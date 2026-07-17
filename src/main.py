@@ -333,9 +333,20 @@ def build_run_summary(
     }
 
 
+def resolve_default_data_dir(repo_root: Path) -> Path:
+    candidates = [
+        repo_root.parent / "附件" / "Data",
+        repo_root / "附件" / "Data",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return candidates[0]
+
+
 def parse_args() -> argparse.Namespace:
     repo_root = Path(__file__).resolve().parents[1]
-    default_data_dir = repo_root / "附件" / "Data"
+    default_data_dir = resolve_default_data_dir(repo_root)
     default_output_dir = repo_root / "outputs" / "problem2_baseline"
 
     parser = argparse.ArgumentParser(
@@ -357,6 +368,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
+    args.data_dir = args.data_dir.resolve()
     args.output_dir.mkdir(parents=True, exist_ok=True)
     seed_everything(args.seed)
 
