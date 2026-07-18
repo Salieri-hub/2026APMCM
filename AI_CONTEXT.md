@@ -10,7 +10,7 @@
 
 ## 当前整体进度
 
-当前已完成题目理解、数据结构核对、baseline 搭建、一次 `20 epoch` CPU 实跑验证、一轮相关文献初步阅读、训练脚本的 GPU 化改造、独立 GPU 环境 `..\LCC_GPU` 的建立与验证、一次正式 `25 epoch` GPU baseline 训练、一次加入 `label smoothing + cosine scheduler` 的对比实验，以及一次 `balanced class-weighted CrossEntropy` 对比实验。项目已进入“围绕当前最优测试结果继续做类别边界优化”阶段。
+当前已完成题目理解、数据结构核对、baseline 搭建、一次 `20 epoch` CPU 实跑验证、一轮相关文献初步阅读、训练脚本的 GPU 化改造、独立 GPU 环境 `..\LCC_GPU` 的建立与验证、一次正式 `25 epoch` GPU baseline 训练、一次加入 `label smoothing + cosine scheduler` 的对比实验、一次 `balanced class-weighted CrossEntropy` 对比实验，以及一次 `focal loss(gamma=2)` 对比实验。项目已进入“围绕当前最优测试结果继续做类别边界优化”阶段。
 
 ## 本次已完成内容
 
@@ -41,6 +41,8 @@
 - 使用 `..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --label-smoothing 0.1 --scheduler cosine` 完成一轮对比实验。
 - 在 `src/main.py` 中加入类别加权 `CrossEntropyLoss` 参数，支持 `balanced` 与 `manual` 两种模式。
 - 使用 `..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --label-smoothing 0.1 --scheduler cosine --class-weighting balanced` 完成一轮对比实验。
+- 在 `src/main.py` 中加入 `FocalLoss` 实现与 `--loss / --focal-gamma` 参数，兼容现有类别权重、`label smoothing` 与学习率调度器配置。
+- 使用 `--loss focal --focal-gamma 2 --label-smoothing 0.1 --scheduler cosine` 完成一轮对比实验，并输出 `outputs/problem2_focal_gamma2`。
 
 ## 已修改模块
 
@@ -57,7 +59,7 @@
 
 - 框架：PyTorch + timm
 - 主干网络：`efficientnet_b0`
-- 损失函数：`CrossEntropyLoss`，现支持 `label smoothing`
+- 损失函数：支持 `CrossEntropyLoss / Focal Loss`
 - 优化器：`AdamW`
 - 学习率调度：支持 `none / cosine / plateau`
 - 默认轮数：`25`
@@ -68,13 +70,13 @@
 
 当前最新对比实验中，测试集表现最好的核心结果：
 
-- 最佳验证集轮次：`epoch 23`
+- 最佳验证集轮次：`epoch 14`
 - 最佳验证集准确率：`90.28%`
-- 测试集准确率：`77.46%`
-- 测试集 `macro F1`：`0.7894`
-- 测试集 `weighted F1`：`0.7705`
-- 配置：`pretrained + label_smoothing=0.1 + cosine scheduler`
-- 总训练耗时：约 `138.9s`
+- 测试集准确率：`79.37%`
+- 测试集 `macro F1`：`0.7988`
+- 测试集 `weighted F1`：`0.7931`
+- 配置：`pretrained + focal_loss(gamma=2) + label_smoothing=0.1 + cosine scheduler`
+- 总训练耗时：约 `189.1s`
 
 当前运行环境状态：
 
@@ -84,11 +86,11 @@
 
 当前模型误差特征：
 
-- `normal` 类识别相对稳定。
-- `large.cell.carcinoma` 的过预测相比上一轮有所缓解。
-- `squamous.cell.carcinoma` 召回率明显提高，但部分 `adenocarcinoma` 被转移误判为 `squamous.cell.carcinoma`。
-- 相比旧 CPU baseline，泛化落差已明显缩小，但腺癌与鳞癌的边界仍未完全稳定。
-- 标准 `balanced` 类别加权会进一步压低腺癌与大细胞癌之间的平衡，当前实验结果低于 `label smoothing + cosine scheduler`。
+- `normal` 类仍然相对稳定，但精度略受其他类别误入影响。
+- `adenocarcinoma` 与 `large.cell.carcinoma` 召回率相较上一轮都有明显提升。
+- `squamous.cell.carcinoma` 召回率从上一轮的高位回落，当前新的取舍转为“拉回腺癌 / 大细胞癌，同时牺牲部分鳞癌召回”。
+- 相比旧 CPU baseline，泛化落差已明显缩小，但三种癌症亚型之间的边界仍未完全稳定。
+- 标准 `balanced` 类别加权仍低于当前 `focal loss(gamma=2)` 方案。
 
 ## 文献调研结论
 
@@ -101,24 +103,24 @@
 
 ## 当前存在的问题
 
-1. `label smoothing + cosine scheduler` 虽然提升了测试集准确率和 `macro F1`，但腺癌召回率下降，需要继续平衡类别取舍。
+1. `focal loss(gamma=2)` 已把测试集准确率提升到 `79.37%`、`macro F1` 提升到 `0.7988`，但鳞癌召回率回落到 `76.67%`，仍需继续平衡类别取舍。
 2. 标准 `balanced class-weighted CrossEntropy` 已完成验证，但测试集准确率降到 `73.33%`、`macro F1` 降到 `0.7547`，不适合作为当前首选方案。
-3. 现阶段尚未加入 `Focal Loss`、采样策略、注意力模块等更针对性的优化手段。
+3. 现阶段尚未加入采样策略、注意力模块或 `Focal Loss + 手动权重` 等更针对性的优化手段。
 4. 当前最佳模型仍以验证集准确率为主要保存依据，实验评价维度还可以继续扩展。
 
 ## 下一步计划
 
-1. 在当前 `label smoothing + cosine scheduler` 基线上优先尝试 `Focal Loss` 或采样策略，拉回腺癌召回率。
-2. 如需继续试类别加权，优先考虑手动权重，而不是直接使用标准 `balanced` 权重。
+1. 在当前 `focal loss(gamma=2)` 基线上继续尝试采样策略或手动权重，优先拉回鳞癌召回率，同时保住腺癌与大细胞癌提升。
+2. 如需继续试类别加权，优先考虑 `Focal Loss + 手动权重`，而不是直接使用标准 `balanced` 权重。
 3. 试验轻量注意力模块，如 `SE`、`CBAM` 或其他全局上下文增强模块。
-4. 基于混淆矩阵与高频误判样本开展误差分析，重点检查“腺癌 -> 鳞癌”的新误判路径。
+4. 基于混淆矩阵与高频误判样本开展误差分析，重点检查“鳞癌 -> 腺癌 / 大细胞癌”与“其他类别 -> normal”的新误判路径。
 
 ## 需要提醒后续协作者的事项
 
 - 后续回答和修改应优先参考本文件，其次是 `README.md` 和 `doc/problem2_baseline.md`。
 - 文献阅读结论的细化整理见 `doc/literature_review.md`。
 - `outputs/problem2_baseline/best_model.pt` 对应的是最近一次 `20 epoch` 运行中验证集最佳的 `epoch 15`。
-- 后续 GPU 实验默认应使用 `..\LCC_GPU\python.exe`，并写入新的输出目录，避免覆盖现有 `problem2_baseline_gpu` 与 `problem2_pretrained_ls_cosine` 结果。
+- 后续 GPU 实验默认应使用 `..\LCC_GPU\python.exe`，并写入新的输出目录，避免覆盖现有 `problem2_baseline_gpu`、`problem2_pretrained_ls_cosine` 与 `problem2_focal_gamma2` 结果。
 - 当前最新有效结果并不代表最终可提交方案，只能视为 baseline。
 - 当前资源布局为“项目代码在 `B题` 目录内，数据集和虚拟环境在项目外部同级目录”。
 - 如果继续训练或替换模型，必须同步更新 `AI_CONTEXT.md` 与 `TODO.md`。

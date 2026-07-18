@@ -12,6 +12,7 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 import timm
 import torch
+import torch.nn.functional as F
 from PIL import Image
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from torch import nn
@@ -31,6 +32,48 @@ CLASS_TO_INDEX = {name: idx for idx, name in enumerate(CLASS_NAMES)}
 
 IMAGENET_MEAN = (0.485, 0.456, 0.406)
 IMAGENET_STD = (0.229, 0.224, 0.225)
+
+
+class FocalLoss(nn.Module):
+    def __init__(
+        self,
+        alpha: Optional[torch.Tensor] = None,
+        gamma: float = 2.0,
+        label_smoothing: float = 0.0,
+        reduction: str = "mean",
+    ):
+        super().__init__()
+        if alpha is None:
+            alpha = torch.tensor([], dtype=torch.float32)
+        if not 0.0 <= label_smoothing < 1.0:
+            raise ValueError("label_smoothing must be in [0, 1).")
+        self.register_buffer("alpha", alpha.float())
+        self.gamma = gamma
+        self.label_smoothing = label_smoothing
+        self.reduction = reduction
+
+    def forward(self, logits: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
+        num_classes = logits.size(1)
+        log_probs = F.log_softmax(logits, dim=1)
+        probs = log_probs.exp()
+        target_dist = F.one_hot(targets, num_classes=num_classes).to(dtype=logits.dtype)
+
+        if self.label_smoothing > 0.0:
+            smooth = self.label_smoothing
+            target_dist = target_dist * (1.0 - smooth) + smooth / num_classes
+
+        target_probs = (probs * target_dist).sum(dim=1)
+        ce_loss = -(target_dist * log_probs).sum(dim=1)
+        loss = ((1.0 - target_probs).clamp_min(1e-8) ** self.gamma) * ce_loss
+
+        if self.alpha.numel() > 0:
+            loss = loss * (target_dist * self.alpha).sum(dim=1)
+
+        if self.reduction == "sum":
+            return loss.sum()
+        if self.reduction == "none":
+            return loss
+        return loss.mean()
 
 
 def canonical_class_name(folder_name: str) -> str:
@@ -288,6 +331,14 @@ def get_current_lr(optimizer: AdamW) -> float:
     return float(optimizer.param_groups[0]["lr"])
 
 
+def create_criterion(args: argparse.Namespace, weight_tensor: Optional[torch.Tensor]) -> nn.Module:
+    if args.loss == "cross_entropy":
+        return nn.CrossEntropyLoss(weight=weight_tensor, label_smoothing=args.label_smoothing)
+    if args.loss == "focal":
+        return FocalLoss(alpha=weight_tensor, gamma=args.focal_gamma, label_smoothing=args.label_smoothing)
+    raise ValueError(f"Unsupported loss: {args.loss}")
+
+
 def train_one_epoch(
     model: nn.Module,
     loader: DataLoader,
@@ -444,12 +495,14 @@ def build_run_summary(
         "config": {
             "model_name": args.model_name,
             "pretrained": args.pretrained,
+            "loss": args.loss,
             "epochs": args.epochs,
             "batch_size": args.batch_size,
             "image_size": args.image_size,
             "learning_rate": args.lr,
             "weight_decay": args.weight_decay,
             "label_smoothing": args.label_smoothing,
+            "focal_gamma": args.focal_gamma,
             "class_weighting": args.class_weighting,
             "class_weights": class_weights,
             "scheduler": args.scheduler,
@@ -510,12 +563,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", type=Path, default=None)
     parser.add_argument("--model-name", type=str, default="efficientnet_b0")
     parser.add_argument("--pretrained", action="store_true", help="Use timm pretrained weights if available.")
+    parser.add_argument("--loss", choices=["cross_entropy", "focal"], default="cross_entropy", help="Training loss; label smoothing applies to both options.")
     parser.add_argument("--epochs", type=int, default=25)
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--image-size", type=int, default=224)
     parser.add_argument("--lr", type=float, default=3e-4)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
-    parser.add_argument("--label-smoothing", type=float, default=0.0)
+    parser.add_argument("--label-smoothing", type=float, default=0.0, help="Label smoothing factor used by cross-entropy and focal loss.")
+    parser.add_argument("--focal-gamma", type=float, default=2.0, help="Focusing parameter when --loss focal is selected.")
     parser.add_argument("--class-weighting", choices=["none", "balanced", "manual"], default="none")
     parser.add_argument("--class-weights", type=str, default=None, help="Comma-separated weights in CLASS_NAMES order when class-weighting=manual.")
     parser.add_argument("--scheduler", choices=["none", "cosine", "plateau"], default="none")
@@ -566,7 +621,7 @@ def main() -> None:
 
     weight_tensor, class_weights = resolve_class_weights(args, samples_by_split["train"], device)
     model = create_model(args.model_name, num_classes=len(CLASS_NAMES), pretrained=args.pretrained).to(device)
-    criterion = nn.CrossEntropyLoss(weight=weight_tensor, label_smoothing=args.label_smoothing)
+    criterion = create_criterion(args, weight_tensor)
     optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     scheduler = create_scheduler(optimizer, args)
     scaler = torch.amp.GradScaler("cuda", enabled=amp_enabled) if device.type == "cuda" else None
@@ -574,6 +629,8 @@ def main() -> None:
     if class_weights is not None:
         formatted_weights = ", ".join(f"{name}={class_weights[name]:.4f}" for name in CLASS_NAMES)
         print(f"Using class weights: {formatted_weights}")
+    if args.loss == "focal":
+        print(f"Using focal loss: gamma={args.focal_gamma}")
 
     history: List[Dict[str, float]] = []
     best_val_accuracy = -1.0
