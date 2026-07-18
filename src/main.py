@@ -34,6 +34,60 @@ IMAGENET_MEAN = (0.485, 0.456, 0.406)
 IMAGENET_STD = (0.229, 0.224, 0.225)
 
 
+def build_target_distribution(
+    targets: torch.Tensor,
+    num_classes: int,
+    label_smoothing: float = 0.0,
+    dtype: Optional[torch.dtype] = None,
+) -> torch.Tensor:
+    if targets.ndim == 2:
+        return targets.to(dtype=dtype or targets.dtype)
+
+    if targets.ndim != 1:
+        raise ValueError(f"Targets must be rank-1 indices or rank-2 distributions, got shape {tuple(targets.shape)}.")
+
+    target_dist = F.one_hot(targets, num_classes=num_classes).to(dtype=dtype or torch.float32)
+    if label_smoothing > 0.0:
+        target_dist = target_dist * (1.0 - label_smoothing) + label_smoothing / num_classes
+    return target_dist
+
+
+class SoftTargetCrossEntropyLoss(nn.Module):
+    def __init__(
+        self,
+        weight: Optional[torch.Tensor] = None,
+        label_smoothing: float = 0.0,
+        reduction: str = "mean",
+    ):
+        super().__init__()
+        if weight is None:
+            weight = torch.tensor([], dtype=torch.float32)
+        if not 0.0 <= label_smoothing < 1.0:
+            raise ValueError("label_smoothing must be in [0, 1).")
+        self.register_buffer("weight", weight.float())
+        self.label_smoothing = label_smoothing
+        self.reduction = reduction
+
+    def forward(self, logits: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
+        target_dist = build_target_distribution(
+            targets,
+            num_classes=logits.size(1),
+            label_smoothing=self.label_smoothing if targets.ndim == 1 else 0.0,
+            dtype=logits.dtype,
+        )
+        log_probs = F.log_softmax(logits, dim=1)
+        if self.weight.numel() > 0:
+            loss = -(target_dist * log_probs * self.weight.unsqueeze(0)).sum(dim=1)
+        else:
+            loss = -(target_dist * log_probs).sum(dim=1)
+
+        if self.reduction == "sum":
+            return loss.sum()
+        if self.reduction == "none":
+            return loss
+        return loss.mean()
+
+
 class FocalLoss(nn.Module):
     def __init__(
         self,
@@ -53,14 +107,14 @@ class FocalLoss(nn.Module):
         self.reduction = reduction
 
     def forward(self, logits: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
-        num_classes = logits.size(1)
         log_probs = F.log_softmax(logits, dim=1)
         probs = log_probs.exp()
-        target_dist = F.one_hot(targets, num_classes=num_classes).to(dtype=logits.dtype)
-
-        if self.label_smoothing > 0.0:
-            smooth = self.label_smoothing
-            target_dist = target_dist * (1.0 - smooth) + smooth / num_classes
+        target_dist = build_target_distribution(
+            targets,
+            num_classes=logits.size(1),
+            label_smoothing=self.label_smoothing if targets.ndim == 1 else 0.0,
+            dtype=logits.dtype,
+        )
 
         target_probs = (probs * target_dist).sum(dim=1)
         ce_loss = -(target_dist * log_probs).sum(dim=1)
@@ -139,6 +193,95 @@ class LungCancerDataset(Dataset):
         image = Image.open(sample.image_path).convert("RGB")
         tensor = self.transform(image)
         return tensor, sample.label, str(sample.image_path)
+
+
+class FeatureSqueezeExcite(nn.Module):
+    def __init__(self, channels: int, reduction_ratio: int = 16):
+        super().__init__()
+        reduced_channels = max(channels // reduction_ratio, 1)
+        self.pool = nn.AdaptiveAvgPool2d(1)
+        self.reduce = nn.Conv2d(channels, reduced_channels, kernel_size=1, bias=True)
+        self.act = nn.SiLU(inplace=True)
+        self.expand = nn.Conv2d(reduced_channels, channels, kernel_size=1, bias=True)
+        self.gate = nn.Sigmoid()
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        scale = self.pool(x)
+        scale = self.reduce(scale)
+        scale = self.act(scale)
+        scale = self.expand(scale)
+        return x * self.gate(scale)
+
+
+class ChannelAttention(nn.Module):
+    def __init__(self, channels: int, reduction_ratio: int = 16):
+        super().__init__()
+        reduced_channels = max(channels // reduction_ratio, 1)
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.max_pool = nn.AdaptiveMaxPool2d(1)
+        self.mlp = nn.Sequential(
+            nn.Conv2d(channels, reduced_channels, kernel_size=1, bias=False),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(reduced_channels, channels, kernel_size=1, bias=False),
+        )
+        self.gate = nn.Sigmoid()
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        attention = self.mlp(self.avg_pool(x)) + self.mlp(self.max_pool(x))
+        return x * self.gate(attention)
+
+
+class SpatialAttention(nn.Module):
+    def __init__(self, kernel_size: int = 7):
+        super().__init__()
+        padding = kernel_size // 2
+        self.conv = nn.Conv2d(2, 1, kernel_size=kernel_size, padding=padding, bias=False)
+        self.gate = nn.Sigmoid()
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        avg_map = x.mean(dim=1, keepdim=True)
+        max_map = x.amax(dim=1, keepdim=True)
+        attention = self.conv(torch.cat([avg_map, max_map], dim=1))
+        return x * self.gate(attention)
+
+
+class CBAM(nn.Module):
+    def __init__(self, channels: int, reduction_ratio: int = 16, spatial_kernel_size: int = 7):
+        super().__init__()
+        self.channel_attention = ChannelAttention(channels, reduction_ratio=reduction_ratio)
+        self.spatial_attention = SpatialAttention(kernel_size=spatial_kernel_size)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = self.channel_attention(x)
+        return self.spatial_attention(x)
+
+
+class AttentionAugmentedModel(nn.Module):
+    def __init__(self, backbone: nn.Module, feature_attention: str):
+        super().__init__()
+        if not hasattr(backbone, "forward_features") or not hasattr(backbone, "forward_head"):
+            raise ValueError(
+                f"Model {backbone.__class__.__name__} does not expose forward_features/forward_head, "
+                f"so feature attention '{feature_attention}' cannot be attached safely."
+            )
+
+        self.backbone = backbone
+        self.feature_attention_name = feature_attention
+        num_features = getattr(backbone, "num_features", None)
+        if num_features is None:
+            raise ValueError("Backbone does not expose num_features, so feature attention cannot be initialized.")
+
+        if feature_attention == "se":
+            self.feature_attention = FeatureSqueezeExcite(num_features)
+        elif feature_attention == "cbam":
+            self.feature_attention = CBAM(num_features)
+        else:
+            raise ValueError(f"Unsupported feature attention: {feature_attention}")
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = self.backbone.forward_features(x)
+        x = self.feature_attention(x)
+        return self.backbone.forward_head(x, pre_logits=False)
 
 
 def build_transforms(image_size: int) -> Tuple[transforms.Compose, transforms.Compose]:
@@ -246,8 +389,16 @@ def create_dataloaders(
     return train_loader, valid_loader, test_loader, samples_by_split
 
 
-def create_model(model_name: str, num_classes: int, pretrained: bool) -> nn.Module:
-    return timm.create_model(model_name, pretrained=pretrained, num_classes=num_classes)
+def create_model(
+    model_name: str,
+    num_classes: int,
+    pretrained: bool,
+    feature_attention: str,
+) -> nn.Module:
+    backbone = timm.create_model(model_name, pretrained=pretrained, num_classes=num_classes)
+    if feature_attention == "none":
+        return backbone
+    return AttentionAugmentedModel(backbone, feature_attention=feature_attention)
 
 
 def compute_train_class_weights(train_samples: List[Sample]) -> Dict[str, float]:
@@ -333,10 +484,71 @@ def get_current_lr(optimizer: AdamW) -> float:
 
 def create_criterion(args: argparse.Namespace, weight_tensor: Optional[torch.Tensor]) -> nn.Module:
     if args.loss == "cross_entropy":
-        return nn.CrossEntropyLoss(weight=weight_tensor, label_smoothing=args.label_smoothing)
+        return SoftTargetCrossEntropyLoss(weight=weight_tensor, label_smoothing=args.label_smoothing)
     if args.loss == "focal":
         return FocalLoss(alpha=weight_tensor, gamma=args.focal_gamma, label_smoothing=args.label_smoothing)
     raise ValueError(f"Unsupported loss: {args.loss}")
+
+
+def has_mix_augmentation(args: argparse.Namespace) -> bool:
+    return args.mixup_alpha > 0.0 or args.cutmix_alpha > 0.0
+
+
+def rand_bbox(width: int, height: int, lam: float) -> Tuple[int, int, int, int]:
+    cut_ratio = np.sqrt(max(0.0, 1.0 - lam))
+    cut_w = int(width * cut_ratio)
+    cut_h = int(height * cut_ratio)
+
+    center_x = np.random.randint(width)
+    center_y = np.random.randint(height)
+
+    x1 = np.clip(center_x - cut_w // 2, 0, width)
+    x2 = np.clip(center_x + cut_w // 2, 0, width)
+    y1 = np.clip(center_y - cut_h // 2, 0, height)
+    y2 = np.clip(center_y + cut_h // 2, 0, height)
+    return int(x1), int(y1), int(x2), int(y2)
+
+
+def apply_mix_augmentation(
+    images: torch.Tensor,
+    labels: torch.Tensor,
+    args: argparse.Namespace,
+) -> Tuple[torch.Tensor, torch.Tensor]:
+    if not has_mix_augmentation(args) or labels.size(0) < 2 or random.random() > args.mix_prob:
+        return images, labels
+
+    permutation = torch.randperm(labels.size(0), device=labels.device)
+    use_cutmix = False
+    if args.cutmix_alpha > 0.0 and args.mixup_alpha > 0.0:
+        use_cutmix = random.random() < args.mix_switch_prob
+    elif args.cutmix_alpha > 0.0:
+        use_cutmix = True
+
+    if use_cutmix:
+        lam = float(np.random.beta(args.cutmix_alpha, args.cutmix_alpha))
+        x1, y1, x2, y2 = rand_bbox(images.size(-1), images.size(-2), lam)
+        mixed_images = images.clone()
+        mixed_images[:, :, y1:y2, x1:x2] = images[permutation, :, y1:y2, x1:x2]
+        patch_area = (x2 - x1) * (y2 - y1)
+        lam = 1.0 - patch_area / float(images.size(-1) * images.size(-2))
+    else:
+        lam = float(np.random.beta(args.mixup_alpha, args.mixup_alpha))
+        mixed_images = images * lam + images[permutation] * (1.0 - lam)
+
+    labels_a = build_target_distribution(
+        labels,
+        num_classes=len(CLASS_NAMES),
+        label_smoothing=args.label_smoothing,
+        dtype=images.dtype,
+    )
+    labels_b = build_target_distribution(
+        labels[permutation],
+        num_classes=len(CLASS_NAMES),
+        label_smoothing=args.label_smoothing,
+        dtype=images.dtype,
+    )
+    mixed_labels = labels_a * lam + labels_b * (1.0 - lam)
+    return mixed_images, mixed_labels
 
 
 def train_one_epoch(
@@ -347,6 +559,7 @@ def train_one_epoch(
     device: torch.device,
     scaler: Optional[object],
     amp_enabled: bool,
+    args: argparse.Namespace,
 ) -> Dict[str, float]:
     model.train()
     total_loss = 0.0
@@ -357,11 +570,13 @@ def train_one_epoch(
     for images, labels, _ in loader:
         images = images.to(device, non_blocking=non_blocking)
         labels = labels.to(device, non_blocking=non_blocking)
+        metric_labels = labels
 
         optimizer.zero_grad(set_to_none=True)
+        images, targets = apply_mix_augmentation(images, labels, args)
         with autocast_context(device, amp_enabled):
             logits = model(images)
-            loss = criterion(logits, labels)
+            loss = criterion(logits, targets)
 
         if scaler is not None:
             scaler.scale(loss).backward()
@@ -373,7 +588,7 @@ def train_one_epoch(
 
         total_loss += loss.item() * labels.size(0)
         preds = logits.argmax(dim=1)
-        all_labels.extend(labels.cpu().tolist())
+        all_labels.extend(metric_labels.cpu().tolist())
         all_preds.extend(preds.cpu().tolist())
 
     return {
@@ -507,6 +722,11 @@ def build_run_summary(
             "class_weights": class_weights,
             "scheduler": args.scheduler,
             "min_lr": args.min_lr,
+            "mixup_alpha": args.mixup_alpha,
+            "cutmix_alpha": args.cutmix_alpha,
+            "mix_prob": args.mix_prob,
+            "mix_switch_prob": args.mix_switch_prob,
+            "feature_attention": args.feature_attention,
             "num_workers": args.num_workers,
             "seed": args.seed,
             "device_request": args.device,
@@ -577,6 +797,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--min-lr", type=float, default=1e-6)
     parser.add_argument("--plateau-patience", type=int, default=3)
     parser.add_argument("--plateau-factor", type=float, default=0.5)
+    parser.add_argument("--mixup-alpha", type=float, default=0.0, help="Enable MixUp when > 0. Typical values: 0.2 to 0.4.")
+    parser.add_argument("--cutmix-alpha", type=float, default=0.0, help="Enable CutMix when > 0. Typical values: 0.5 to 1.0.")
+    parser.add_argument("--mix-prob", type=float, default=1.0, help="Probability of applying MixUp/CutMix to a training batch.")
+    parser.add_argument("--mix-switch-prob", type=float, default=0.5, help="When MixUp and CutMix are both enabled, probability of selecting CutMix.")
+    parser.add_argument("--feature-attention", choices=["none", "se", "cbam"], default="none", help="Extra attention attached on the final feature map. EfficientNet-B0 already includes internal SE blocks.")
     parser.add_argument("--num-workers", type=int, default=None, help="DataLoader workers. Defaults to 4 on CUDA and 0 on CPU.")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
@@ -593,9 +818,18 @@ def main() -> None:
     args.data_dir = args.data_dir.resolve()
     device = resolve_device(args.device)
     if args.output_dir is None:
-        default_output_name = "problem2_baseline_gpu" if device.type == "cuda" else "problem2_baseline"
+        if device.type == "cuda":
+            default_output_name = "ablation_pretrained_ce" if args.pretrained else "ablation_scratch_ce_cuda"
+        else:
+            default_output_name = "ablation_scratch_ce"
         args.output_dir = repo_root / "outputs" / default_output_name
     args.output_dir.mkdir(parents=True, exist_ok=True)
+    if args.mixup_alpha < 0.0 or args.cutmix_alpha < 0.0:
+        raise ValueError("--mixup-alpha and --cutmix-alpha must be >= 0.")
+    if not 0.0 <= args.mix_prob <= 1.0:
+        raise ValueError("--mix-prob must be in [0, 1].")
+    if not 0.0 <= args.mix_switch_prob <= 1.0:
+        raise ValueError("--mix-switch-prob must be in [0, 1].")
     seed_everything(args.seed, deterministic=args.deterministic)
     args.num_workers = resolve_num_workers(args.num_workers, device)
     amp_enabled = resolve_amp_enabled(args.amp, device)
@@ -620,7 +854,12 @@ def main() -> None:
     )
 
     weight_tensor, class_weights = resolve_class_weights(args, samples_by_split["train"], device)
-    model = create_model(args.model_name, num_classes=len(CLASS_NAMES), pretrained=args.pretrained).to(device)
+    model = create_model(
+        args.model_name,
+        num_classes=len(CLASS_NAMES),
+        pretrained=args.pretrained,
+        feature_attention=args.feature_attention,
+    ).to(device)
     criterion = create_criterion(args, weight_tensor)
     optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     scheduler = create_scheduler(optimizer, args)
@@ -631,6 +870,17 @@ def main() -> None:
         print(f"Using class weights: {formatted_weights}")
     if args.loss == "focal":
         print(f"Using focal loss: gamma={args.focal_gamma}")
+    if has_mix_augmentation(args):
+        print(
+            "Using mixed augmentation: "
+            f"mixup_alpha={args.mixup_alpha}, cutmix_alpha={args.cutmix_alpha}, "
+            f"mix_prob={args.mix_prob}, cutmix_switch_prob={args.mix_switch_prob}"
+        )
+    if args.feature_attention != "none":
+        print(
+            f"Using extra feature attention: {args.feature_attention} "
+            "(note: EfficientNet-B0 already contains internal SE blocks)."
+        )
 
     history: List[Dict[str, float]] = []
     best_val_accuracy = -1.0
@@ -647,6 +897,7 @@ def main() -> None:
             device,
             scaler=scaler,
             amp_enabled=amp_enabled,
+            args=args,
         )
         valid_metrics = evaluate(model, valid_loader, criterion, device, amp_enabled=amp_enabled)
         step_scheduler(scheduler, args.scheduler, valid_metrics["loss"])
@@ -682,6 +933,7 @@ def main() -> None:
                     "class_names": CLASS_NAMES,
                     "model_name": args.model_name,
                     "image_size": args.image_size,
+                    "feature_attention": args.feature_attention,
                 },
                 best_model_path,
             )

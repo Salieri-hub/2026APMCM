@@ -1,4 +1,4 @@
-# TODO
+﻿# TODO
 
 ## 已完成任务
 
@@ -35,10 +35,10 @@
 - [ ] 在当前 `Focal Loss` 基线上继续尝试采样策略
 - [ ] 如有必要再尝试手动类别权重，而不是直接使用 `balanced` 权重
 - [ ] 尝试 `Focal Loss + 手动权重`，平衡腺癌 / 鳞癌 / 大细胞癌召回率
-- [ ] 试验轻量注意力模块 `SE` / `CBAM`
+- [x] 试验轻量注意力模块 `SE` / `CBAM` 并完成结果分析
 - [ ] 输出更细化的误差分析结果，并补充 `Grad-CAM` 或高混淆样本检查
 - [ ] 在实验记录中明确比较 `macro F1`、各类召回率与混淆矩阵
-- [ ] 根据最新实验结果更新 `doc/problem2_baseline.md` 与 `doc/literature_review.md`
+- [x] 根据最新实验结果更新 `doc/problem2_baseline.md` 与 `doc/literature_review.md`
 
 ## 当前优先级
 
@@ -48,3 +48,9 @@
 - 中优先级：整理问题一正式答案和问题二实验总结
 - 中优先级：补充图表、混淆矩阵解读和论文可用文字
 - 低优先级：整理目录和长期维护文档
+## Latest Update
+
+- [x] Renamed all experiment output folders to the unified `ablation_*` format.
+- [x] Added the consolidated ablation report at `doc/ablation_results.md`.
+- [x] Confirmed the best overall run is `ablation_pretrained_focal_ls_cosine_cbam`.
+- [x] Verified the attention module comparison: `SE` is weaker, `CBAM` is best.

@@ -1,4 +1,4 @@
-# APMCM 2026 B题
+﻿# APMCM 2026 B题
 
 肺癌疾病诊断图像识别与分类问题的本地实验项目。
 
@@ -17,15 +17,15 @@
 - 已保留原有 CPU baseline 结果，并新建 `..\LCC_GPU` CUDA 环境用于 GPU 训练。
 - 最新 baseline 为 `EfficientNet-B0 + AdamW`，并已支持 `CrossEntropyLoss / Focal Loss`、`label smoothing` 与学习率调度器。
 - 已完成一轮相关文献初步阅读与方法归纳，后续优化方向已明确。
-- 已在 `2026-07-18` 完成三轮正式 GPU 训练，对比了 `pretrained baseline`、`label smoothing + cosine scheduler` 与 `focal loss (gamma=2)`。
+- 已在 `2026-07-18` 完成多轮正式 GPU 训练，对比了 `pretrained baseline`、`label smoothing + cosine scheduler`、`focal loss` 与 `SE` / `CBAM` 注意力模块。
 
-截至 `2026-07-18`，当前测试集表现最好的结果来自 `GPU + pretrained + focal loss(gamma=2) + label smoothing + cosine scheduler`：
+截至 `2026-07-18`，当前测试集表现最好的结果来自 `GPU + pretrained + focal loss(gamma=2) + label smoothing + cosine scheduler + CBAM`：
 
-- 最佳验证集轮次：`epoch 14`
-- 最佳验证集准确率：`90.28%`
-- 测试集准确率：`79.37%`
-- 测试集 `macro F1`：`0.7988`
-- 当前最明显问题：腺癌与大细胞癌召回率得到改善，但鳞癌召回率回落，类别边界仍需继续优化。
+- 最佳验证集轮次：`epoch 17`
+- 最佳验证集准确率：`93.06%`
+- 测试集准确率：`86.35%`
+- 测试集 `macro F1`：`0.8646`
+- 当前最明显问题：鳞癌召回率仍偏低，类别边界还要继续平衡。
 
 ## 文献调研结论
 
@@ -45,10 +45,10 @@
 ├─ doc/
 │  └─ problem2_baseline.md
 ├─ outputs/
-│  ├─ problem2_baseline/
-│  ├─ problem2_baseline_gpu/   # GPU pretrained baseline
-│  ├─ problem2_pretrained_ls_cosine/   # label smoothing + cosine 调度实验
-│  └─ problem2_focal_gamma2/   # focal loss(gamma=2) 实验
+│  ├─ ablation_scratch_ce/
+│  ├─ ablation_pretrained_ce/   # GPU pretrained baseline
+│  ├─ ablation_pretrained_ce_ls_cosine/   # label smoothing + cosine 调度实验
+│  └─ ablation_pretrained_focal_ls_cosine/   # focal loss(gamma=2) 实验
 ├─ README.md
 ├─ AI_CONTEXT.md
 ├─ TODO.md
@@ -122,8 +122,8 @@
 ..\LCC_GPU\python.exe .\src\main.py --pretrained
 ..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --batch-size 32 --num-workers 4
 ..\LCC_GPU\python.exe .\src\main.py --device cuda --no-amp
-..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\problem2_pretrained_ls_cosine
-..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --loss focal --focal-gamma 2 --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\problem2_focal_gamma2
+..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\ablation_pretrained_ce_ls_cosine
+..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --loss focal --focal-gamma 2 --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\ablation_pretrained_focal_ls_cosine
 ```
 
 主要参数说明：
@@ -148,14 +148,14 @@
 
 - `src/main.py` 默认会优先查找项目外部同级目录 `..\附件\Data`。
 - 如果外部路径不存在，脚本才会回退到项目内部的 `.\附件\Data`。
-- 当设备实际运行在 GPU 且未手动指定 `--output-dir` 时，默认输出目录为 `outputs/problem2_baseline_gpu`，避免覆盖现有 CPU baseline 结果。
+- 当设备实际运行在 GPU 且未手动指定 `--output-dir` 时，默认输出目录为 `outputs/ablation_pretrained_ce`，避免覆盖现有 CPU baseline 结果。
 
 ## 输出结果
 
 运行完成后，结果会写入输出目录：
 
-- CPU 默认：`outputs/problem2_baseline`
-- GPU 默认：`outputs/problem2_baseline_gpu`
+- CPU 默认：`outputs/ablation_scratch_ce`
+- GPU 默认：`outputs/ablation_pretrained_ce`
 
 - `best_model.pt`：验证集最佳权重
 - `metrics_summary.json`：完整训练记录与指标
@@ -169,3 +169,8 @@
 - 相关论文阅读与可迁移思路见 `doc/literature_review.md`
 - 阶段进度见 `AI_CONTEXT.md`
 - 待办事项见 `TODO.md`
+## Ablation Summary
+
+See [doc/ablation_results.md](doc/ablation_results.md) for the consolidated 12-run table.
+All experiment output folders now use the `ablation_*` prefix.
+The current best structural add-on is `CBAM`; the extra `SE` block is weaker.

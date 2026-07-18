@@ -100,3 +100,9 @@
 2. 更合理的优化目标与损失设计
 3. 轻量注意力 / 全局上下文增强
 4. 更细的误差分析与可解释性检查
+## Ablation Implications
+
+- Pretraining remains the strongest transferable improvement for this dataset.
+- Label smoothing is the best low-cost regularizer in the current runs.
+- MixUp and CutMix do not help under the present small-sample setting.
+- Extra CBAM is the strongest structural add-on; `EfficientNet-B0` already contains internal SE blocks.

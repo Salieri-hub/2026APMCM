@@ -1,0 +1,316 @@
+﻿image_path,true_label,pred_label,prob_adenocarcinoma,prob_large.cell.carcinoma,prob_normal,prob_squamous.cell.carcinoma
+/content/附件/Data/test/adenocarcinoma/000108 (3).png,adenocarcinoma,adenocarcinoma,0.989232,0.006870,0.000663,0.003236
+/content/附件/Data/test/adenocarcinoma/000109 (2).png,adenocarcinoma,adenocarcinoma,0.941545,0.004152,0.045948,0.008355
+/content/附件/Data/test/adenocarcinoma/000109 (4).png,adenocarcinoma,squamous.cell.carcinoma,0.103610,0.142938,0.028969,0.724483
+/content/附件/Data/test/adenocarcinoma/000109 (5).png,adenocarcinoma,adenocarcinoma,0.481624,0.091249,0.146815,0.280312
+/content/附件/Data/test/adenocarcinoma/000112 (2).png,adenocarcinoma,adenocarcinoma,0.540170,0.231532,0.147458,0.080840
+/content/附件/Data/test/adenocarcinoma/000113 (7).png,adenocarcinoma,large.cell.carcinoma,0.221188,0.408818,0.138078,0.231916
+/content/附件/Data/test/adenocarcinoma/000114 (5).png,adenocarcinoma,adenocarcinoma,0.977468,0.002171,0.017712,0.002649
+/content/附件/Data/test/adenocarcinoma/000114.png,adenocarcinoma,adenocarcinoma,0.899082,0.006563,0.012564,0.081790
+/content/附件/Data/test/adenocarcinoma/000115 (4).png,adenocarcinoma,large.cell.carcinoma,0.001995,0.996566,0.000309,0.001131
+/content/附件/Data/test/adenocarcinoma/000115 (8).png,adenocarcinoma,adenocarcinoma,0.782685,0.109849,0.062483,0.044983
+/content/附件/Data/test/adenocarcinoma/000115.png,adenocarcinoma,squamous.cell.carcinoma,0.037914,0.214379,0.005091,0.742615
+/content/附件/Data/test/adenocarcinoma/000116 (5).png,adenocarcinoma,adenocarcinoma,0.791547,0.011949,0.029286,0.167218
+/content/附件/Data/test/adenocarcinoma/000116 (7).png,adenocarcinoma,squamous.cell.carcinoma,0.127915,0.035000,0.036492,0.800593
+/content/附件/Data/test/adenocarcinoma/000116 (9).png,adenocarcinoma,squamous.cell.carcinoma,0.437781,0.007503,0.014128,0.540588
+/content/附件/Data/test/adenocarcinoma/000117 (4).png,adenocarcinoma,squamous.cell.carcinoma,0.128062,0.049204,0.099686,0.723047
+/content/附件/Data/test/adenocarcinoma/000117 (8).png,adenocarcinoma,adenocarcinoma,0.853119,0.005411,0.020944,0.120526
+/content/附件/Data/test/adenocarcinoma/000117.png,adenocarcinoma,adenocarcinoma,0.491190,0.148929,0.327843,0.032037
+/content/附件/Data/test/adenocarcinoma/000118 (5).png,adenocarcinoma,squamous.cell.carcinoma,0.373025,0.122801,0.089253,0.414922
+/content/附件/Data/test/adenocarcinoma/000118 (7).png,adenocarcinoma,squamous.cell.carcinoma,0.231678,0.051871,0.015266,0.701185
+/content/附件/Data/test/adenocarcinoma/000119 (4).png,adenocarcinoma,adenocarcinoma,0.651692,0.011093,0.166879,0.170336
+/content/附件/Data/test/adenocarcinoma/000119 (5).png,adenocarcinoma,adenocarcinoma,0.487128,0.031065,0.178158,0.303649
+/content/附件/Data/test/adenocarcinoma/000119 (6).png,adenocarcinoma,adenocarcinoma,0.947321,0.007776,0.002666,0.042237
+/content/附件/Data/test/adenocarcinoma/000120.png,adenocarcinoma,adenocarcinoma,0.985019,0.003789,0.000308,0.010884
+/content/附件/Data/test/adenocarcinoma/000121 (6).png,adenocarcinoma,large.cell.carcinoma,0.204979,0.713007,0.055711,0.026303
+/content/附件/Data/test/adenocarcinoma/000121 (7).png,adenocarcinoma,adenocarcinoma,0.453565,0.212659,0.129363,0.204413
+/content/附件/Data/test/adenocarcinoma/000121.png,adenocarcinoma,adenocarcinoma,0.646455,0.053992,0.044413,0.255141
+/content/附件/Data/test/adenocarcinoma/000122 (4).png,adenocarcinoma,adenocarcinoma,0.512176,0.313929,0.039073,0.134822
+/content/附件/Data/test/adenocarcinoma/000122.png,adenocarcinoma,adenocarcinoma,0.570445,0.049024,0.031994,0.348536
+/content/附件/Data/test/adenocarcinoma/000123 (4).png,adenocarcinoma,adenocarcinoma,0.681037,0.074768,0.024279,0.219916
+/content/附件/Data/test/adenocarcinoma/000123 (6).png,adenocarcinoma,squamous.cell.carcinoma,0.029824,0.112718,0.046645,0.810813
+/content/附件/Data/test/adenocarcinoma/000123 (9).png,adenocarcinoma,adenocarcinoma,0.872054,0.022591,0.021160,0.084196
+/content/附件/Data/test/adenocarcinoma/000124 (6).png,adenocarcinoma,squamous.cell.carcinoma,0.044477,0.124677,0.040934,0.789912
+/content/附件/Data/test/adenocarcinoma/000124 (9).png,adenocarcinoma,squamous.cell.carcinoma,0.382541,0.160247,0.014539,0.442673
+/content/附件/Data/test/adenocarcinoma/000125 (2).png,adenocarcinoma,squamous.cell.carcinoma,0.198897,0.018019,0.268693,0.514391
+/content/附件/Data/test/adenocarcinoma/000125 (4).png,adenocarcinoma,normal,0.040328,0.047751,0.692842,0.219079
+/content/附件/Data/test/adenocarcinoma/000125 (5).png,adenocarcinoma,large.cell.carcinoma,0.115978,0.356366,0.259706,0.267950
+/content/附件/Data/test/adenocarcinoma/000125 (6).png,adenocarcinoma,normal,0.273056,0.311536,0.365291,0.050117
+/content/附件/Data/test/adenocarcinoma/000125 (8).png,adenocarcinoma,squamous.cell.carcinoma,0.313680,0.274583,0.018606,0.393131
+/content/附件/Data/test/adenocarcinoma/000126 (6).png,adenocarcinoma,adenocarcinoma,0.610839,0.009990,0.006866,0.372306
+/content/附件/Data/test/adenocarcinoma/000127 (5).png,adenocarcinoma,squamous.cell.carcinoma,0.015299,0.315805,0.043903,0.624993
+/content/附件/Data/test/adenocarcinoma/000128 (5).png,adenocarcinoma,squamous.cell.carcinoma,0.026111,0.048734,0.113669,0.811487
+/content/附件/Data/test/adenocarcinoma/000129 (5).png,adenocarcinoma,adenocarcinoma,0.566072,0.309577,0.026748,0.097603
+/content/附件/Data/test/adenocarcinoma/000129.png,adenocarcinoma,adenocarcinoma,0.677735,0.073234,0.025210,0.223821
+/content/附件/Data/test/adenocarcinoma/000130 (6).png,adenocarcinoma,large.cell.carcinoma,0.112591,0.619455,0.042944,0.225010
+/content/附件/Data/test/adenocarcinoma/000131 (2).png,adenocarcinoma,normal,0.121666,0.180339,0.474434,0.223560
+/content/附件/Data/test/adenocarcinoma/000132 (2).png,adenocarcinoma,squamous.cell.carcinoma,0.019317,0.349711,0.189555,0.441416
+/content/附件/Data/test/adenocarcinoma/000132 (7).png,adenocarcinoma,adenocarcinoma,0.497791,0.163514,0.025967,0.312729
+/content/附件/Data/test/adenocarcinoma/000132 (8).png,adenocarcinoma,adenocarcinoma,0.872947,0.009918,0.011338,0.105797
+/content/附件/Data/test/adenocarcinoma/000132.png,adenocarcinoma,adenocarcinoma,0.444768,0.125223,0.017863,0.412147
+/content/附件/Data/test/adenocarcinoma/000133 (2).png,adenocarcinoma,adenocarcinoma,0.663615,0.091895,0.023612,0.220877
+/content/附件/Data/test/adenocarcinoma/000133 (4).png,adenocarcinoma,adenocarcinoma,0.416726,0.163033,0.136752,0.283489
+/content/附件/Data/test/adenocarcinoma/000134 (2).png,adenocarcinoma,adenocarcinoma,0.860065,0.016834,0.025395,0.097706
+/content/附件/Data/test/adenocarcinoma/000134 (9).png,adenocarcinoma,adenocarcinoma,0.947395,0.014958,0.007927,0.029719
+/content/附件/Data/test/adenocarcinoma/000134.png,adenocarcinoma,squamous.cell.carcinoma,0.073259,0.046932,0.011400,0.868409
+/content/附件/Data/test/adenocarcinoma/000135 (5).png,adenocarcinoma,large.cell.carcinoma,0.012884,0.895346,0.031241,0.060529
+/content/附件/Data/test/adenocarcinoma/000136 (2).png,adenocarcinoma,adenocarcinoma,0.615859,0.176641,0.108812,0.098688
+/content/附件/Data/test/adenocarcinoma/000136 (8).png,adenocarcinoma,squamous.cell.carcinoma,0.058567,0.217230,0.113028,0.611174
+/content/附件/Data/test/adenocarcinoma/000137 (2).png,adenocarcinoma,large.cell.carcinoma,0.164599,0.642239,0.063335,0.129827
+/content/附件/Data/test/adenocarcinoma/000137 (4).png,adenocarcinoma,squamous.cell.carcinoma,0.113970,0.160880,0.160253,0.564897
+/content/附件/Data/test/adenocarcinoma/000137 (8).png,adenocarcinoma,adenocarcinoma,0.594295,0.124937,0.067621,0.213148
+/content/附件/Data/test/adenocarcinoma/000138 (6).png,adenocarcinoma,squamous.cell.carcinoma,0.056463,0.271152,0.062377,0.610008
+/content/附件/Data/test/adenocarcinoma/000138 (9).png,adenocarcinoma,adenocarcinoma,0.648838,0.070523,0.015507,0.265131
+/content/附件/Data/test/adenocarcinoma/000139 (5).png,adenocarcinoma,squamous.cell.carcinoma,0.259446,0.149242,0.118696,0.472615
+/content/附件/Data/test/adenocarcinoma/000139 (6).png,adenocarcinoma,squamous.cell.carcinoma,0.084641,0.175462,0.272225,0.467672
+/content/附件/Data/test/adenocarcinoma/000139 (8).png,adenocarcinoma,adenocarcinoma,0.860638,0.042953,0.023468,0.072941
+/content/附件/Data/test/adenocarcinoma/000139 (9).png,adenocarcinoma,adenocarcinoma,0.335317,0.287934,0.076612,0.300136
+/content/附件/Data/test/adenocarcinoma/000139.png,adenocarcinoma,squamous.cell.carcinoma,0.443787,0.036154,0.032535,0.487524
+/content/附件/Data/test/adenocarcinoma/000140.png,adenocarcinoma,large.cell.carcinoma,0.010836,0.820591,0.014840,0.153733
+/content/附件/Data/test/adenocarcinoma/000141 (2).png,adenocarcinoma,squamous.cell.carcinoma,0.109961,0.183611,0.067283,0.639145
+/content/附件/Data/test/adenocarcinoma/000142.png,adenocarcinoma,adenocarcinoma,0.825832,0.033021,0.011688,0.129459
+/content/附件/Data/test/adenocarcinoma/000143 (5).png,adenocarcinoma,squamous.cell.carcinoma,0.046800,0.073421,0.013376,0.866403
+/content/附件/Data/test/adenocarcinoma/000143 (6).png,adenocarcinoma,squamous.cell.carcinoma,0.031929,0.031159,0.150402,0.786511
+/content/附件/Data/test/adenocarcinoma/000144 (2).png,adenocarcinoma,squamous.cell.carcinoma,0.017535,0.083900,0.059436,0.839128
+/content/附件/Data/test/adenocarcinoma/000144 (5).png,adenocarcinoma,squamous.cell.carcinoma,0.068928,0.156587,0.012716,0.761769
+/content/附件/Data/test/adenocarcinoma/000145 (9).png,adenocarcinoma,adenocarcinoma,0.543236,0.178583,0.009457,0.268724
+/content/附件/Data/test/adenocarcinoma/000146 (3).png,adenocarcinoma,adenocarcinoma,0.518566,0.060499,0.291031,0.129903
+/content/附件/Data/test/adenocarcinoma/000146 (6).png,adenocarcinoma,adenocarcinoma,0.911520,0.023886,0.002291,0.062303
+/content/附件/Data/test/adenocarcinoma/000147.png,adenocarcinoma,squamous.cell.carcinoma,0.127183,0.260453,0.016764,0.595600
+/content/附件/Data/test/adenocarcinoma/000148 (3).png,adenocarcinoma,adenocarcinoma,0.899673,0.011857,0.023489,0.064981
+/content/附件/Data/test/adenocarcinoma/000148 (6).png,adenocarcinoma,squamous.cell.carcinoma,0.081983,0.197503,0.131361,0.589152
+/content/附件/Data/test/adenocarcinoma/000148 (8).png,adenocarcinoma,adenocarcinoma,0.585854,0.075361,0.085208,0.253577
+/content/附件/Data/test/adenocarcinoma/000148.png,adenocarcinoma,adenocarcinoma,0.502974,0.086533,0.157766,0.252726
+/content/附件/Data/test/adenocarcinoma/000149 (2).png,adenocarcinoma,adenocarcinoma,0.446693,0.052288,0.059773,0.441246
+/content/附件/Data/test/adenocarcinoma/000149 (4).png,adenocarcinoma,adenocarcinoma,0.583256,0.066959,0.230535,0.119250
+/content/附件/Data/test/adenocarcinoma/000149 (7).png,adenocarcinoma,large.cell.carcinoma,0.123200,0.752485,0.011315,0.113000
+/content/附件/Data/test/adenocarcinoma/000151 (5).png,adenocarcinoma,adenocarcinoma,0.551603,0.098415,0.279027,0.070955
+/content/附件/Data/test/adenocarcinoma/000153 (5).png,adenocarcinoma,adenocarcinoma,0.664795,0.037781,0.057722,0.239702
+/content/附件/Data/test/adenocarcinoma/000155 (4).png,adenocarcinoma,squamous.cell.carcinoma,0.094384,0.360575,0.174108,0.370933
+/content/附件/Data/test/adenocarcinoma/000155.png,adenocarcinoma,squamous.cell.carcinoma,0.221775,0.049897,0.094388,0.633940
+/content/附件/Data/test/adenocarcinoma/000156 (4).png,adenocarcinoma,adenocarcinoma,0.987323,0.000221,0.001805,0.010651
+/content/附件/Data/test/adenocarcinoma/000157 (5).png,adenocarcinoma,squamous.cell.carcinoma,0.263624,0.205073,0.154278,0.377025
+/content/附件/Data/test/adenocarcinoma/000157 (6).png,adenocarcinoma,squamous.cell.carcinoma,0.334203,0.180465,0.053948,0.431384
+/content/附件/Data/test/adenocarcinoma/000158 (2).png,adenocarcinoma,large.cell.carcinoma,0.089035,0.632062,0.098168,0.180735
+/content/附件/Data/test/adenocarcinoma/000158 (3).png,adenocarcinoma,large.cell.carcinoma,0.000354,0.999377,0.000239,0.000031
+/content/附件/Data/test/adenocarcinoma/000158 (5).png,adenocarcinoma,squamous.cell.carcinoma,0.015842,0.246609,0.007751,0.729797
+/content/附件/Data/test/adenocarcinoma/000158 (6).png,adenocarcinoma,adenocarcinoma,0.601696,0.155285,0.195724,0.047296
+/content/附件/Data/test/adenocarcinoma/000158.png,adenocarcinoma,adenocarcinoma,0.797495,0.026715,0.018446,0.157343
+/content/附件/Data/test/adenocarcinoma/000160 (4).png,adenocarcinoma,large.cell.carcinoma,0.115953,0.736434,0.026982,0.120631
+/content/附件/Data/test/adenocarcinoma/000160 (6).png,adenocarcinoma,adenocarcinoma,0.615507,0.207279,0.085234,0.091980
+/content/附件/Data/test/adenocarcinoma/000161 (4).png,adenocarcinoma,large.cell.carcinoma,0.298244,0.343277,0.066288,0.292190
+/content/附件/Data/test/adenocarcinoma/000161 (5).png,adenocarcinoma,adenocarcinoma,0.922843,0.005525,0.007122,0.064510
+/content/附件/Data/test/adenocarcinoma/000163 (3).png,adenocarcinoma,adenocarcinoma,0.941535,0.022862,0.004965,0.030637
+/content/附件/Data/test/adenocarcinoma/000163 (7).png,adenocarcinoma,adenocarcinoma,0.811856,0.004571,0.003834,0.179740
+/content/附件/Data/test/adenocarcinoma/000164 (5).png,adenocarcinoma,adenocarcinoma,0.889004,0.008236,0.002627,0.100134
+/content/附件/Data/test/adenocarcinoma/000165 (6).png,adenocarcinoma,squamous.cell.carcinoma,0.025528,0.014468,0.075090,0.884913
+/content/附件/Data/test/adenocarcinoma/000166 (2).png,adenocarcinoma,squamous.cell.carcinoma,0.288102,0.316882,0.034008,0.361008
+/content/附件/Data/test/adenocarcinoma/000166 (3).png,adenocarcinoma,large.cell.carcinoma,0.001561,0.954523,0.003594,0.040322
+/content/附件/Data/test/adenocarcinoma/000166 (4).png,adenocarcinoma,squamous.cell.carcinoma,0.099336,0.158700,0.011183,0.730781
+/content/附件/Data/test/adenocarcinoma/000167 (3).png,adenocarcinoma,large.cell.carcinoma,0.030534,0.834183,0.004451,0.130832
+/content/附件/Data/test/adenocarcinoma/000167 (8).png,adenocarcinoma,adenocarcinoma,0.829762,0.015153,0.005735,0.149350
+/content/附件/Data/test/adenocarcinoma/000168 (3).png,adenocarcinoma,squamous.cell.carcinoma,0.154913,0.188373,0.084225,0.572489
+/content/附件/Data/test/adenocarcinoma/000171 (5).png,adenocarcinoma,large.cell.carcinoma,0.100571,0.401278,0.165642,0.332509
+/content/附件/Data/test/adenocarcinoma/000171.png,adenocarcinoma,adenocarcinoma,0.702378,0.103688,0.031902,0.162032
+/content/附件/Data/test/adenocarcinoma/000172 (3).png,adenocarcinoma,squamous.cell.carcinoma,0.213100,0.233303,0.146929,0.406669
+/content/附件/Data/test/adenocarcinoma/000173 (5).png,adenocarcinoma,large.cell.carcinoma,0.321060,0.476702,0.066790,0.135448
+/content/附件/Data/test/adenocarcinoma/000173 (7).png,adenocarcinoma,large.cell.carcinoma,0.064342,0.471265,0.012066,0.452327
+/content/附件/Data/test/adenocarcinoma/000174 (4).png,adenocarcinoma,large.cell.carcinoma,0.340604,0.474616,0.153522,0.031258
+/content/附件/Data/test/adenocarcinoma/000176 (2).png,adenocarcinoma,large.cell.carcinoma,0.130653,0.544490,0.043635,0.281222
+/content/附件/Data/test/adenocarcinoma/000177 (4).png,adenocarcinoma,adenocarcinoma,0.552072,0.047492,0.003570,0.396866
+/content/附件/Data/test/adenocarcinoma/000177.png,adenocarcinoma,squamous.cell.carcinoma,0.004333,0.028985,0.008720,0.957962
+/content/附件/Data/test/large.cell.carcinoma/000108.png,large.cell.carcinoma,squamous.cell.carcinoma,0.021551,0.052318,0.030541,0.895590
+/content/附件/Data/test/large.cell.carcinoma/000110.png,large.cell.carcinoma,large.cell.carcinoma,0.020035,0.704865,0.001754,0.273347
+/content/附件/Data/test/large.cell.carcinoma/000111 (2).png,large.cell.carcinoma,squamous.cell.carcinoma,0.025570,0.069235,0.040900,0.864296
+/content/附件/Data/test/large.cell.carcinoma/000111.png,large.cell.carcinoma,large.cell.carcinoma,0.001542,0.934034,0.002848,0.061576
+/content/附件/Data/test/large.cell.carcinoma/000113 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.069030,0.478929,0.076858,0.375182
+/content/附件/Data/test/large.cell.carcinoma/000113.png,large.cell.carcinoma,large.cell.carcinoma,0.021356,0.902774,0.028738,0.047132
+/content/附件/Data/test/large.cell.carcinoma/000114.png,large.cell.carcinoma,large.cell.carcinoma,0.040797,0.924018,0.005540,0.029645
+/content/附件/Data/test/large.cell.carcinoma/000115 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.012455,0.853736,0.044134,0.089676
+/content/附件/Data/test/large.cell.carcinoma/000116.png,large.cell.carcinoma,large.cell.carcinoma,0.007512,0.987784,0.001099,0.003604
+/content/附件/Data/test/large.cell.carcinoma/000118.png,large.cell.carcinoma,squamous.cell.carcinoma,0.059745,0.044573,0.028806,0.866876
+/content/附件/Data/test/large.cell.carcinoma/000120.png,large.cell.carcinoma,large.cell.carcinoma,0.001514,0.951385,0.003688,0.043413
+/content/附件/Data/test/large.cell.carcinoma/000122.png,large.cell.carcinoma,large.cell.carcinoma,0.085351,0.847825,0.009382,0.057442
+/content/附件/Data/test/large.cell.carcinoma/000123.png,large.cell.carcinoma,large.cell.carcinoma,0.011568,0.859911,0.030522,0.097999
+/content/附件/Data/test/large.cell.carcinoma/000124 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.000272,0.993465,0.001716,0.004547
+/content/附件/Data/test/large.cell.carcinoma/000126.png,large.cell.carcinoma,large.cell.carcinoma,0.005828,0.983081,0.000387,0.010705
+/content/附件/Data/test/large.cell.carcinoma/000127 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.198616,0.559077,0.055451,0.186856
+/content/附件/Data/test/large.cell.carcinoma/000128 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.364161,0.611048,0.013599,0.011192
+/content/附件/Data/test/large.cell.carcinoma/000128.png,large.cell.carcinoma,squamous.cell.carcinoma,0.164705,0.169106,0.045961,0.620228
+/content/附件/Data/test/large.cell.carcinoma/000130.png,large.cell.carcinoma,squamous.cell.carcinoma,0.311030,0.163982,0.096212,0.428776
+/content/附件/Data/test/large.cell.carcinoma/000131 (2).png,large.cell.carcinoma,squamous.cell.carcinoma,0.090858,0.040004,0.065634,0.803504
+/content/附件/Data/test/large.cell.carcinoma/000131.png,large.cell.carcinoma,large.cell.carcinoma,0.147249,0.702831,0.045172,0.104747
+/content/附件/Data/test/large.cell.carcinoma/000132 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.001890,0.986810,0.004325,0.006975
+/content/附件/Data/test/large.cell.carcinoma/000133 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.002624,0.965580,0.010978,0.020818
+/content/附件/Data/test/large.cell.carcinoma/000133.png,large.cell.carcinoma,large.cell.carcinoma,0.068005,0.871207,0.009454,0.051333
+/content/附件/Data/test/large.cell.carcinoma/000136 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.017524,0.964764,0.005703,0.012009
+/content/附件/Data/test/large.cell.carcinoma/000137.png,large.cell.carcinoma,large.cell.carcinoma,0.029141,0.957845,0.004163,0.008852
+/content/附件/Data/test/large.cell.carcinoma/000138 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.015310,0.953708,0.020877,0.010105
+/content/附件/Data/test/large.cell.carcinoma/000141.png,large.cell.carcinoma,squamous.cell.carcinoma,0.014427,0.473574,0.018597,0.493402
+/content/附件/Data/test/large.cell.carcinoma/000143.png,large.cell.carcinoma,large.cell.carcinoma,0.011914,0.633553,0.048167,0.306366
+/content/附件/Data/test/large.cell.carcinoma/000147 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.001128,0.986000,0.002418,0.010454
+/content/附件/Data/test/large.cell.carcinoma/000148 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.022756,0.776721,0.127853,0.072671
+/content/附件/Data/test/large.cell.carcinoma/000148.png,large.cell.carcinoma,large.cell.carcinoma,0.102209,0.753203,0.035228,0.109360
+/content/附件/Data/test/large.cell.carcinoma/000149.png,large.cell.carcinoma,large.cell.carcinoma,0.008598,0.976297,0.000628,0.014477
+/content/附件/Data/test/large.cell.carcinoma/000150.png,large.cell.carcinoma,large.cell.carcinoma,0.004041,0.970253,0.010004,0.015702
+/content/附件/Data/test/large.cell.carcinoma/000154 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.001580,0.968376,0.002106,0.027937
+/content/附件/Data/test/large.cell.carcinoma/000154.png,large.cell.carcinoma,large.cell.carcinoma,0.009279,0.919136,0.055631,0.015954
+/content/附件/Data/test/large.cell.carcinoma/000155.png,large.cell.carcinoma,large.cell.carcinoma,0.009430,0.971368,0.016073,0.003129
+/content/附件/Data/test/large.cell.carcinoma/000158.png,large.cell.carcinoma,large.cell.carcinoma,0.116529,0.871191,0.002276,0.010003
+/content/附件/Data/test/large.cell.carcinoma/000159 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.000707,0.940336,0.003034,0.055923
+/content/附件/Data/test/large.cell.carcinoma/000159.png,large.cell.carcinoma,large.cell.carcinoma,0.047035,0.869476,0.014415,0.069074
+/content/附件/Data/test/large.cell.carcinoma/000160.png,large.cell.carcinoma,squamous.cell.carcinoma,0.085082,0.077090,0.033547,0.804281
+/content/附件/Data/test/large.cell.carcinoma/000162.png,large.cell.carcinoma,large.cell.carcinoma,0.038703,0.948740,0.000947,0.011609
+/content/附件/Data/test/large.cell.carcinoma/000163.png,large.cell.carcinoma,large.cell.carcinoma,0.005274,0.599552,0.031528,0.363647
+/content/附件/Data/test/large.cell.carcinoma/000169.png,large.cell.carcinoma,squamous.cell.carcinoma,0.322094,0.109748,0.023458,0.544700
+/content/附件/Data/test/large.cell.carcinoma/000170.png,large.cell.carcinoma,squamous.cell.carcinoma,0.171569,0.062892,0.061076,0.704463
+/content/附件/Data/test/large.cell.carcinoma/000171.png,large.cell.carcinoma,large.cell.carcinoma,0.018891,0.673124,0.003099,0.304886
+/content/附件/Data/test/large.cell.carcinoma/000172 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.001987,0.985269,0.003311,0.009433
+/content/附件/Data/test/large.cell.carcinoma/000172.png,large.cell.carcinoma,large.cell.carcinoma,0.007416,0.971363,0.004343,0.016877
+/content/附件/Data/test/large.cell.carcinoma/000173 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.003999,0.935500,0.015419,0.045082
+/content/附件/Data/test/large.cell.carcinoma/000173.png,large.cell.carcinoma,large.cell.carcinoma,0.026261,0.919096,0.007477,0.047166
+/content/附件/Data/test/large.cell.carcinoma/000174.png,large.cell.carcinoma,large.cell.carcinoma,0.008199,0.598882,0.028257,0.364662
+/content/附件/Data/test/normal/10 (2) - Copy.png,normal,normal,0.000205,0.000021,0.999772,0.000001
+/content/附件/Data/test/normal/10 (2).png,normal,normal,0.000205,0.000021,0.999772,0.000001
+/content/附件/Data/test/normal/10 - Copy (2) - Copy.png,normal,normal,0.000055,0.000018,0.999925,0.000003
+/content/附件/Data/test/normal/10 - Copy (2).png,normal,normal,0.000055,0.000018,0.999925,0.000003
+/content/附件/Data/test/normal/10 - Copy (3).png,normal,normal,0.000016,0.000014,0.999970,0.000001
+/content/附件/Data/test/normal/10 - Copy - Copy.png,normal,normal,0.000023,0.000011,0.999963,0.000003
+/content/附件/Data/test/normal/10 - Copy.png,normal,normal,0.000023,0.000011,0.999963,0.000003
+/content/附件/Data/test/normal/10.png,normal,normal,0.000016,0.000014,0.999970,0.000001
+/content/附件/Data/test/normal/11 (2) - Copy.png,normal,normal,0.000015,0.000008,0.999804,0.000173
+/content/附件/Data/test/normal/11 (2).png,normal,normal,0.000015,0.000008,0.999804,0.000173
+/content/附件/Data/test/normal/11 - Copy (2) - Copy.png,normal,normal,0.000005,0.000010,0.999307,0.000677
+/content/附件/Data/test/normal/11 - Copy (2).png,normal,normal,0.000005,0.000010,0.999307,0.000677
+/content/附件/Data/test/normal/11 - Copy (3).png,normal,normal,0.000021,0.000013,0.999864,0.000102
+/content/附件/Data/test/normal/11 - Copy - Copy.png,normal,normal,0.000030,0.000103,0.995248,0.004618
+/content/附件/Data/test/normal/11 - Copy.png,normal,normal,0.000030,0.000103,0.995248,0.004618
+/content/附件/Data/test/normal/11.png,normal,normal,0.000021,0.000013,0.999864,0.000102
+/content/附件/Data/test/normal/12 (2) - Copy.png,normal,normal,0.000009,0.000442,0.999545,0.000005
+/content/附件/Data/test/normal/12 (2).png,normal,normal,0.000009,0.000442,0.999545,0.000005
+/content/附件/Data/test/normal/12 - Copy (2) - Copy.png,normal,normal,0.000186,0.000303,0.999509,0.000001
+/content/附件/Data/test/normal/12 - Copy (2).png,normal,normal,0.000186,0.000303,0.999509,0.000001
+/content/附件/Data/test/normal/12 - Copy (3).png,normal,normal,0.000014,0.000782,0.999201,0.000003
+/content/附件/Data/test/normal/12 - Copy - Copy.png,normal,normal,0.000008,0.000145,0.999844,0.000002
+/content/附件/Data/test/normal/12 - Copy.png,normal,normal,0.000008,0.000145,0.999844,0.000002
+/content/附件/Data/test/normal/21.png,normal,normal,0.000018,0.000147,0.999833,0.000002
+/content/附件/Data/test/normal/22.png,normal,large.cell.carcinoma,0.171129,0.600077,0.228767,0.000027
+/content/附件/Data/test/normal/23.png,normal,adenocarcinoma,0.538333,0.018197,0.226281,0.217188
+/content/附件/Data/test/normal/24 - Copy.png,normal,normal,0.000000,0.000018,0.998775,0.001207
+/content/附件/Data/test/normal/24.png,normal,normal,0.000001,0.000021,0.997651,0.002328
+/content/附件/Data/test/normal/25.png,normal,normal,0.000856,0.000146,0.993952,0.005046
+/content/附件/Data/test/normal/6 (2) - Copy.png,normal,normal,0.000000,0.000112,0.999887,0.000001
+/content/附件/Data/test/normal/6 (2).png,normal,normal,0.000000,0.000112,0.999887,0.000001
+/content/附件/Data/test/normal/6 - Copy (2) - Copy.png,normal,normal,0.000000,0.000001,0.999970,0.000029
+/content/附件/Data/test/normal/6 - Copy (2).png,normal,normal,0.000000,0.000001,0.999970,0.000029
+/content/附件/Data/test/normal/6 - Copy (3).png,normal,normal,0.000000,0.000112,0.999887,0.000001
+/content/附件/Data/test/normal/6 - Copy.png,normal,normal,0.000000,0.000001,0.999970,0.000029
+/content/附件/Data/test/normal/6.png,normal,normal,0.000000,0.000112,0.999887,0.000001
+/content/附件/Data/test/normal/7 (2) - Copy.png,normal,normal,0.000288,0.002594,0.990864,0.006254
+/content/附件/Data/test/normal/7 (2).png,normal,normal,0.000288,0.002594,0.990864,0.006254
+/content/附件/Data/test/normal/7 - Copy (2) - Copy.png,normal,normal,0.000018,0.000002,0.998458,0.001523
+/content/附件/Data/test/normal/7 - Copy (2).png,normal,normal,0.000018,0.000002,0.998458,0.001523
+/content/附件/Data/test/normal/7 - Copy (3).png,normal,normal,0.000288,0.002594,0.990864,0.006254
+/content/附件/Data/test/normal/7 - Copy - Copy.png,normal,normal,0.000018,0.000002,0.998458,0.001523
+/content/附件/Data/test/normal/7 - Copy.png,normal,normal,0.000018,0.000002,0.998458,0.001523
+/content/附件/Data/test/normal/7.png,normal,normal,0.000288,0.002594,0.990864,0.006254
+/content/附件/Data/test/normal/8 (2) - Copy.png,normal,normal,0.000326,0.031548,0.968102,0.000024
+/content/附件/Data/test/normal/8 (2).png,normal,normal,0.000326,0.031548,0.968102,0.000024
+/content/附件/Data/test/normal/8 - Copy (2) - Copy.png,normal,normal,0.000014,0.000453,0.999528,0.000005
+/content/附件/Data/test/normal/8 - Copy (2).png,normal,normal,0.000014,0.000453,0.999528,0.000005
+/content/附件/Data/test/normal/8 - Copy (3).png,normal,normal,0.000070,0.000615,0.999311,0.000004
+/content/附件/Data/test/normal/8 - Copy - Copy.png,normal,normal,0.000014,0.000453,0.999528,0.000005
+/content/附件/Data/test/normal/8 - Copy.png,normal,normal,0.000014,0.000453,0.999528,0.000005
+/content/附件/Data/test/normal/8.png,normal,normal,0.000070,0.000615,0.999311,0.000004
+/content/附件/Data/test/normal/normal - Copy.png,normal,adenocarcinoma,0.494340,0.199634,0.031556,0.274471
+/content/附件/Data/test/normal/normal.png,normal,large.cell.carcinoma,0.000294,0.758133,0.229754,0.011819
+/content/附件/Data/test/squamous.cell.carcinoma/000108 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.001945,0.008042,0.006802,0.983211
+/content/附件/Data/test/squamous.cell.carcinoma/000110 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.004001,0.060598,0.001281,0.934121
+/content/附件/Data/test/squamous.cell.carcinoma/000111.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.006417,0.215651,0.006634,0.771298
+/content/附件/Data/test/squamous.cell.carcinoma/000112.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.019892,0.062723,0.013941,0.903444
+/content/附件/Data/test/squamous.cell.carcinoma/000114 (2).png,squamous.cell.carcinoma,large.cell.carcinoma,0.076645,0.480523,0.004456,0.438376
+/content/附件/Data/test/squamous.cell.carcinoma/000114 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.000517,0.000072,0.003298,0.996113
+/content/附件/Data/test/squamous.cell.carcinoma/000115 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.050503,0.008272,0.019922,0.921303
+/content/附件/Data/test/squamous.cell.carcinoma/000115 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.001011,0.000827,0.001013,0.997148
+/content/附件/Data/test/squamous.cell.carcinoma/000116 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.009690,0.002852,0.009112,0.978346
+/content/附件/Data/test/squamous.cell.carcinoma/000117 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.019249,0.053357,0.007123,0.920270
+/content/附件/Data/test/squamous.cell.carcinoma/000117 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.027121,0.066724,0.006280,0.899875
+/content/附件/Data/test/squamous.cell.carcinoma/000117 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.161631,0.080513,0.012032,0.745825
+/content/附件/Data/test/squamous.cell.carcinoma/000118 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.002472,0.026486,0.000528,0.970513
+/content/附件/Data/test/squamous.cell.carcinoma/000118 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.006277,0.000258,0.001848,0.991618
+/content/附件/Data/test/squamous.cell.carcinoma/000119 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.004814,0.002880,0.008156,0.984150
+/content/附件/Data/test/squamous.cell.carcinoma/000119.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.007153,0.025947,0.002246,0.964654
+/content/附件/Data/test/squamous.cell.carcinoma/000120 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.006363,0.057663,0.002616,0.933358
+/content/附件/Data/test/squamous.cell.carcinoma/000120 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.000179,0.005922,0.008110,0.985788
+/content/附件/Data/test/squamous.cell.carcinoma/000120 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.005652,0.002275,0.001684,0.990389
+/content/附件/Data/test/squamous.cell.carcinoma/000121 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.004467,0.001223,0.001746,0.992564
+/content/附件/Data/test/squamous.cell.carcinoma/000121.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.005397,0.007464,0.041449,0.945689
+/content/附件/Data/test/squamous.cell.carcinoma/000122 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.001915,0.019050,0.007901,0.971134
+/content/附件/Data/test/squamous.cell.carcinoma/000122.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.009100,0.348374,0.008924,0.633602
+/content/附件/Data/test/squamous.cell.carcinoma/000124 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.017283,0.001842,0.006022,0.974853
+/content/附件/Data/test/squamous.cell.carcinoma/000124 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.222376,0.039919,0.026669,0.711036
+/content/附件/Data/test/squamous.cell.carcinoma/000124.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.279879,0.060174,0.012694,0.647253
+/content/附件/Data/test/squamous.cell.carcinoma/000125 (2).png,squamous.cell.carcinoma,large.cell.carcinoma,0.199764,0.404719,0.004014,0.391502
+/content/附件/Data/test/squamous.cell.carcinoma/000125 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.002400,0.035205,0.007138,0.955256
+/content/附件/Data/test/squamous.cell.carcinoma/000125.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.020780,0.041484,0.009912,0.927824
+/content/附件/Data/test/squamous.cell.carcinoma/000126 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.009102,0.000677,0.025231,0.964989
+/content/附件/Data/test/squamous.cell.carcinoma/000127 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.000454,0.000747,0.001318,0.997481
+/content/附件/Data/test/squamous.cell.carcinoma/000127 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.000337,0.006465,0.016147,0.977050
+/content/附件/Data/test/squamous.cell.carcinoma/000127.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.029222,0.026310,0.010198,0.934270
+/content/附件/Data/test/squamous.cell.carcinoma/000129 (2).png,squamous.cell.carcinoma,adenocarcinoma,0.833430,0.048275,0.006271,0.112024
+/content/附件/Data/test/squamous.cell.carcinoma/000129 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.002550,0.010194,0.011416,0.975840
+/content/附件/Data/test/squamous.cell.carcinoma/000130 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.003080,0.012193,0.011354,0.973373
+/content/附件/Data/test/squamous.cell.carcinoma/000131 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.000799,0.001279,0.000590,0.997332
+/content/附件/Data/test/squamous.cell.carcinoma/000132 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.005029,0.002534,0.003719,0.988719
+/content/附件/Data/test/squamous.cell.carcinoma/000133 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.004409,0.065199,0.000421,0.929972
+/content/附件/Data/test/squamous.cell.carcinoma/000133 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.001606,0.002225,0.029241,0.966927
+/content/附件/Data/test/squamous.cell.carcinoma/000134 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.010808,0.486347,0.003992,0.498854
+/content/附件/Data/test/squamous.cell.carcinoma/000135 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.009402,0.007503,0.007028,0.976066
+/content/附件/Data/test/squamous.cell.carcinoma/000135.png,squamous.cell.carcinoma,large.cell.carcinoma,0.028435,0.741995,0.077939,0.151631
+/content/附件/Data/test/squamous.cell.carcinoma/000136 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.007400,0.002041,0.008909,0.981649
+/content/附件/Data/test/squamous.cell.carcinoma/000136 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.154266,0.129335,0.058296,0.658103
+/content/附件/Data/test/squamous.cell.carcinoma/000137 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.006630,0.088627,0.082650,0.822093
+/content/附件/Data/test/squamous.cell.carcinoma/000137.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.019624,0.116686,0.004430,0.859259
+/content/附件/Data/test/squamous.cell.carcinoma/000139 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.016129,0.000558,0.008092,0.975221
+/content/附件/Data/test/squamous.cell.carcinoma/000139 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.081099,0.371446,0.021197,0.526258
+/content/附件/Data/test/squamous.cell.carcinoma/000139 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.009460,0.007296,0.020145,0.963098
+/content/附件/Data/test/squamous.cell.carcinoma/000141 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.026592,0.008604,0.004245,0.960560
+/content/附件/Data/test/squamous.cell.carcinoma/000141 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.040935,0.230612,0.014119,0.714334
+/content/附件/Data/test/squamous.cell.carcinoma/000142 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.113991,0.320007,0.060836,0.505166
+/content/附件/Data/test/squamous.cell.carcinoma/000142 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.005620,0.039995,0.043648,0.910736
+/content/附件/Data/test/squamous.cell.carcinoma/000144 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.117144,0.062856,0.011215,0.808785
+/content/附件/Data/test/squamous.cell.carcinoma/000145 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.000957,0.003424,0.011320,0.984298
+/content/附件/Data/test/squamous.cell.carcinoma/000146 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.003096,0.002120,0.000596,0.994189
+/content/附件/Data/test/squamous.cell.carcinoma/000148 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.000203,0.000844,0.000442,0.998511
+/content/附件/Data/test/squamous.cell.carcinoma/000148 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.012111,0.049133,0.007148,0.931608
+/content/附件/Data/test/squamous.cell.carcinoma/000149 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.014980,0.010195,0.012072,0.962753
+/content/附件/Data/test/squamous.cell.carcinoma/000151 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.004168,0.014107,0.001848,0.979877
+/content/附件/Data/test/squamous.cell.carcinoma/000151.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.016463,0.088563,0.008782,0.886193
+/content/附件/Data/test/squamous.cell.carcinoma/000153 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.057027,0.007661,0.002729,0.932582
+/content/附件/Data/test/squamous.cell.carcinoma/000153 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.139591,0.031422,0.063227,0.765760
+/content/附件/Data/test/squamous.cell.carcinoma/000153.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.000857,0.003120,0.003151,0.992872
+/content/附件/Data/test/squamous.cell.carcinoma/000154 (2).png,squamous.cell.carcinoma,large.cell.carcinoma,0.008494,0.670143,0.001391,0.319972
+/content/附件/Data/test/squamous.cell.carcinoma/000154 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.000375,0.003193,0.000199,0.996234
+/content/附件/Data/test/squamous.cell.carcinoma/000154 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.094565,0.029742,0.009062,0.866632
+/content/附件/Data/test/squamous.cell.carcinoma/000155 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.002247,0.005810,0.030929,0.961014
+/content/附件/Data/test/squamous.cell.carcinoma/000155.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.047524,0.008085,0.015372,0.929019
+/content/附件/Data/test/squamous.cell.carcinoma/000156 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.052702,0.320276,0.013881,0.613142
+/content/附件/Data/test/squamous.cell.carcinoma/000157 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.002365,0.033282,0.012198,0.952154
+/content/附件/Data/test/squamous.cell.carcinoma/000158 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.013856,0.004475,0.005769,0.975900
+/content/附件/Data/test/squamous.cell.carcinoma/000158 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.003455,0.000526,0.001234,0.994785
+/content/附件/Data/test/squamous.cell.carcinoma/000159 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.050177,0.040082,0.006774,0.902967
+/content/附件/Data/test/squamous.cell.carcinoma/000160 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.000825,0.000251,0.000895,0.998028
+/content/附件/Data/test/squamous.cell.carcinoma/000162 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.005434,0.074506,0.001695,0.918365
+/content/附件/Data/test/squamous.cell.carcinoma/000162.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.021331,0.066367,0.007034,0.905268
+/content/附件/Data/test/squamous.cell.carcinoma/000163 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.051802,0.234554,0.027945,0.685699
+/content/附件/Data/test/squamous.cell.carcinoma/000163 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.004580,0.004303,0.004022,0.987095
+/content/附件/Data/test/squamous.cell.carcinoma/000163 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.002718,0.001598,0.000676,0.995008
+/content/附件/Data/test/squamous.cell.carcinoma/000164 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.011107,0.213976,0.050515,0.724402
+/content/附件/Data/test/squamous.cell.carcinoma/000166 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.081339,0.055091,0.031574,0.831995
+/content/附件/Data/test/squamous.cell.carcinoma/000167 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.045419,0.028273,0.008915,0.917393
+/content/附件/Data/test/squamous.cell.carcinoma/000168 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.004034,0.043835,0.001067,0.951065
+/content/附件/Data/test/squamous.cell.carcinoma/000169 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.086005,0.019539,0.004854,0.889602
+/content/附件/Data/test/squamous.cell.carcinoma/000170 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.018297,0.439424,0.022484,0.519795
+/content/附件/Data/test/squamous.cell.carcinoma/000172 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.002075,0.001360,0.000516,0.996049
+/content/附件/Data/test/squamous.cell.carcinoma/000174 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.008102,0.005539,0.000618,0.985741
+/content/附件/Data/test/squamous.cell.carcinoma/000177 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.011546,0.004521,0.003756,0.980177

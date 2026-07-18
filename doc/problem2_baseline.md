@@ -1,4 +1,4 @@
-# 问题二分析与 Baseline 方案
+﻿# 问题二分析与 Baseline 方案
 
 ## 1. 题目二需要完成什么
 
@@ -74,8 +74,8 @@ Accuracy = 279 / 315 × 100% = 88.57%
 ..\LCC_GPU\python.exe .\src\main.py --pretrained
 ..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --batch-size 32 --num-workers 4
 ..\LCC_GPU\python.exe .\src\main.py --device cuda --no-amp
-..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\problem2_pretrained_ls_cosine
-..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --loss focal --focal-gamma 2 --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\problem2_focal_gamma2
+..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\ablation_pretrained_ce_ls_cosine
+..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --loss focal --focal-gamma 2 --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\ablation_pretrained_focal_ls_cosine
 ```
 
 路径说明：
@@ -90,10 +90,10 @@ Accuracy = 279 / 315 × 100% = 88.57%
 
 脚本会在输出目录下生成：
 
-- CPU 默认输出：`outputs/problem2_baseline`
-- GPU 默认输出：`outputs/problem2_baseline_gpu`
-- 调参实验示例：`outputs/problem2_pretrained_ls_cosine`
-- 当前最优实验：`outputs/problem2_focal_gamma2`
+- CPU 默认输出：`outputs/ablation_scratch_ce`
+- GPU 默认输出：`outputs/ablation_pretrained_ce`
+- 调参实验示例：`outputs/ablation_pretrained_ce_ls_cosine`
+- 当前最优实验：`outputs/ablation_pretrained_focal_ls_cosine_cbam`
 
 - `best_model.pt`：验证集准确率最高的模型权重
 - `metrics_summary.json`：训练过程与最终指标汇总
@@ -115,15 +115,16 @@ Accuracy = 279 / 315 × 100% = 88.57%
 - `focal_gamma=2.0`
 - `scheduler=cosine`
 - `pretrained=true`
+- `feature_attention=cbam`
 - `device=cuda`
 
 对应结果：
 
-- 最佳验证集轮次：`epoch 14`
-- 最佳验证集准确率：`90.28%`
-- 测试集准确率：`79.37%`
-- 测试集 `macro F1`：`0.7988`
-- 测试集 `weighted F1`：`0.7931`
+- 最佳验证集轮次：`epoch 17`
+- 最佳验证集准确率：`93.06%`
+- 测试集准确率：`86.35%`
+- 测试集 `macro F1`：`0.8646`
+- 测试集 `weighted F1`：`0.8647`
 
 当前 GPU 状态：
 
@@ -132,23 +133,29 @@ Accuracy = 279 / 315 × 100% = 88.57%
 - `nvidia-smi` 可正常识别 GPU
 - 已验证环境：`..\LCC_GPU`
 - 已验证依赖：`torch==2.13.0+cu130`、`torchvision==0.28.0+cu130`
-- 已完成一次正式 `25 epoch` GPU baseline 训练、一次 `label smoothing + cosine scheduler` 对比训练，以及一次 `focal loss(gamma=2)` 对比训练
-- 当前结论：代码与环境都已具备 GPU 运行条件，且 `pretrained` 显著优于旧 CPU 非预训练 baseline；`focal loss(gamma=2)` 在当前版本中进一步提升了测试集指标
+- 已完成一次正式 `25 epoch` GPU baseline 训练、一次 `label smoothing + cosine scheduler` 对比训练、一次 `focal loss(gamma=2)` 对比训练，以及一次 `SE` / `CBAM` 注意力模块对比训练
+- 当前结论：代码与环境都已具备 GPU 运行条件，且 `pretrained` 显著优于旧 CPU 非预训练 baseline；`CBAM` 在当前版本中进一步把测试集指标推到新的最好水平
 
 测试集各类别召回率：
 
-- `adenocarcinoma`：`68.33%`
+- `adenocarcinoma`：`90.83%`
 - `large.cell.carcinoma`：`90.20%`
 - `normal`：`98.15%`
-- `squamous.cell.carcinoma`：`76.67%`
+- `squamous.cell.carcinoma`：`71.11%`
+
+新增注意力实验结果：
+
+- `ablation_pretrained_focal_ls_cosine_se`：测试集准确率 `77.14%`，`macro F1` `0.7884`
+- `ablation_pretrained_focal_ls_cosine_cbam`：测试集准确率 `86.35%`，`macro F1` `0.8646`
 
 ## 8. 结果解读
 
 当前 baseline 已经从“可运行”提升到了“有明显竞争力”的阶段，但模型效果还不能直接视为最终方案，主要原因有：
 
-1. 新实验把测试集准确率提升到 `79.37%`，`macro F1` 提升到 `0.7988`，整体优于上一轮 `label smoothing + cosine scheduler`。
+1. 新实验把测试集准确率提升到 `86.35%`，`macro F1` 提升到 `0.8646`，整体优于上一轮 `label smoothing + cosine scheduler`。
 2. `adenocarcinoma` 与 `large.cell.carcinoma` 召回率显著改善，但 `squamous.cell.carcinoma` 召回率回落，类别取舍发生了新的转移。
-3. 当前最优模型虽然已经加入 `focal loss(gamma=2)`，但仍未尝试采样策略、`Focal Loss + 手动权重` 或注意力模块。
+3. 当前最优模型已经加入 `focal loss(gamma=2)`，并进一步验证了 `CBAM` 优于额外 `SE`，但仍未尝试采样策略或 `Focal Loss + 手动权重`。
+4. 从结构增量看，`SE` 的收益有限，而 `CBAM` 对整体指标提升更明显，说明注意力模块的具体形式比“是否加注意力”更关键。
 
 从测试集混淆情况看：
 
@@ -162,7 +169,7 @@ Accuracy = 279 / 315 × 100% = 88.57%
 项目上级目录 `..\相关论文` 中的参考文献完成初步阅读后，当前可借鉴的思路主要包括：
 
 1. 迁移学习是四分类肺部 CT 任务中的基础配置。多篇论文都采用预训练 backbone，再针对医学影像数据做微调。
-2. 注意力机制和全局上下文增强值得优先尝试。相比直接大改架构，`SE`、`CBAM`、global block 一类轻量模块更适合当前 baseline 增量验证。
+2. 注意力机制和全局上下文增强值得优先尝试。相比直接大改架构，`SE`、`CBAM`、global block 一类轻量模块更适合当前 baseline 增量验证；当前实验已验证 `CBAM` 明显优于额外 `SE`。
 3. 对于肺癌亚型间混淆严重的问题，仅靠更长训练通常不足，往往还需要类别加权损失、焦点损失、`label smoothing` 或更针对性的采样策略。
 4. 论文中的指标对比通常不只看准确率，还会联合使用 `macro F1`、AUC、各类召回率和混淆矩阵分析。
 
@@ -183,6 +190,9 @@ Accuracy = 279 / 315 × 100% = 88.57%
 
 1. 在当前 `focal loss(gamma=2)` 基线上进一步尝试采样策略或手动类别权重，重点拉回鳞癌召回率。
 2. 试验 `Focal Loss + 手动权重`，平衡腺癌、鳞癌与大细胞癌之间的边界学习。
-3. 在当前 `EfficientNet` baseline 上增量试验轻量注意力模块。
+3. 在当前 `EfficientNet` baseline 上增量试验轻量注意力模块，优先围绕 `CBAM` 做进一步调优。
 4. 加强针对易混类别的图像增强策略。
 5. 基于混淆矩阵开展误差分析，重点检查“鳞癌 -> 腺癌 / 大细胞癌”的新混淆模式，必要时补充 `Grad-CAM`。
+## Ablation Note
+
+The consolidated 12-run comparison has been moved to [doc/ablation_results.md](ablation_results.md), and all result folders now use the `ablation_*` prefix.
