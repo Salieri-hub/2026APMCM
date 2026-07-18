@@ -16,6 +16,7 @@ from PIL import Image
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from torch import nn
 from torch.optim import AdamW
+from torch.optim.lr_scheduler import CosineAnnealingLR, ReduceLROnPlateau
 from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 
@@ -206,6 +207,33 @@ def create_model(model_name: str, num_classes: int, pretrained: bool) -> nn.Modu
     return timm.create_model(model_name, pretrained=pretrained, num_classes=num_classes)
 
 
+def create_scheduler(optimizer: AdamW, args: argparse.Namespace):
+    if args.scheduler == "none":
+        return None
+    if args.scheduler == "cosine":
+        return CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=args.min_lr)
+    if args.scheduler == "plateau":
+        return ReduceLROnPlateau(optimizer, mode="min", factor=args.plateau_factor, patience=args.plateau_patience)
+    raise ValueError(f"Unsupported scheduler: {args.scheduler}")
+
+
+def step_scheduler(
+    scheduler: Optional[object],
+    scheduler_name: str,
+    valid_loss: float,
+) -> None:
+    if scheduler is None:
+        return
+    if scheduler_name == "plateau":
+        scheduler.step(valid_loss)
+        return
+    scheduler.step()
+
+
+def get_current_lr(optimizer: AdamW) -> float:
+    return float(optimizer.param_groups[0]["lr"])
+
+
 def train_one_epoch(
     model: nn.Module,
     loader: DataLoader,
@@ -366,6 +394,9 @@ def build_run_summary(
             "image_size": args.image_size,
             "learning_rate": args.lr,
             "weight_decay": args.weight_decay,
+            "label_smoothing": args.label_smoothing,
+            "scheduler": args.scheduler,
+            "min_lr": args.min_lr,
             "num_workers": args.num_workers,
             "seed": args.seed,
             "device_request": args.device,
@@ -427,6 +458,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--image-size", type=int, default=224)
     parser.add_argument("--lr", type=float, default=3e-4)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
+    parser.add_argument("--label-smoothing", type=float, default=0.0)
+    parser.add_argument("--scheduler", choices=["none", "cosine", "plateau"], default="none")
+    parser.add_argument("--min-lr", type=float, default=1e-6)
+    parser.add_argument("--plateau-patience", type=int, default=3)
+    parser.add_argument("--plateau-factor", type=float, default=0.5)
     parser.add_argument("--num-workers", type=int, default=None, help="DataLoader workers. Defaults to 4 on CUDA and 0 on CPU.")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
@@ -470,8 +506,9 @@ def main() -> None:
     )
 
     model = create_model(args.model_name, num_classes=len(CLASS_NAMES), pretrained=args.pretrained).to(device)
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss(label_smoothing=args.label_smoothing)
     optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+    scheduler = create_scheduler(optimizer, args)
     scaler = torch.amp.GradScaler("cuda", enabled=amp_enabled) if device.type == "cuda" else None
 
     history: List[Dict[str, float]] = []
@@ -491,6 +528,8 @@ def main() -> None:
             amp_enabled=amp_enabled,
         )
         valid_metrics = evaluate(model, valid_loader, criterion, device, amp_enabled=amp_enabled)
+        step_scheduler(scheduler, args.scheduler, valid_metrics["loss"])
+        current_lr = get_current_lr(optimizer)
 
         epoch_result = {
             "epoch": epoch,
@@ -498,11 +537,13 @@ def main() -> None:
             "train_accuracy": train_metrics["accuracy"],
             "valid_loss": valid_metrics["loss"],
             "valid_accuracy": valid_metrics["accuracy"],
+            "learning_rate": current_lr,
         }
         history.append(epoch_result)
 
         print(
             f"Epoch [{epoch:02d}/{args.epochs}] "
+            f"lr={current_lr:.7f} "
             f"train_loss={train_metrics['loss']:.4f} "
             f"train_acc={train_metrics['accuracy']:.4f} "
             f"valid_loss={valid_metrics['loss']:.4f} "

@@ -15,17 +15,17 @@
 - 问题二 baseline 已实现，入口为 `src/main.py`。
 - `src/main.py` 已改为 GPU 优先版本，支持 `CUDA/CPU` 自动切换、AMP 混合精度和更适合 GPU 的数据加载配置。
 - 已保留原有 CPU baseline 结果，并新建 `..\LCC_GPU` CUDA 环境用于 GPU 训练。
-- 最新 baseline 为 `EfficientNet-B0 + CrossEntropyLoss + AdamW`。
+- 最新 baseline 为 `EfficientNet-B0 + CrossEntropyLoss + AdamW`，并已支持 `label smoothing` 与学习率调度器。
 - 已完成一轮相关文献初步阅读与方法归纳，后续优化方向已明确。
-- 已在 `2026-07-18` 对 `..\LCC_GPU` 完成一次正式 `25 epoch` GPU 训练。
+- 已在 `2026-07-18` 对 `..\LCC_GPU` 完成两轮正式 GPU 训练，其中第二轮加入 `label smoothing + cosine scheduler`。
 
-截至 `2026-07-18`，当前最新已验证运行结果来自 `GPU + pretrained` baseline：
+截至 `2026-07-18`，当前测试集表现最好的结果来自 `GPU + pretrained + label smoothing + cosine scheduler`：
 
 - 最佳验证集轮次：`epoch 23`
-- 最佳验证集准确率：`91.67%`
-- 测试集准确率：`76.19%`
-- 测试集 `macro F1`：`0.7721`
-- 当前最明显问题：模型对 `large.cell.carcinoma` 仍有过预测，鳞癌召回率还有提升空间。
+- 最佳验证集准确率：`90.28%`
+- 测试集准确率：`77.46%`
+- 测试集 `macro F1`：`0.7894`
+- 当前最明显问题：腺癌召回率下降，鳞癌与大细胞癌之间的边界仍需继续优化。
 
 ## 文献调研结论
 
@@ -46,7 +46,8 @@
 │  └─ problem2_baseline.md
 ├─ outputs/
 │  ├─ problem2_baseline/
-│  └─ problem2_baseline_gpu/   # GPU 运行时的默认输出目录
+│  ├─ problem2_baseline_gpu/   # GPU pretrained baseline
+│  └─ problem2_pretrained_ls_cosine/   # label smoothing + cosine 调度实验
 ├─ README.md
 ├─ AI_CONTEXT.md
 ├─ TODO.md
@@ -120,6 +121,7 @@
 ..\LCC_GPU\python.exe .\src\main.py --pretrained
 ..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --batch-size 32 --num-workers 4
 ..\LCC_GPU\python.exe .\src\main.py --device cuda --no-amp
+..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\problem2_pretrained_ls_cosine
 ```
 
 主要参数说明：
@@ -129,6 +131,9 @@
 - `--image-size`：输入尺寸，默认 `224`
 - `--lr`：学习率，默认 `3e-4`
 - `--weight-decay`：权重衰减，默认 `1e-4`
+- `--label-smoothing`：标签平滑系数，默认 `0.0`
+- `--scheduler`：学习率调度器，支持 `none / cosine / plateau`
+- `--min-lr`：调度器最小学习率，默认 `1e-6`
 - `--device`：设备选择，支持 `auto / cpu / cuda`，默认 `auto`
 - `--amp` / `--no-amp`：是否在 CUDA 上启用混合精度，默认在 `cuda` 上自动开启
 - `--deterministic`：开启确定性后端，结果更稳定但 GPU 会更慢

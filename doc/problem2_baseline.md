@@ -40,6 +40,7 @@ Accuracy = 279 / 315 × 100% = 88.57%
 - 输入尺寸：224 x 224
 - 设备策略：`--device auto`，有可用 CUDA 时优先使用 GPU
 - CUDA 优化：自动混合精度 AMP、`pin_memory`、自动 `num_workers`
+- 可选优化：`label smoothing` 与学习率调度器
 - 代码入口：`src/main.py`
 
 默认读取的数据目录为：
@@ -73,6 +74,7 @@ Accuracy = 279 / 315 × 100% = 88.57%
 ..\LCC_GPU\python.exe .\src\main.py --pretrained
 ..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --batch-size 32 --num-workers 4
 ..\LCC_GPU\python.exe .\src\main.py --device cuda --no-amp
+..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\problem2_pretrained_ls_cosine
 ```
 
 路径说明：
@@ -89,6 +91,7 @@ Accuracy = 279 / 315 × 100% = 88.57%
 
 - CPU 默认输出：`outputs/problem2_baseline`
 - GPU 默认输出：`outputs/problem2_baseline_gpu`
+- 调参实验示例：`outputs/problem2_pretrained_ls_cosine`
 
 - `best_model.pt`：验证集准确率最高的模型权重
 - `metrics_summary.json`：训练过程与最终指标汇总
@@ -98,23 +101,25 @@ Accuracy = 279 / 315 × 100% = 88.57%
 
 ## 7. 当前最新实验结果与 GPU 状态
 
-截至 `2026-07-18`，当前最新已完成检查的运行配置为 GPU 版本：
+截至 `2026-07-18`，当前最新已完成检查的最好测试结果来自以下 GPU 配置：
 
 - `epochs=25`
 - `batch_size=16`
 - `image_size=224`
 - `lr=3e-4`
 - `weight_decay=1e-4`
+- `label_smoothing=0.1`
+- `scheduler=cosine`
 - `pretrained=true`
 - `device=cuda`
 
 对应结果：
 
 - 最佳验证集轮次：`epoch 23`
-- 最佳验证集准确率：`91.67%`
-- 测试集准确率：`76.19%`
-- 测试集 `macro F1`：`0.7721`
-- 测试集 `weighted F1`：`0.7656`
+- 最佳验证集准确率：`90.28%`
+- 测试集准确率：`77.46%`
+- 测试集 `macro F1`：`0.7894`
+- 测试集 `weighted F1`：`0.7705`
 
 当前 GPU 状态：
 
@@ -123,29 +128,30 @@ Accuracy = 279 / 315 × 100% = 88.57%
 - `nvidia-smi` 可正常识别 GPU
 - 已验证环境：`..\LCC_GPU`
 - 已验证依赖：`torch==2.13.0+cu130`、`torchvision==0.28.0+cu130`
-- 已完成一次正式 `25 epoch` GPU baseline 训练
-- 当前结论：代码与环境都已具备 GPU 运行条件，且 `pretrained` 显著优于旧 CPU 非预训练 baseline
+- 已完成一次正式 `25 epoch` GPU baseline 训练，以及一次加入 `label smoothing + cosine scheduler` 的对比训练
+- 当前结论：代码与环境都已具备 GPU 运行条件，且 `pretrained` 显著优于旧 CPU 非预训练 baseline；`label smoothing + cosine scheduler` 进一步提升了测试集指标
 
 测试集各类别召回率：
 
-- `adenocarcinoma`：`71.67%`
-- `large.cell.carcinoma`：`92.16%`
+- `adenocarcinoma`：`56.67%`
+- `large.cell.carcinoma`：`80.39%`
 - `normal`：`98.15%`
-- `squamous.cell.carcinoma`：`60.00%`
+- `squamous.cell.carcinoma`：`91.11%`
 
 ## 8. 结果解读
 
 当前 baseline 已经从“可运行”提升到了“有明显竞争力”的阶段，但模型效果还不能直接视为最终方案，主要原因有：
 
-1. 虽然测试集准确率已提升到 `76.19%`，但 `large.cell.carcinoma` 仍存在过预测。
-2. 题目重点关注的腺癌与鳞癌误诊问题已经明显缓解，但鳞癌召回率仍有提升空间。
-3. 当前最优模型仍只基于 `EfficientNet-B0 + CrossEntropyLoss + AdamW`，还没有加入更针对性的损失与采样优化。
+1. 新实验把测试集准确率提升到 `77.46%`，同时显著改善了鳞癌召回率，但腺癌召回率下降。
+2. `large.cell.carcinoma` 的过预测相比上一轮减轻，但腺癌与鳞癌之间又出现了新的取舍。
+3. 当前最优模型虽然已经加入 `label smoothing + cosine scheduler`，但仍未尝试类别加权和采样策略。
 
 从测试集混淆情况看：
 
-- 腺癌 `120` 张中有 `86` 张预测正确，仍有 `25` 张被判成了大细胞癌。
-- 鳞癌 `90` 张中有 `54` 张预测正确，仍有 `19` 张被判成了大细胞癌、`16` 张被判成腺癌。
-- 正常肺部样本识别非常稳定，`54` 张中有 `53` 张预测正确。
+- 腺癌 `120` 张中有 `68` 张预测正确，`35` 张被判成了鳞癌。
+- 鳞癌 `90` 张中有 `82` 张预测正确，明显优于上一轮。
+- 大细胞癌 `51` 张中有 `41` 张预测正确，较上一轮更平衡，不再明显“吸走”其他类别。
+- 正常肺部样本识别依然非常稳定，`54` 张中有 `53` 张预测正确。
 
 ## 9. 相关论文借鉴
 
@@ -171,8 +177,8 @@ Accuracy = 279 / 315 × 100% = 88.57%
 
 在当前 baseline 基础上，优先考虑以下优化路径：
 
-1. 在当前 `GPU + pretrained` 基线之上引入学习率调度器与 `label smoothing`。
-2. 对腺癌与鳞癌尝试类别加权损失、`Focal Loss` 或采样策略。
+1. 在当前 `label smoothing + cosine scheduler` 基线上进一步尝试类别加权损失或 `Focal Loss`，重点拉回腺癌召回率。
+2. 试验采样策略，平衡腺癌、鳞癌与大细胞癌之间的边界学习。
 3. 在当前 `EfficientNet` baseline 上增量试验轻量注意力模块。
 4. 加强针对易混类别的图像增强策略。
-5. 基于混淆矩阵开展误差分析，重点检查鳞癌与大细胞癌的混淆样本，必要时补充 `Grad-CAM`。
+5. 基于混淆矩阵开展误差分析，重点检查“腺癌 -> 鳞癌”的新混淆模式，必要时补充 `Grad-CAM`。
