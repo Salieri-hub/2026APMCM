@@ -15,6 +15,7 @@
 - 问题二 baseline 已实现，入口为 `src/main.py`。
 - 已在项目外部的 `..\LCC` 虚拟环境下完成一次 `20 epoch` 训练与评估。
 - 最新 baseline 为 `EfficientNet-B0 + CrossEntropyLoss + AdamW`。
+- 已完成一轮相关文献初步阅读与方法归纳，后续优化方向已明确。
 
 最新一次已验证运行结果：
 
@@ -22,6 +23,15 @@
 - 最佳验证集准确率：`62.50%`
 - 测试集准确率：`39.68%`
 - 当前最明显问题：模型对 `large.cell.carcinoma` 预测偏置明显，腺癌和鳞癌召回率偏低。
+
+## 文献调研结论
+
+结合上级目录 `..\相关论文` 中的参考文献，当前最值得优先借鉴的思路有：
+
+1. 优先启用迁移学习。现有 baseline 未使用预训练权重，而多篇肺部 CT 分类论文都将 transfer learning 作为小样本场景的基础配置。
+2. 在 CNN backbone 上加入轻量注意力或全局上下文模块。相比直接换成更重的架构，`SE`、`CBAM`、global block 一类模块更适合当前仓库按增量方式验证。
+3. 针对腺癌和鳞癌的高误诊率，应同时尝试类别加权损失、`Focal Loss`、`label smoothing` 或采样策略，而不是只增加训练轮数。
+4. 后续实验比较不应只看准确率，还应重点记录 `macro F1`、各类召回率和混淆矩阵变化。
 
 ## 目录结构
 
@@ -130,5 +140,6 @@
 ## 相关文档
 
 - 问题二 baseline 说明见 `doc/problem2_baseline.md`
+- 相关论文阅读与可迁移思路见 `doc/literature_review.md`
 - 阶段进度见 `AI_CONTEXT.md`
 - 待办事项见 `TODO.md`

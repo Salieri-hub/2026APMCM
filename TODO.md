@@ -9,6 +9,7 @@
 - [x] 生成问题二 baseline 说明文档
 - [x] 完成一次 `20 epoch` baseline 训练与结果检查
 - [x] 补齐项目级文档 `README.md`、`AI_CONTEXT.md`、`TODO.md`
+- [x] 初步阅读 `..\相关论文` 中的参考文献并整理可迁移优化思路
 
 ## 未完成任务
 
@@ -21,15 +22,19 @@
 ## 新增待办事项
 
 - [ ] 使用 `--pretrained` 重跑 EfficientNet-B0
-- [ ] 增加学习率调度器
-- [ ] 尝试类别加权 `CrossEntropyLoss` 或 `Focal Loss`
-- [ ] 输出更细化的误差分析结果
-- [ ] 根据最新实验结果更新 `doc/problem2_baseline.md`
+- [ ] 视资源情况补试 EfficientNet-B1
+- [ ] 增加学习率调度器与 `label smoothing`
+- [ ] 尝试类别加权 `CrossEntropyLoss`、`Focal Loss` 或采样策略
+- [ ] 试验轻量注意力模块 `SE` / `CBAM`
+- [ ] 输出更细化的误差分析结果，并补充 `Grad-CAM` 或高混淆样本检查
+- [ ] 在实验记录中明确比较 `macro F1`、各类召回率与混淆矩阵
+- [ ] 根据最新实验结果更新 `doc/problem2_baseline.md` 与 `doc/literature_review.md`
 
 ## 当前优先级
 
 - 高优先级：提升问题二 baseline 的测试集性能与稳定性
 - 高优先级：修复腺癌、鳞癌大量误判为大细胞癌的问题
+- 高优先级：优先验证迁移学习、损失函数和注意力机制是否有效
 - 中优先级：整理问题一正式答案和问题二实验总结
 - 中优先级：补充图表、混淆矩阵解读和论文可用文字
 - 低优先级：整理目录和长期维护文档

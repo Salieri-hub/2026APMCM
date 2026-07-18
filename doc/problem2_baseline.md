@@ -129,13 +129,34 @@ Accuracy = 279 / 315 × 100% = 88.57%
 - 鳞癌 `90` 张中仅 `23` 张预测正确，`57` 张被判成了大细胞癌。
 - 正常肺部样本识别相对稳定。
 
-## 9. 后续优化方向
+## 9. 相关论文借鉴
+
+项目上级目录 `..\相关论文` 中的参考文献完成初步阅读后，当前可借鉴的思路主要包括：
+
+1. 迁移学习是四分类肺部 CT 任务中的基础配置。多篇论文都采用预训练 backbone，再针对医学影像数据做微调。
+2. 注意力机制和全局上下文增强值得优先尝试。相比直接大改架构，`SE`、`CBAM`、global block 一类轻量模块更适合当前 baseline 增量验证。
+3. 对于肺癌亚型间混淆严重的问题，仅靠更长训练通常不足，往往还需要类别加权损失、焦点损失、`label smoothing` 或更针对性的采样策略。
+4. 论文中的指标对比通常不只看准确率，还会联合使用 `macro F1`、AUC、各类召回率和混淆矩阵分析。
+
+对当前仓库最有直接借鉴价值的论文包括：
+
+- `Leveraging Transfer Learning and Attention Mechanisms for a Computed Tomography Lung Cancer Classification Model`
+  - 启发：优先把预训练与注意力模块结合，而不是继续使用纯随机初始化的 backbone。
+- `Lung-EffNet`
+  - 启发：`EfficientNet` 系列在肺部 CT 分类中是可行路线，后续可在 `B0` 之外补试 `B1`。
+- `Classification of lung cancer subtypes on CT images with synthetic pathological priors`
+  - 启发：肺癌亚型分类可结合额外先验或辅助信息，当前项目可先用更容易落地的类别加权、误差分析与辅助监督思路做弱化替代。
+- `CCT Lightweight compact convolutional transformer for lung disease CT image classification`
+  - 启发：全局上下文有价值，但现阶段应优先试轻量增强模块，而不是直接大规模重写训练框架。
+
+## 10. 后续优化方向
 
 在当前 baseline 基础上，优先考虑以下优化路径：
 
 1. 启用 `--pretrained`，增强小样本场景下的特征提取能力。
-2. 引入学习率调度器，降低后期训练波动。
-3. 对腺癌与鳞癌使用类别加权损失或焦点损失。
-4. 加强针对易混类别的图像增强策略。
-5. 基于混淆矩阵开展误差分析，检查被高频误判样本。
-6. 如条件允许，切换到 GPU 环境缩短迭代周期。
+2. 引入学习率调度器与 `label smoothing`，降低后期训练波动与过度自信预测。
+3. 对腺癌与鳞癌尝试类别加权损失、`Focal Loss` 或采样策略。
+4. 在当前 `EfficientNet` baseline 上增量试验轻量注意力模块。
+5. 加强针对易混类别的图像增强策略。
+6. 基于混淆矩阵开展误差分析，检查被高频误判样本，必要时补充 `Grad-CAM`。
+7. 如条件允许，切换到 GPU 环境缩短迭代周期。
