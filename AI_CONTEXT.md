@@ -10,7 +10,7 @@
 
 ## 当前整体进度
 
-当前已完成题目理解、数据结构核对、baseline 搭建、一次 `20 epoch` CPU 实跑验证、一轮相关文献初步阅读、训练脚本的 GPU 化改造、独立 GPU 环境 `..\LCC_GPU` 的建立与验证、一次正式 `25 epoch` GPU baseline 训练，以及一次加入 `label smoothing + cosine scheduler` 的对比实验。项目已进入“围绕当前最优测试结果继续做类别边界优化”阶段。
+当前已完成题目理解、数据结构核对、baseline 搭建、一次 `20 epoch` CPU 实跑验证、一轮相关文献初步阅读、训练脚本的 GPU 化改造、独立 GPU 环境 `..\LCC_GPU` 的建立与验证、一次正式 `25 epoch` GPU baseline 训练、一次加入 `label smoothing + cosine scheduler` 的对比实验，以及一次 `balanced class-weighted CrossEntropy` 对比实验。项目已进入“围绕当前最优测试结果继续做类别边界优化”阶段。
 
 ## 本次已完成内容
 
@@ -39,6 +39,8 @@
 - 使用 `..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained` 完成一次正式 `25 epoch` 训练。
 - 在 `src/main.py` 中加入 `label smoothing`、学习率调度器和每轮学习率记录。
 - 使用 `..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --label-smoothing 0.1 --scheduler cosine` 完成一轮对比实验。
+- 在 `src/main.py` 中加入类别加权 `CrossEntropyLoss` 参数，支持 `balanced` 与 `manual` 两种模式。
+- 使用 `..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --label-smoothing 0.1 --scheduler cosine --class-weighting balanced` 完成一轮对比实验。
 
 ## 已修改模块
 
@@ -86,6 +88,7 @@
 - `large.cell.carcinoma` 的过预测相比上一轮有所缓解。
 - `squamous.cell.carcinoma` 召回率明显提高，但部分 `adenocarcinoma` 被转移误判为 `squamous.cell.carcinoma`。
 - 相比旧 CPU baseline，泛化落差已明显缩小，但腺癌与鳞癌的边界仍未完全稳定。
+- 标准 `balanced` 类别加权会进一步压低腺癌与大细胞癌之间的平衡，当前实验结果低于 `label smoothing + cosine scheduler`。
 
 ## 文献调研结论
 
@@ -99,15 +102,16 @@
 ## 当前存在的问题
 
 1. `label smoothing + cosine scheduler` 虽然提升了测试集准确率和 `macro F1`，但腺癌召回率下降，需要继续平衡类别取舍。
-2. 现阶段尚未加入类别加权、`Focal Loss`、采样策略、注意力模块等更针对性的优化手段。
-3. 当前最佳模型仍以验证集准确率为主要保存依据，实验评价维度还可以继续扩展。
+2. 标准 `balanced class-weighted CrossEntropy` 已完成验证，但测试集准确率降到 `73.33%`、`macro F1` 降到 `0.7547`，不适合作为当前首选方案。
+3. 现阶段尚未加入 `Focal Loss`、采样策略、注意力模块等更针对性的优化手段。
+4. 当前最佳模型仍以验证集准确率为主要保存依据，实验评价维度还可以继续扩展。
 
 ## 下一步计划
 
-1. 在当前 `label smoothing + cosine scheduler` 基线上尝试类别加权、`Focal Loss` 或采样策略，优先拉回腺癌召回率。
-2. 试验轻量注意力模块，如 `SE`、`CBAM` 或其他全局上下文增强模块。
-3. 基于混淆矩阵与高频误判样本开展误差分析，重点检查“腺癌 -> 鳞癌”的新误判路径。
-4. 视结果决定是否保留 `label smoothing`，或改为“类别加权 + scheduler”的组合。
+1. 在当前 `label smoothing + cosine scheduler` 基线上优先尝试 `Focal Loss` 或采样策略，拉回腺癌召回率。
+2. 如需继续试类别加权，优先考虑手动权重，而不是直接使用标准 `balanced` 权重。
+3. 试验轻量注意力模块，如 `SE`、`CBAM` 或其他全局上下文增强模块。
+4. 基于混淆矩阵与高频误判样本开展误差分析，重点检查“腺癌 -> 鳞癌”的新误判路径。
 
 ## 需要提醒后续协作者的事项
 

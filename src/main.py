@@ -207,6 +207,60 @@ def create_model(model_name: str, num_classes: int, pretrained: bool) -> nn.Modu
     return timm.create_model(model_name, pretrained=pretrained, num_classes=num_classes)
 
 
+def compute_train_class_weights(train_samples: List[Sample]) -> Dict[str, float]:
+    counts = {class_name: 0 for class_name in CLASS_NAMES}
+    for sample in train_samples:
+        counts[sample.class_name] += 1
+
+    total_samples = sum(counts.values())
+    if total_samples == 0:
+        raise ValueError("Training split is empty; cannot compute class weights.")
+
+    return {
+        class_name: total_samples / (len(CLASS_NAMES) * counts[class_name])
+        for class_name in CLASS_NAMES
+    }
+
+
+def parse_manual_class_weights(weights_arg: str) -> Dict[str, float]:
+    values = [item.strip() for item in weights_arg.split(",") if item.strip()]
+    if len(values) != len(CLASS_NAMES):
+        raise ValueError(
+            f"--class-weights must provide exactly {len(CLASS_NAMES)} comma-separated values "
+            f"for {CLASS_NAMES}."
+        )
+
+    return {
+        class_name: float(value)
+        for class_name, value in zip(CLASS_NAMES, values)
+    }
+
+
+def resolve_class_weights(
+    args: argparse.Namespace,
+    train_samples: List[Sample],
+    device: torch.device,
+) -> Tuple[Optional[torch.Tensor], Optional[Dict[str, float]]]:
+    if args.class_weighting == "none":
+        return None, None
+
+    if args.class_weighting == "balanced":
+        class_weights = compute_train_class_weights(train_samples)
+    elif args.class_weighting == "manual":
+        if not args.class_weights:
+            raise ValueError("--class-weights is required when --class-weighting manual is used.")
+        class_weights = parse_manual_class_weights(args.class_weights)
+    else:
+        raise ValueError(f"Unsupported class weighting: {args.class_weighting}")
+
+    weight_tensor = torch.tensor(
+        [class_weights[class_name] for class_name in CLASS_NAMES],
+        dtype=torch.float32,
+        device=device,
+    )
+    return weight_tensor, class_weights
+
+
 def create_scheduler(optimizer: AdamW, args: argparse.Namespace):
     if args.scheduler == "none":
         return None
@@ -377,6 +431,7 @@ def build_run_summary(
     amp_enabled: bool,
     pin_memory: bool,
     gpu_name: Optional[str],
+    class_weights: Optional[Dict[str, float]],
 ) -> Dict[str, object]:
     class_distribution: Dict[str, Dict[str, int]] = {}
     for split_name, samples in samples_by_split.items():
@@ -395,6 +450,8 @@ def build_run_summary(
             "learning_rate": args.lr,
             "weight_decay": args.weight_decay,
             "label_smoothing": args.label_smoothing,
+            "class_weighting": args.class_weighting,
+            "class_weights": class_weights,
             "scheduler": args.scheduler,
             "min_lr": args.min_lr,
             "num_workers": args.num_workers,
@@ -459,6 +516,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--lr", type=float, default=3e-4)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
     parser.add_argument("--label-smoothing", type=float, default=0.0)
+    parser.add_argument("--class-weighting", choices=["none", "balanced", "manual"], default="none")
+    parser.add_argument("--class-weights", type=str, default=None, help="Comma-separated weights in CLASS_NAMES order when class-weighting=manual.")
     parser.add_argument("--scheduler", choices=["none", "cosine", "plateau"], default="none")
     parser.add_argument("--min-lr", type=float, default=1e-6)
     parser.add_argument("--plateau-patience", type=int, default=3)
@@ -505,11 +564,16 @@ def main() -> None:
         pin_memory=pin_memory,
     )
 
+    weight_tensor, class_weights = resolve_class_weights(args, samples_by_split["train"], device)
     model = create_model(args.model_name, num_classes=len(CLASS_NAMES), pretrained=args.pretrained).to(device)
-    criterion = nn.CrossEntropyLoss(label_smoothing=args.label_smoothing)
+    criterion = nn.CrossEntropyLoss(weight=weight_tensor, label_smoothing=args.label_smoothing)
     optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     scheduler = create_scheduler(optimizer, args)
     scaler = torch.amp.GradScaler("cuda", enabled=amp_enabled) if device.type == "cuda" else None
+
+    if class_weights is not None:
+        formatted_weights = ", ".join(f"{name}={class_weights[name]:.4f}" for name in CLASS_NAMES)
+        print(f"Using class weights: {formatted_weights}")
 
     history: List[Dict[str, float]] = []
     best_val_accuracy = -1.0
@@ -588,6 +652,7 @@ def main() -> None:
         amp_enabled=amp_enabled,
         pin_memory=pin_memory,
         gpu_name=gpu_name,
+        class_weights=class_weights,
     )
     save_json(args.output_dir / "metrics_summary.json", summary)
 

@@ -17,6 +17,8 @@
 - [x] 完成一次 `GPU + pretrained` 的正式 baseline 训练
 - [x] 增加 `label smoothing` 与学习率调度器参数
 - [x] 完成一次 `GPU + pretrained + label smoothing + cosine scheduler` 对比实验
+- [x] 增加类别加权 `CrossEntropyLoss` 参数
+- [x] 完成一次 `balanced class-weighted CrossEntropy` 对比实验
 
 ## 未完成任务
 
@@ -28,7 +30,8 @@
 ## 新增待办事项
 
 - [ ] 视资源情况补试 EfficientNet-B1
-- [ ] 尝试类别加权 `CrossEntropyLoss`、`Focal Loss` 或采样策略
+- [ ] 尝试 `Focal Loss` 或采样策略
+- [ ] 如有必要再尝试手动类别权重，而不是直接使用 `balanced` 权重
 - [ ] 试验轻量注意力模块 `SE` / `CBAM`
 - [ ] 输出更细化的误差分析结果，并补充 `Grad-CAM` 或高混淆样本检查
 - [ ] 在实验记录中明确比较 `macro F1`、各类召回率与混淆矩阵
@@ -38,7 +41,7 @@
 
 - 高优先级：提升问题二 baseline 的测试集性能与稳定性
 - 高优先级：修复腺癌、鳞癌大量误判为大细胞癌的问题
-- 高优先级：优先验证类别加权 / `Focal Loss` 是否能在保住鳞癌召回率的同时拉回腺癌召回率
+- 高优先级：优先验证 `Focal Loss` 或采样策略是否能在保住鳞癌召回率的同时拉回腺癌召回率
 - 中优先级：整理问题一正式答案和问题二实验总结
 - 中优先级：补充图表、混淆矩阵解读和论文可用文字
 - 低优先级：整理目录和长期维护文档
