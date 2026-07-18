@@ -38,6 +38,8 @@ Accuracy = 279 / 315 × 100% = 88.57%
 - 优化器：AdamW
 - 默认训练轮数：25 epoch
 - 输入尺寸：224 x 224
+- 设备策略：`--device auto`，有可用 CUDA 时优先使用 GPU
+- CUDA 优化：自动混合精度 AMP、`pin_memory`、自动 `num_workers`
 - 代码入口：`src/main.py`
 
 默认读取的数据目录为：
@@ -60,27 +62,33 @@ Accuracy = 279 / 315 × 100% = 88.57%
 在项目根目录执行：
 
 ```powershell
-..\LCC\Scripts\python.exe .\src\main.py
+..\LCC_GPU\python.exe .\src\main.py
 ```
 
 常见运行方式：
 
 ```powershell
-..\LCC\Scripts\python.exe .\src\main.py --epochs 20
-..\LCC\Scripts\python.exe .\src\main.py --epochs 30
-..\LCC\Scripts\python.exe .\src\main.py --pretrained
+..\LCC_GPU\python.exe .\src\main.py --epochs 20
+..\LCC_GPU\python.exe .\src\main.py --epochs 30
+..\LCC_GPU\python.exe .\src\main.py --pretrained
+..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --batch-size 32 --num-workers 4
+..\LCC_GPU\python.exe .\src\main.py --device cuda --no-amp
 ```
 
 路径说明：
 
 - 当前项目代码位于 `B题` 目录内。
 - 数据集位于项目外部同级目录 `..\附件\Data`。
-- 虚拟环境位于项目外部同级目录 `..\LCC`。
+- 推荐 GPU 虚拟环境位于项目外部同级目录 `..\LCC_GPU`。
 - `src/main.py` 默认会优先使用 `..\附件\Data`，兼容当前目录布局。
+- 当前机器已经检测到 `NVIDIA GeForce RTX 4060 Laptop GPU`，且截至 `2026-07-18`，`..\LCC_GPU` 已验证 `torch==2.13.0+cu130`、`torchvision==0.28.0+cu130` 可正常识别 CUDA。
 
 ## 6. 输出结果
 
-脚本会在 `outputs/problem2_baseline` 下生成：
+脚本会在输出目录下生成：
+
+- CPU 默认输出：`outputs/problem2_baseline`
+- GPU 默认输出：`outputs/problem2_baseline_gpu`
 
 - `best_model.pt`：验证集准确率最高的模型权重
 - `metrics_summary.json`：训练过程与最终指标汇总
@@ -88,46 +96,56 @@ Accuracy = 279 / 315 × 100% = 88.57%
 - `valid_confusion_matrix.csv`：验证集混淆矩阵
 - `test_confusion_matrix.csv`：测试集混淆矩阵
 
-## 7. 当前最新实验结果
+## 7. 当前最新实验结果与 GPU 状态
 
-最近一次已完成检查的运行配置：
+截至 `2026-07-18`，当前最新已完成检查的运行配置为 GPU 版本：
 
-- `epochs=20`
+- `epochs=25`
 - `batch_size=16`
 - `image_size=224`
 - `lr=3e-4`
 - `weight_decay=1e-4`
-- `pretrained=false`
-- `device=cpu`
+- `pretrained=true`
+- `device=cuda`
 
 对应结果：
 
-- 最佳验证集轮次：`epoch 15`
-- 最佳验证集准确率：`62.50%`
-- 测试集准确率：`39.68%`
-- 测试集 `macro F1`：`0.4427`
-- 测试集 `weighted F1`：`0.3663`
+- 最佳验证集轮次：`epoch 23`
+- 最佳验证集准确率：`91.67%`
+- 测试集准确率：`76.19%`
+- 测试集 `macro F1`：`0.7721`
+- 测试集 `weighted F1`：`0.7656`
+
+当前 GPU 状态：
+
+- 主机显卡：`NVIDIA GeForce RTX 4060 Laptop GPU`
+- 驱动版本：`581.80`
+- `nvidia-smi` 可正常识别 GPU
+- 已验证环境：`..\LCC_GPU`
+- 已验证依赖：`torch==2.13.0+cu130`、`torchvision==0.28.0+cu130`
+- 已完成一次正式 `25 epoch` GPU baseline 训练
+- 当前结论：代码与环境都已具备 GPU 运行条件，且 `pretrained` 显著优于旧 CPU 非预训练 baseline
 
 测试集各类别召回率：
 
-- `adenocarcinoma`：`6.67%`
-- `large.cell.carcinoma`：`96.08%`
-- `normal`：`83.33%`
-- `squamous.cell.carcinoma`：`25.56%`
+- `adenocarcinoma`：`71.67%`
+- `large.cell.carcinoma`：`92.16%`
+- `normal`：`98.15%`
+- `squamous.cell.carcinoma`：`60.00%`
 
 ## 8. 结果解读
 
-当前 baseline 已经完成了问题二最基本的端到端流程验证，但模型效果还不能作为最终方案提交，主要原因有：
+当前 baseline 已经从“可运行”提升到了“有明显竞争力”的阶段，但模型效果还不能直接视为最终方案，主要原因有：
 
-1. 验证集最好成绩为 `62.50%`，但测试集仅 `39.68%`，泛化落差较大。
-2. 模型存在明显的类别预测偏置，大量样本被预测成 `large.cell.carcinoma`。
-3. 题目重点关注的腺癌与鳞癌误诊问题在当前 baseline 中依然突出。
+1. 虽然测试集准确率已提升到 `76.19%`，但 `large.cell.carcinoma` 仍存在过预测。
+2. 题目重点关注的腺癌与鳞癌误诊问题已经明显缓解，但鳞癌召回率仍有提升空间。
+3. 当前最优模型仍只基于 `EfficientNet-B0 + CrossEntropyLoss + AdamW`，还没有加入更针对性的损失与采样优化。
 
 从测试集混淆情况看：
 
-- 腺癌 `120` 张中仅 `8` 张预测正确，`106` 张被判成了大细胞癌。
-- 鳞癌 `90` 张中仅 `23` 张预测正确，`57` 张被判成了大细胞癌。
-- 正常肺部样本识别相对稳定。
+- 腺癌 `120` 张中有 `86` 张预测正确，仍有 `25` 张被判成了大细胞癌。
+- 鳞癌 `90` 张中有 `54` 张预测正确，仍有 `19` 张被判成了大细胞癌、`16` 张被判成腺癌。
+- 正常肺部样本识别非常稳定，`54` 张中有 `53` 张预测正确。
 
 ## 9. 相关论文借鉴
 
@@ -153,10 +171,8 @@ Accuracy = 279 / 315 × 100% = 88.57%
 
 在当前 baseline 基础上，优先考虑以下优化路径：
 
-1. 启用 `--pretrained`，增强小样本场景下的特征提取能力。
-2. 引入学习率调度器与 `label smoothing`，降低后期训练波动与过度自信预测。
-3. 对腺癌与鳞癌尝试类别加权损失、`Focal Loss` 或采样策略。
-4. 在当前 `EfficientNet` baseline 上增量试验轻量注意力模块。
-5. 加强针对易混类别的图像增强策略。
-6. 基于混淆矩阵开展误差分析，检查被高频误判样本，必要时补充 `Grad-CAM`。
-7. 如条件允许，切换到 GPU 环境缩短迭代周期。
+1. 在当前 `GPU + pretrained` 基线之上引入学习率调度器与 `label smoothing`。
+2. 对腺癌与鳞癌尝试类别加权损失、`Focal Loss` 或采样策略。
+3. 在当前 `EfficientNet` baseline 上增量试验轻量注意力模块。
+4. 加强针对易混类别的图像增强策略。
+5. 基于混淆矩阵开展误差分析，重点检查鳞癌与大细胞癌的混淆样本，必要时补充 `Grad-CAM`。
