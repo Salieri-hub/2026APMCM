@@ -3,17 +3,31 @@ import csv
 import json
 import os
 import random
+import shutil
 import time
+import urllib.request
 from contextlib import nullcontext
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_HF_CACHE_REL = Path(".cache") / "huggingface"
+HF_CACHE_ROOT = PROJECT_ROOT / DEFAULT_HF_CACHE_REL
+HF_HUB_CACHE_DIR = HF_CACHE_ROOT / "hub"
+HF_CACHE_ROOT.mkdir(parents=True, exist_ok=True)
+HF_HUB_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+os.environ["HF_HOME"] = str(HF_CACHE_ROOT)
+os.environ["HF_HUB_CACHE"] = str(HF_HUB_CACHE_DIR)
+os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
+
 import timm
 import torch
 import torch.nn.functional as F
 from PIL import Image
+from safetensors.torch import load_file as load_safetensors_file
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from torch import nn
 from torch.optim import AdamW
@@ -33,6 +47,17 @@ DEFAULT_EXPERT_CLASSES = [
     "adenocarcinoma",
     "squamous.cell.carcinoma",
 ]
+DEFAULT_MODEL_NAME = "efficientnet_b1"
+MODEL_DEFAULT_IMAGE_SIZE = {
+    "efficientnet_b0": 224,
+    "efficientnet_b1": 240,
+}
+LOCAL_PRETRAINED_SAFETENSORS = {
+    "efficientnet_b1": {
+        "url": "https://huggingface.co/timm/efficientnet_b1.ra4_e3600_r240_in1k/resolve/main/model.safetensors",
+        "relative_path": Path(".cache") / "weights" / "efficientnet_b1.ra4_e3600_r240_in1k" / "model.safetensors",
+    },
+}
 
 IMAGENET_MEAN = (0.485, 0.456, 0.406)
 IMAGENET_STD = (0.229, 0.224, 0.225)
@@ -58,6 +83,80 @@ def sanitize_name(text: str) -> str:
 
 def build_output_slug(class_names: Sequence[str]) -> str:
     return "_".join(sanitize_name(name) for name in class_names)
+
+
+def build_backbone_tag(model_name: str) -> str:
+    if model_name == "efficientnet_b0":
+        return "b0"
+    if model_name == "efficientnet_b1":
+        return "b1"
+    return sanitize_name(model_name)
+
+
+def build_backbone_suffix(model_name: str) -> str:
+    if model_name == "efficientnet_b0":
+        return ""
+    return f"_{build_backbone_tag(model_name)}"
+
+
+def resolve_image_size(model_name: str, requested_image_size: Optional[int]) -> int:
+    if requested_image_size is not None:
+        return requested_image_size
+    return MODEL_DEFAULT_IMAGE_SIZE.get(model_name, 224)
+
+
+def ensure_parent_dir(path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+
+def download_file(url: str, destination: Path, timeout_seconds: int = 120, max_retries: int = 3) -> Path:
+    ensure_parent_dir(destination)
+    temp_path = destination.with_suffix(destination.suffix + ".part")
+    last_error: Optional[Exception] = None
+
+    for attempt in range(1, max_retries + 1):
+        try:
+            with urllib.request.urlopen(url, timeout=timeout_seconds) as response, temp_path.open("wb") as output_file:
+                shutil.copyfileobj(response, output_file)
+            temp_path.replace(destination)
+            return destination
+        except Exception as error:
+            last_error = error
+            if temp_path.exists():
+                temp_path.unlink(missing_ok=True)
+            if attempt == max_retries:
+                break
+            time.sleep(min(attempt * 2, 5))
+
+    raise RuntimeError(f"Failed to download pretrained weights from {url}: {last_error}") from last_error
+
+
+def ensure_local_pretrained_file(model_name: str) -> Optional[Path]:
+    spec = LOCAL_PRETRAINED_SAFETENSORS.get(model_name)
+    if spec is None:
+        return None
+
+    local_path = PROJECT_ROOT / spec["relative_path"]
+    if local_path.exists():
+        return local_path
+
+    print(f"Downloading local pretrained weights for {model_name} -> {local_path}")
+    return download_file(spec["url"], local_path)
+
+
+def build_pretrained_backbone(model_name: str, num_classes: int) -> nn.Module:
+    local_weights = ensure_local_pretrained_file(model_name)
+    if local_weights is None:
+        return timm.create_model(model_name, pretrained=True, num_classes=num_classes)
+
+    backbone = timm.create_model(model_name, pretrained=False, num_classes=1000)
+    state_dict = load_safetensors_file(str(local_weights))
+    backbone.load_state_dict(state_dict, strict=True)
+    if hasattr(backbone, "reset_classifier"):
+        backbone.reset_classifier(num_classes)
+    else:
+        raise ValueError(f"Backbone {model_name} does not support reset_classifier after local weight loading.")
+    return backbone
 
 
 def build_target_distribution(
@@ -443,7 +542,10 @@ def create_model(
     pretrained: bool,
     feature_attention: str,
 ) -> nn.Module:
-    backbone = timm.create_model(model_name, pretrained=pretrained, num_classes=num_classes)
+    if pretrained:
+        backbone = build_pretrained_backbone(model_name, num_classes=num_classes)
+    else:
+        backbone = timm.create_model(model_name, pretrained=False, num_classes=num_classes)
     if feature_attention == "none":
         return backbone
     return AttentionAugmentedModel(backbone, feature_attention=feature_attention)
@@ -879,6 +981,18 @@ def resolve_default_data_dir(repo_root: Path) -> Path:
     return candidates[0]
 
 
+def configure_huggingface_cache(repo_root: Path) -> Path:
+    cache_root = repo_root / DEFAULT_HF_CACHE_REL
+    hub_cache = cache_root / "hub"
+    cache_root.mkdir(parents=True, exist_ok=True)
+    hub_cache.mkdir(parents=True, exist_ok=True)
+
+    os.environ["HF_HOME"] = str(cache_root)
+    os.environ["HF_HUB_CACHE"] = str(hub_cache)
+    os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
+    return cache_root
+
+
 def resolve_active_class_names(args: argparse.Namespace) -> List[str]:
     if args.run_mode == "expert":
         return parse_class_names_arg(args.expert_classes)
@@ -894,14 +1008,16 @@ def resolve_training_output_dir(
     if args.output_dir is not None:
         return args.output_dir
 
+    backbone_suffix = build_backbone_suffix(args.model_name)
+
     if args.run_mode == "expert":
-        return repo_root / "outputs" / f"expert_{build_output_slug(class_names)}"
+        return repo_root / "outputs" / f"expert_{build_output_slug(class_names)}{backbone_suffix}"
 
     if device.type == "cuda":
         default_output_name = "v2.0_pretrained_ce" if args.pretrained else "v1.1_scratch_ce_cuda"
     else:
         default_output_name = "v1.0_scratch_ce_cpu"
-    return repo_root / "outputs" / default_output_name
+    return repo_root / "outputs" / f"{default_output_name}{backbone_suffix}"
 
 
 def load_model_from_checkpoint(checkpoint_path: Path, device: torch.device) -> Tuple[nn.Module, Dict[str, Any]]:
@@ -1186,8 +1302,10 @@ def validate_training_args(args: argparse.Namespace) -> None:
 
 def train_and_evaluate(args: argparse.Namespace) -> None:
     repo_root = Path(__file__).resolve().parents[1]
+    configure_huggingface_cache(repo_root)
     args.data_dir = args.data_dir.resolve()
     device = resolve_device(args.device)
+    args.image_size = resolve_image_size(args.model_name, args.image_size)
     class_names = resolve_active_class_names(args)
     args.output_dir = resolve_training_output_dir(args, repo_root, device, class_names)
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -1245,7 +1363,7 @@ def train_and_evaluate(args: argparse.Namespace) -> None:
     if args.feature_attention != "none":
         print(
             f"Using extra feature attention: {args.feature_attention} "
-            "(note: EfficientNet-B0 already contains internal SE blocks)."
+            "(note: EfficientNet backbones already contain internal SE blocks)."
         )
 
     history: List[Dict[str, float]] = []
@@ -1334,6 +1452,7 @@ def run_cascade_evaluation(args: argparse.Namespace) -> None:
         raise ValueError("--main-checkpoint and --expert-checkpoint are required when --run-mode cascade is used.")
 
     repo_root = Path(__file__).resolve().parents[1]
+    configure_huggingface_cache(repo_root)
     args.data_dir = args.data_dir.resolve()
     device = resolve_device(args.device)
     amp_enabled = resolve_amp_enabled(args.amp, device)
@@ -1358,7 +1477,12 @@ def run_cascade_evaluation(args: argparse.Namespace) -> None:
         )
 
     if args.output_dir is None:
-        args.output_dir = repo_root / "outputs" / f"cascade_{build_output_slug(expert_class_names)}"
+        expert_parent_name = args.expert_checkpoint.resolve().parent.name
+        if expert_parent_name.startswith("expert_"):
+            output_name = f"cascade_{expert_parent_name[len('expert_'):]}"
+        else:
+            output_name = f"cascade_{build_output_slug(expert_class_names)}"
+        args.output_dir = repo_root / "outputs" / output_name
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     print(
@@ -1452,7 +1576,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--run-mode", choices=["single", "expert", "cascade"], default="single")
     parser.add_argument("--data-dir", type=Path, default=default_data_dir)
     parser.add_argument("--output-dir", type=Path, default=None)
-    parser.add_argument("--model-name", type=str, default="efficientnet_b0")
+    parser.add_argument("--model-name", type=str, default=DEFAULT_MODEL_NAME)
     parser.add_argument("--pretrained", action="store_true", help="Use timm pretrained weights if available.")
     parser.add_argument(
         "--loss",
@@ -1462,7 +1586,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--epochs", type=int, default=25)
     parser.add_argument("--batch-size", type=int, default=16)
-    parser.add_argument("--image-size", type=int, default=224)
+    parser.add_argument(
+        "--image-size",
+        type=int,
+        default=None,
+        help="Input image size. Defaults to 240 for EfficientNet-B1 and 224 for EfficientNet-B0.",
+    )
     parser.add_argument("--lr", type=float, default=3e-4)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
     parser.add_argument(
@@ -1501,7 +1630,7 @@ def parse_args() -> argparse.Namespace:
         "--feature-attention",
         choices=["none", "se", "cbam"],
         default="none",
-        help="Extra attention attached on the final feature map. EfficientNet-B0 already includes internal SE blocks.",
+        help="Extra attention attached on the final feature map. EfficientNet backbones already include internal SE blocks.",
     )
     parser.add_argument("--num-workers", type=int, default=None, help="DataLoader workers. Defaults to 4 on CUDA and 0 on CPU.")
     parser.add_argument("--seed", type=int, default=42)

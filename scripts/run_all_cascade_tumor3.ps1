@@ -4,7 +4,9 @@ param(
     [string]$ExpertClasses = "adenocarcinoma,large.cell.carcinoma,squamous.cell.carcinoma",
     [int]$ExpertTriggerTopK = 2,
     [double]$ExpertMarginThreshold = 0.12,
-    [int]$NumWorkers = 0
+    [int]$NumWorkers = 0,
+    [string]$ModelName = "efficientnet_b0",
+    [int]$ImageSize = 224
 )
 
 Set-StrictMode -Version Latest
@@ -48,6 +50,7 @@ Start-Transcript -Path $logPath | Out-Null
 try {
     Write-Host "Repo root: $repoRoot"
     Write-Host "Python: $PythonExe"
+    Write-Host "Model: $ModelName"
     Write-Host "Expert classes: $ExpertClasses"
     Write-Host "Trigger: top-$ExpertTriggerTopK, margin <= $marginText"
     Write-Host "Num workers: $NumWorkers"
@@ -75,11 +78,12 @@ try {
             $expertCmd = @(
                 $mainPy,
                 "--run-mode", "expert",
+                "--model-name", $ModelName,
                 "--expert-classes", $ExpertClasses,
                 "--device", $Device,
                 "--epochs", "25",
                 "--batch-size", "16",
-                "--image-size", "224",
+                "--image-size", $ImageSize.ToString(),
                 "--lr", "3e-4",
                 "--weight-decay", "1e-4",
                 "--num-workers", $NumWorkers.ToString()

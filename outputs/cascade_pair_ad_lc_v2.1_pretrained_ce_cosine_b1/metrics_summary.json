@@ -1,0 +1,172 @@
+{
+  "mode": "cascade",
+  "config": {
+    "run_mode": "cascade",
+    "data_dir": "C:\\Users\\梁嘉纯\\Desktop\\2026年APMCM亚太地区大学生大模型竞赛赛题\\2026年APMCM亚太地区大学生大模型竞赛赛题\\B题\\基线\\附件\\Data",
+    "device_request": "cuda",
+    "device": "cuda",
+    "amp_enabled": true,
+    "expert_trigger_topk": 2,
+    "expert_margin_threshold": 0.12,
+    "main_checkpoint": "C:\\Users\\梁嘉纯\\Desktop\\2026年APMCM亚太地区大学生大模型竞赛赛题\\2026年APMCM亚太地区大学生大模型竞赛赛题\\B题\\基线\\2026APMCM\\outputs\\v2.1_pretrained_ce_cosine_b1\\best_model.pt",
+    "expert_checkpoint": "C:\\Users\\梁嘉纯\\Desktop\\2026年APMCM亚太地区大学生大模型竞赛赛题\\2026年APMCM亚太地区大学生大模型竞赛赛题\\B题\\基线\\2026APMCM\\outputs\\expert_pair_ad_lc_v2.1_pretrained_ce_cosine_b1\\best_model.pt"
+  },
+  "hardware": {
+    "cuda_available": true,
+    "gpu_name": "NVIDIA GeForce RTX 4060 Laptop GPU"
+  },
+  "dataset": {
+    "class_names": [
+      "adenocarcinoma",
+      "large.cell.carcinoma",
+      "normal",
+      "squamous.cell.carcinoma"
+    ],
+    "split_sizes": {
+      "train": 613,
+      "valid": 72,
+      "test": 315
+    },
+    "class_distribution": {
+      "train": {
+        "adenocarcinoma": 195,
+        "large.cell.carcinoma": 115,
+        "normal": 148,
+        "squamous.cell.carcinoma": 155
+      },
+      "valid": {
+        "adenocarcinoma": 23,
+        "large.cell.carcinoma": 21,
+        "normal": 13,
+        "squamous.cell.carcinoma": 15
+      },
+      "test": {
+        "adenocarcinoma": 120,
+        "large.cell.carcinoma": 51,
+        "normal": 54,
+        "squamous.cell.carcinoma": 90
+      }
+    }
+  },
+  "main_model": {
+    "model_name": "efficientnet_b1",
+    "image_size": 240,
+    "feature_attention": "none",
+    "class_names": [
+      "adenocarcinoma",
+      "large.cell.carcinoma",
+      "normal",
+      "squamous.cell.carcinoma"
+    ],
+    "best_epoch": 21,
+    "best_valid_accuracy": 0.875
+  },
+  "expert_model": {
+    "model_name": "efficientnet_b1",
+    "image_size": 240,
+    "feature_attention": "none",
+    "class_names": [
+      "adenocarcinoma",
+      "large.cell.carcinoma"
+    ],
+    "best_epoch": 7,
+    "best_valid_accuracy": 0.9318181818181818
+  },
+  "validation": {
+    "accuracy": 0.875,
+    "report": {
+      "adenocarcinoma": {
+        "precision": 0.84,
+        "recall": 0.9130434782608695,
+        "f1-score": 0.875,
+        "support": 23.0
+      },
+      "large.cell.carcinoma": {
+        "precision": 1.0,
+        "recall": 0.6666666666666666,
+        "f1-score": 0.8,
+        "support": 21.0
+      },
+      "normal": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 13.0
+      },
+      "squamous.cell.carcinoma": {
+        "precision": 0.75,
+        "recall": 1.0,
+        "f1-score": 0.8571428571428571,
+        "support": 15.0
+      },
+      "accuracy": 0.875,
+      "macro avg": {
+        "precision": 0.8975,
+        "recall": 0.894927536231884,
+        "f1-score": 0.8830357142857143,
+        "support": 72.0
+      },
+      "weighted avg": {
+        "precision": 0.8968055555555554,
+        "recall": 0.875,
+        "f1-score": 0.8719742063492063,
+        "support": 72.0
+      }
+    },
+    "cascade_stats": {
+      "expert_invocations": 0,
+      "expert_changed_predictions": 0,
+      "expert_corrected_predictions": 0,
+      "expert_hurt_predictions": 0
+    }
+  },
+  "test": {
+    "accuracy": 0.9174603174603174,
+    "report": {
+      "adenocarcinoma": {
+        "precision": 0.9067796610169492,
+        "recall": 0.8916666666666667,
+        "f1-score": 0.8991596638655462,
+        "support": 120.0
+      },
+      "large.cell.carcinoma": {
+        "precision": 0.8775510204081632,
+        "recall": 0.8431372549019608,
+        "f1-score": 0.86,
+        "support": 51.0
+      },
+      "normal": {
+        "precision": 0.9814814814814815,
+        "recall": 0.9814814814814815,
+        "f1-score": 0.9814814814814815,
+        "support": 54.0
+      },
+      "squamous.cell.carcinoma": {
+        "precision": 0.9148936170212766,
+        "recall": 0.9555555555555556,
+        "f1-score": 0.9347826086956522,
+        "support": 90.0
+      },
+      "accuracy": 0.9174603174603174,
+      "macro avg": {
+        "precision": 0.9201764449819676,
+        "recall": 0.9179602396514162,
+        "f1-score": 0.91885593851067,
+        "support": 315.0
+      },
+      "weighted avg": {
+        "precision": 0.9171717044278257,
+        "recall": 0.9174603174603174,
+        "f1-score": 0.9171098236396007,
+        "support": 315.0
+      }
+    },
+    "cascade_stats": {
+      "expert_invocations": 3,
+      "expert_changed_predictions": 1,
+      "expert_corrected_predictions": 0,
+      "expert_hurt_predictions": 1
+    }
+  },
+  "elapsed_seconds": 13.962778806686401
+}

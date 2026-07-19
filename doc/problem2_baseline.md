@@ -39,9 +39,21 @@ Accuracy = 279 / 315 × 100% = 88.57%
 3. `cascade`
    - 先运行四分类主模型，再按触发规则调用专家模型，对局部高混淆类别做二次判别，最终仍输出四分类结果。
 
-当前默认 backbone 为 `EfficientNet-B0`，主模型和专家模型都沿用这一主干，只是最终分类头类别数不同。
+## 5. 当前 backbone 状态
 
-## 5. 数据与标签
+需要区分“历史结果 backbone”和“当前代码默认 backbone”：
+
+1. 历史正式结果 backbone
+   - `EfficientNet-B0`
+   - 已完成 `52` 组正式实验
+2. 当前代码默认 backbone
+   - `EfficientNet-B1`
+   - 默认输入尺寸 `240`
+   - 准备重新执行除 CPU baseline 与非迁移 GPU baseline 之外的其余 `50` 组正式实验
+
+因此，当前项目不是删掉了 B0，而是保留 B0 已完成结果，同时把新的默认主线切到 B1。
+
+## 6. 数据与标签
 
 默认读取的数据目录为：
 
@@ -64,15 +76,15 @@ Accuracy = 279 / 315 × 100% = 88.57%
 - 验证集：`72`
 - 测试集：`315`
 
-## 6. 当前主模型基线配置
+## 7. 当前代码默认主线配置
 
-当前主线 baseline 配置为：
+当前默认主线配置为：
 
 - 框架：PyTorch + timm
-- 主干网络：`EfficientNet-B0`
+- 默认主干网络：`EfficientNet-B1`
+- 默认输入尺寸：`240 x 240`
 - 优化器：`AdamW`
 - 默认训练轮数：`25`
-- 输入尺寸：`224 x 224`
 - 损失函数：`CrossEntropyLoss / Focal Loss`
 - 学习率调度：`none / cosine / plateau`
 - 可选正则：`label smoothing`
@@ -80,7 +92,12 @@ Accuracy = 279 / 315 × 100% = 88.57%
 - 可选结构增强：`SE / CBAM`
 - 设备策略：`--device auto`，有可用 CUDA 时优先使用 GPU
 
-## 7. 级联模式原理
+补充说明：
+
+- 如果显式指定 `--model-name efficientnet_b0`，默认输入尺寸会回到 `224`
+- 当前 `main.py` 对旧 B0 checkpoint 仍然兼容
+
+## 8. 级联模式原理
 
 当前 `cascade` 模式采用“主模型先判，再按条件触发专家模型”的方式：
 
@@ -94,32 +111,19 @@ Accuracy = 279 / 315 × 100% = 88.57%
 - `expert_trigger_topk = 2`
 - `expert_margin_threshold = 0.12`
 
-## 8. 已完成的正式实验范围
+## 9. 已完成的历史正式实验范围
 
-截至 `2026-07-19`，项目已经完成三组正式实验：
+截至 `2026-07-19`，项目已经完成三组历史正式实验：
 
 1. `12` 组单模型实验
 2. `10` 组三肿瘤专家级联实验
 3. `30` 组两两肿瘤专家级联实验
 
-合计 `52` 组正式结果。
+合计 `52` 组历史正式结果，统一基于 `EfficientNet-B0`。
 
-单模型目录命名规则：
+## 10. 当前已验证最佳单模型结果
 
-- `v1.x`：scratch + CE
-- `v2.x`：pretrained + CE
-- `v3.x`：pretrained + focal / attention
-
-级联目录命名规则：
-
-- `expert_tumor3_*`：三肿瘤专家模型
-- `expert_pair_*`：两两肿瘤专家模型
-- `cascade_*`：三肿瘤专家级联结果
-- `cascade_pair_*`：两两肿瘤专家级联结果
-
-## 9. 当前最佳单模型结果
-
-当前最佳单模型为：
+当前“已完成并验证”的最佳单模型为：
 
 ```text
 v3.4_pretrained_focal_ls_cosine_cbam
@@ -128,7 +132,7 @@ v3.4_pretrained_focal_ls_cosine_cbam
 其核心配置为：
 
 ```text
-pretrained + focal loss(gamma=2) + label smoothing(0.1) + cosine scheduler + CBAM
+EfficientNet-B0 + pretrained + focal loss(gamma=2) + label smoothing(0.1) + cosine scheduler + CBAM
 ```
 
 对应结果：
@@ -138,16 +142,9 @@ pretrained + focal loss(gamma=2) + label smoothing(0.1) + cosine scheduler + CBA
 - 测试集 `macro F1`：`0.8646`
 - 测试集 `weighted F1`：`0.8647`
 
-测试集各类别召回率：
+## 11. 当前已验证最佳全局结果
 
-- `adenocarcinoma`：`90.83%`
-- `large.cell.carcinoma`：`90.20%`
-- `normal`：`98.15%`
-- `squamous.cell.carcinoma`：`71.11%`
-
-## 10. 当前最佳全局结果
-
-当前 `52` 组实验中的全局最佳结果为：
+当前已完成的 `52` 组历史实验中的全局最佳结果为：
 
 ```text
 cascade_v3.4_pretrained_focal_ls_cosine_cbam
@@ -164,11 +161,6 @@ cascade_v3.4_pretrained_focal_ls_cosine_cbam
 - 测试集准确率：`87.62%`
 - 测试集 `macro F1`：`0.8773`
 
-相对于最佳单模型：
-
-- 测试集准确率提升 `1.27` 个百分点
-- 测试集 `macro F1` 提升约 `0.0127`
-
 测试集级联统计：
 
 - `expert_invocations = 17`
@@ -176,42 +168,66 @@ cascade_v3.4_pretrained_focal_ls_cosine_cbam
 - `expert_corrected_predictions = 5`
 - `expert_hurt_predictions = 1`
 
-这说明当前级联机制并不是“大面积重写主模型输出”，而是在少量高混淆样本上做针对性修正。
+## 12. 新一轮 B1 正式实验范围
 
-## 11. 消融实验结论
+当前计划重新执行的 B1 正式实验共 `50` 组，排除以下两个历史实验：
 
-从 `12` 组单模型结果看：
+1. `v1.0_scratch_ce_cpu`
+2. `v1.1_scratch_ce_cuda`
 
-1. `pretrained` 是收益最大的单步改动。
-2. `label smoothing` 是 CE 系列里最有效的低成本正则项。
-3. `balanced class-weighted CE` 在当前数据上整体不如不加权。
-4. `MixUp` 和 `CutMix` 在当前小样本医学图像设定下会破坏细粒度病灶线索。
-5. `CBAM` 明显优于额外 `SE`，是当前最佳结构增量。
+保留并重跑的其余实验包括：
 
-从 `40` 组级联结果看：
+1. `10` 组迁移学习单模型实验
+2. `10` 组三肿瘤专家级联实验
+3. `30` 组两两肿瘤专家级联实验
 
-1. 三肿瘤专家级联整体更稳，`10` 组里有 `8` 组优于对应单模型。
-2. 两两肿瘤专家级联中，`large.cell.carcinoma` 与 `squamous.cell.carcinoma` 这一支平均效果最好。
-3. 不是所有级联都优于主模型，说明触发规则和专家模型质量仍然是性能上限的重要决定因素。
+新的 B1 正式实验命名规则为：在原正式实验名后追加 `_b1`
 
-## 12. 相关论文借鉴
+例如：
+
+- `v2.0_pretrained_ce_b1`
+- `v3.4_pretrained_focal_ls_cosine_cbam_b1`
+- `cascade_v3.4_pretrained_focal_ls_cosine_cbam_b1`
+- `cascade_pair_lc_sq_v3.4_pretrained_focal_ls_cosine_cbam_b1`
+
+## 13. B1 一键运行脚本
+
+已新增：
+
+- `scripts/run_all_efficientnet_b1_50.ps1`
+- `scripts/run_all_efficientnet_b1_50.cmd`
+- `scripts/run_all_cascade_tumor3.ps1`
+- `scripts/run_all_cascade_tumor_pairs.ps1`
+
+一条命令启动：
+
+```powershell
+.\scripts\run_all_efficientnet_b1_50.cmd
+```
+
+该脚本会自动完成：
+
+1. `10` 组 B1 单模型训练
+2. `10` 个三肿瘤专家模型训练与 `10` 次三肿瘤级联
+3. `30` 个两两专家模型训练与 `30` 次两两级联
+4. 自动跳过已完成目录，支持续跑
+
+补充说明：
+
+- 新的 B1 主线会把预训练权重缓存到项目内 `2026APMCM/.cache/weights`
+- 旧的两个级联脚本已经固定为 `EfficientNet-B0` 历史复现脚本，不会跟随代码默认 backbone 一起切到 B1
+
+## 14. 相关论文借鉴
 
 项目参考的论文位于上级目录 `..\相关论文(1)`。当前已经落地并被实验部分验证的思路主要包括：
 
-1. 迁移学习：`pretrained` 已验证为当前最关键改进。
-2. `EfficientNet` 路线：当前所有正式实验统一使用 `EfficientNet-B0` 作为 backbone。
-3. 轻量注意力机制：`CBAM` 已证明优于额外 `SE`。
-4. 难例聚焦与边界平滑：`Focal Loss`、`label smoothing` 已被纳入正式实验并保留为当前主线。
+1. 迁移学习：`pretrained` 已验证为当前最关键改进
+2. `EfficientNet` 路线：当前主线从 B0 迁移到 B1，属于同一结构族的渐进放大
+3. 轻量注意力机制：`CBAM` 已证明优于额外 `SE`
+4. 难例聚焦与边界平滑：`Focal Loss`、`label smoothing` 已被纳入正式实验主线
 
-## 13. 后续优化方向
+## 15. 后续优化方向
 
-1. 在当前最佳 `v3.4` 主模型和三肿瘤专家模型上微调触发阈值。
-2. 对最佳单模型和最佳级联模型补充误差分析与高混淆样本检查。
-3. 若后续还需继续提高结果，优先优化专家触发逻辑和误差修正机制，而不是立刻大规模更换 backbone。
-
-## 14. 相关文件
-
-- `doc/ablation_results.md`：`12` 组单模型消融总结
-- `doc/progress_report_2026-07-19.md`：阶段进展汇总
-- `doc/all_52_experiments_comparison_20260719.docx`：`52` 组总对比 Word 文档
-- `doc/outputs_实验版本说明与消融对比_20260719.docx`：各版本与消融分析 Word 文档
+1. 先完成 B1 的 `50` 组正式实验
+2. 对比 B1 与历史 B0 在单模型和级联两条主线上的收益差异
+3. 若 B1 表现更好，再继续微调触发阈值并补充误差分析
