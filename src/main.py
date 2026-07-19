@@ -7,7 +7,7 @@ import time
 from contextlib import nullcontext
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 import timm
@@ -29,9 +29,35 @@ CLASS_NAMES = [
     "squamous.cell.carcinoma",
 ]
 CLASS_TO_INDEX = {name: idx for idx, name in enumerate(CLASS_NAMES)}
+DEFAULT_EXPERT_CLASSES = [
+    "adenocarcinoma",
+    "squamous.cell.carcinoma",
+]
 
 IMAGENET_MEAN = (0.485, 0.456, 0.406)
 IMAGENET_STD = (0.229, 0.224, 0.225)
+
+
+def parse_class_names_arg(value: str) -> List[str]:
+    class_names = [item.strip() for item in value.split(",") if item.strip()]
+    if not class_names:
+        raise ValueError("At least one class name must be provided.")
+
+    unknown = [name for name in class_names if name not in CLASS_TO_INDEX]
+    if unknown:
+        raise ValueError(f"Unknown class names: {unknown}. Valid options: {CLASS_NAMES}")
+
+    if len(set(class_names)) != len(class_names):
+        raise ValueError(f"Duplicate class names are not allowed: {class_names}")
+    return class_names
+
+
+def sanitize_name(text: str) -> str:
+    return text.replace(".", "_").replace(",", "_").replace("/", "_").replace("\\", "_")
+
+
+def build_output_slug(class_names: Sequence[str]) -> str:
+    return "_".join(sanitize_name(name) for name in class_names)
 
 
 def build_target_distribution(
@@ -160,6 +186,9 @@ class Sample:
 
 
 def collect_samples(split_dir: Path, split_name: str) -> List[Sample]:
+    if not split_dir.exists():
+        raise FileNotFoundError(f"Split directory does not exist: {split_dir}")
+
     samples: List[Sample] = []
     class_dirs = sorted(path for path in split_dir.iterdir() if path.is_dir())
     for class_dir in class_dirs:
@@ -180,10 +209,29 @@ def collect_samples(split_dir: Path, split_name: str) -> List[Sample]:
     return samples
 
 
+def collect_samples_by_split(data_dir: Path) -> Dict[str, List[Sample]]:
+    return {
+        "train": collect_samples(data_dir / "train", "train"),
+        "valid": collect_samples(data_dir / "valid", "valid"),
+        "test": collect_samples(data_dir / "test", "test"),
+    }
+
+
+def filter_samples_by_classes(samples: Sequence[Sample], class_names: Sequence[str]) -> List[Sample]:
+    class_name_set = set(class_names)
+    return [sample for sample in samples if sample.class_name in class_name_set]
+
+
 class LungCancerDataset(Dataset):
-    def __init__(self, samples: List[Sample], transform: transforms.Compose):
+    def __init__(self, samples: List[Sample], transform: transforms.Compose, class_names: Sequence[str]):
         self.samples = samples
         self.transform = transform
+        self.class_names = list(class_names)
+        self.class_to_index = {name: idx for idx, name in enumerate(self.class_names)}
+
+        unknown = sorted({sample.class_name for sample in samples if sample.class_name not in self.class_to_index})
+        if unknown:
+            raise ValueError(f"Dataset received samples outside class space {self.class_names}: {unknown}")
 
     def __len__(self) -> int:
         return len(self.samples)
@@ -192,7 +240,7 @@ class LungCancerDataset(Dataset):
         sample = self.samples[index]
         image = Image.open(sample.image_path).convert("RGB")
         tensor = self.transform(image)
-        return tensor, sample.label, str(sample.image_path)
+        return tensor, self.class_to_index[sample.class_name], str(sample.image_path)
 
 
 class FeatureSqueezeExcite(nn.Module):
@@ -349,19 +397,19 @@ def create_dataloaders(
     batch_size: int,
     num_workers: int,
     pin_memory: bool,
+    class_names: Sequence[str],
 ) -> Tuple[DataLoader, DataLoader, DataLoader, Dict[str, List[Sample]]]:
     train_transform, eval_transform = build_transforms(image_size)
-
+    all_samples_by_split = collect_samples_by_split(data_dir)
     samples_by_split = {
-        "train": collect_samples(data_dir / "train", "train"),
-        "valid": collect_samples(data_dir / "valid", "valid"),
-        "test": collect_samples(data_dir / "test", "test"),
+        split_name: filter_samples_by_classes(split_samples, class_names)
+        for split_name, split_samples in all_samples_by_split.items()
     }
 
     datasets = {
-        "train": LungCancerDataset(samples_by_split["train"], train_transform),
-        "valid": LungCancerDataset(samples_by_split["valid"], eval_transform),
-        "test": LungCancerDataset(samples_by_split["test"], eval_transform),
+        "train": LungCancerDataset(samples_by_split["train"], train_transform, class_names),
+        "valid": LungCancerDataset(samples_by_split["valid"], eval_transform, class_names),
+        "test": LungCancerDataset(samples_by_split["test"], eval_transform, class_names),
     }
 
     loader_kwargs = {
@@ -401,54 +449,60 @@ def create_model(
     return AttentionAugmentedModel(backbone, feature_attention=feature_attention)
 
 
-def compute_train_class_weights(train_samples: List[Sample]) -> Dict[str, float]:
-    counts = {class_name: 0 for class_name in CLASS_NAMES}
+def compute_train_class_weights(train_samples: Sequence[Sample], class_names: Sequence[str]) -> Dict[str, float]:
+    counts = {class_name: 0 for class_name in class_names}
     for sample in train_samples:
-        counts[sample.class_name] += 1
+        if sample.class_name in counts:
+            counts[sample.class_name] += 1
 
     total_samples = sum(counts.values())
     if total_samples == 0:
         raise ValueError("Training split is empty; cannot compute class weights.")
 
+    missing = [class_name for class_name, count in counts.items() if count == 0]
+    if missing:
+        raise ValueError(f"Cannot compute class weights because these classes have zero training samples: {missing}")
+
     return {
-        class_name: total_samples / (len(CLASS_NAMES) * counts[class_name])
-        for class_name in CLASS_NAMES
+        class_name: total_samples / (len(class_names) * counts[class_name])
+        for class_name in class_names
     }
 
 
-def parse_manual_class_weights(weights_arg: str) -> Dict[str, float]:
+def parse_manual_class_weights(weights_arg: str, class_names: Sequence[str]) -> Dict[str, float]:
     values = [item.strip() for item in weights_arg.split(",") if item.strip()]
-    if len(values) != len(CLASS_NAMES):
+    if len(values) != len(class_names):
         raise ValueError(
-            f"--class-weights must provide exactly {len(CLASS_NAMES)} comma-separated values "
-            f"for {CLASS_NAMES}."
+            f"--class-weights must provide exactly {len(class_names)} comma-separated values "
+            f"for {list(class_names)}."
         )
 
     return {
         class_name: float(value)
-        for class_name, value in zip(CLASS_NAMES, values)
+        for class_name, value in zip(class_names, values)
     }
 
 
 def resolve_class_weights(
     args: argparse.Namespace,
-    train_samples: List[Sample],
+    train_samples: Sequence[Sample],
     device: torch.device,
+    class_names: Sequence[str],
 ) -> Tuple[Optional[torch.Tensor], Optional[Dict[str, float]]]:
     if args.class_weighting == "none":
         return None, None
 
     if args.class_weighting == "balanced":
-        class_weights = compute_train_class_weights(train_samples)
+        class_weights = compute_train_class_weights(train_samples, class_names)
     elif args.class_weighting == "manual":
         if not args.class_weights:
             raise ValueError("--class-weights is required when --class-weighting manual is used.")
-        class_weights = parse_manual_class_weights(args.class_weights)
+        class_weights = parse_manual_class_weights(args.class_weights, class_names)
     else:
         raise ValueError(f"Unsupported class weighting: {args.class_weighting}")
 
     weight_tensor = torch.tensor(
-        [class_weights[class_name] for class_name in CLASS_NAMES],
+        [class_weights[class_name] for class_name in class_names],
         dtype=torch.float32,
         device=device,
     )
@@ -512,6 +566,7 @@ def rand_bbox(width: int, height: int, lam: float) -> Tuple[int, int, int, int]:
 def apply_mix_augmentation(
     images: torch.Tensor,
     labels: torch.Tensor,
+    num_classes: int,
     args: argparse.Namespace,
 ) -> Tuple[torch.Tensor, torch.Tensor]:
     if not has_mix_augmentation(args) or labels.size(0) < 2 or random.random() > args.mix_prob:
@@ -537,13 +592,13 @@ def apply_mix_augmentation(
 
     labels_a = build_target_distribution(
         labels,
-        num_classes=len(CLASS_NAMES),
+        num_classes=num_classes,
         label_smoothing=args.label_smoothing,
         dtype=images.dtype,
     )
     labels_b = build_target_distribution(
         labels[permutation],
-        num_classes=len(CLASS_NAMES),
+        num_classes=num_classes,
         label_smoothing=args.label_smoothing,
         dtype=images.dtype,
     )
@@ -560,6 +615,7 @@ def train_one_epoch(
     scaler: Optional[object],
     amp_enabled: bool,
     args: argparse.Namespace,
+    num_classes: int,
 ) -> Dict[str, float]:
     model.train()
     total_loss = 0.0
@@ -573,7 +629,7 @@ def train_one_epoch(
         metric_labels = labels
 
         optimizer.zero_grad(set_to_none=True)
-        images, targets = apply_mix_augmentation(images, labels, args)
+        images, targets = apply_mix_augmentation(images, labels, num_classes, args)
         with autocast_context(device, amp_enabled):
             logits = model(images)
             loss = criterion(logits, targets)
@@ -597,6 +653,28 @@ def train_one_epoch(
     }
 
 
+def build_prediction_report(
+    labels: Sequence[int],
+    preds: Sequence[int],
+    class_names: Sequence[str],
+) -> Dict[str, Any]:
+    report = classification_report(
+        labels,
+        preds,
+        labels=list(range(len(class_names))),
+        target_names=list(class_names),
+        digits=4,
+        zero_division=0,
+        output_dict=True,
+    )
+    matrix = confusion_matrix(labels, preds, labels=list(range(len(class_names))))
+    return {
+        "accuracy": accuracy_score(labels, preds),
+        "report": report,
+        "confusion_matrix": matrix,
+    }
+
+
 @torch.no_grad()
 def evaluate(
     model: nn.Module,
@@ -604,7 +682,8 @@ def evaluate(
     criterion: nn.Module,
     device: torch.device,
     amp_enabled: bool,
-) -> Dict[str, object]:
+    class_names: Sequence[str],
+) -> Dict[str, Any]:
     model.eval()
     total_loss = 0.0
     all_labels: List[int] = []
@@ -629,30 +708,21 @@ def evaluate(
         all_probs.extend(probs.cpu().tolist())
         all_paths.extend(paths)
 
-    report = classification_report(
-        all_labels,
-        all_preds,
-        labels=list(range(len(CLASS_NAMES))),
-        target_names=CLASS_NAMES,
-        digits=4,
-        zero_division=0,
-        output_dict=True,
+    metrics = build_prediction_report(all_labels, all_preds, class_names)
+    metrics.update(
+        {
+            "loss": total_loss / max(len(loader.dataset), 1),
+            "labels": all_labels,
+            "preds": all_preds,
+            "paths": all_paths,
+            "probs": all_probs,
+        }
     )
-
-    return {
-        "loss": total_loss / max(len(loader.dataset), 1),
-        "accuracy": accuracy_score(all_labels, all_preds),
-        "labels": all_labels,
-        "preds": all_preds,
-        "paths": all_paths,
-        "probs": all_probs,
-        "report": report,
-        "confusion_matrix": confusion_matrix(all_labels, all_preds, labels=list(range(len(CLASS_NAMES)))),
-    }
+    return metrics
 
 
-def save_predictions(output_path: Path, eval_result: Dict[str, object]) -> None:
-    header = ["image_path", "true_label", "pred_label"] + [f"prob_{name}" for name in CLASS_NAMES]
+def save_predictions(output_path: Path, eval_result: Dict[str, Any], class_names: Sequence[str]) -> None:
+    header = ["image_path", "true_label", "pred_label"] + [f"prob_{name}" for name in class_names]
     with output_path.open("w", newline="", encoding="utf-8-sig") as file:
         writer = csv.writer(file)
         writer.writerow(header)
@@ -665,32 +735,47 @@ def save_predictions(output_path: Path, eval_result: Dict[str, object]) -> None:
             writer.writerow(
                 [
                     path,
-                    CLASS_NAMES[true_label],
-                    CLASS_NAMES[pred_label],
+                    class_names[true_label],
+                    class_names[pred_label],
                     *[f"{prob:.6f}" for prob in probs],
                 ]
             )
 
 
-def save_confusion_matrix(output_path: Path, matrix: np.ndarray) -> None:
+def save_confusion_matrix(output_path: Path, matrix: np.ndarray, class_names: Sequence[str]) -> None:
     with output_path.open("w", newline="", encoding="utf-8-sig") as file:
         writer = csv.writer(file)
-        writer.writerow(["true/pred", *CLASS_NAMES])
-        for class_name, row in zip(CLASS_NAMES, matrix.tolist()):
+        writer.writerow(["true/pred", *class_names])
+        for class_name, row in zip(class_names, matrix.tolist()):
             writer.writerow([class_name, *row])
 
 
-def save_json(output_path: Path, payload: Dict[str, object]) -> None:
+def save_json(output_path: Path, payload: Dict[str, Any]) -> None:
     with output_path.open("w", encoding="utf-8") as file:
         json.dump(payload, file, ensure_ascii=False, indent=2)
 
 
-def build_run_summary(
+def build_class_distribution(
+    samples_by_split: Dict[str, Sequence[Sample]],
+    class_names: Sequence[str],
+) -> Dict[str, Dict[str, int]]:
+    class_distribution: Dict[str, Dict[str, int]] = {}
+    class_name_set = set(class_names)
+    for split_name, samples in samples_by_split.items():
+        distribution = {class_name: 0 for class_name in class_names}
+        for sample in samples:
+            if sample.class_name in class_name_set:
+                distribution[sample.class_name] += 1
+        class_distribution[split_name] = distribution
+    return class_distribution
+
+
+def build_training_run_summary(
     args: argparse.Namespace,
     train_history: List[Dict[str, float]],
     best_epoch: int,
-    best_val: Dict[str, object],
-    test_result: Dict[str, object],
+    best_val: Dict[str, Any],
+    test_result: Dict[str, Any],
     samples_by_split: Dict[str, List[Sample]],
     elapsed_seconds: float,
     device: torch.device,
@@ -698,16 +783,12 @@ def build_run_summary(
     pin_memory: bool,
     gpu_name: Optional[str],
     class_weights: Optional[Dict[str, float]],
-) -> Dict[str, object]:
-    class_distribution: Dict[str, Dict[str, int]] = {}
-    for split_name, samples in samples_by_split.items():
-        distribution = {class_name: 0 for class_name in CLASS_NAMES}
-        for sample in samples:
-            distribution[sample.class_name] += 1
-        class_distribution[split_name] = distribution
-
+    class_names: Sequence[str],
+) -> Dict[str, Any]:
     return {
+        "mode": args.run_mode,
         "config": {
+            "run_mode": args.run_mode,
             "model_name": args.model_name,
             "pretrained": args.pretrained,
             "loss": args.loss,
@@ -734,6 +815,8 @@ def build_run_summary(
             "amp_enabled": amp_enabled,
             "deterministic": args.deterministic,
             "pin_memory": pin_memory,
+            "active_class_names": list(class_names),
+            "expert_classes_arg": args.expert_classes,
         },
         "hardware": {
             "cuda_available": torch.cuda.is_available(),
@@ -741,9 +824,9 @@ def build_run_summary(
         },
         "dataset": {
             "data_dir": str(args.data_dir),
-            "class_names": CLASS_NAMES,
+            "class_names": list(class_names),
             "split_sizes": {split_name: len(samples) for split_name, samples in samples_by_split.items()},
-            "class_distribution": class_distribution,
+            "class_distribution": build_class_distribution(samples_by_split, class_names),
         },
         "training_history": train_history,
         "best_epoch": best_epoch,
@@ -761,6 +844,30 @@ def build_run_summary(
     }
 
 
+def save_checkpoint(
+    output_path: Path,
+    model: nn.Module,
+    epoch: int,
+    valid_accuracy: float,
+    args: argparse.Namespace,
+    class_names: Sequence[str],
+) -> None:
+    torch.save(
+        {
+            "model_state_dict": model.state_dict(),
+            "epoch": epoch,
+            "valid_accuracy": valid_accuracy,
+            "class_names": list(class_names),
+            "model_name": args.model_name,
+            "image_size": args.image_size,
+            "feature_attention": args.feature_attention,
+            "run_mode": args.run_mode,
+            "pretrained": args.pretrained,
+        },
+        output_path,
+    )
+
+
 def resolve_default_data_dir(repo_root: Path) -> Path:
     candidates = [
         repo_root.parent / "附件" / "Data",
@@ -772,64 +879,320 @@ def resolve_default_data_dir(repo_root: Path) -> Path:
     return candidates[0]
 
 
-def parse_args() -> argparse.Namespace:
-    repo_root = Path(__file__).resolve().parents[1]
-    default_data_dir = resolve_default_data_dir(repo_root)
+def resolve_active_class_names(args: argparse.Namespace) -> List[str]:
+    if args.run_mode == "expert":
+        return parse_class_names_arg(args.expert_classes)
+    return list(CLASS_NAMES)
 
-    parser = argparse.ArgumentParser(
-        description="Problem 2 baseline: timm EfficientNet-B0 for four-class lung cancer image classification."
+
+def resolve_training_output_dir(
+    args: argparse.Namespace,
+    repo_root: Path,
+    device: torch.device,
+    class_names: Sequence[str],
+) -> Path:
+    if args.output_dir is not None:
+        return args.output_dir
+
+    if args.run_mode == "expert":
+        return repo_root / "outputs" / f"expert_{build_output_slug(class_names)}"
+
+    if device.type == "cuda":
+        default_output_name = "v2.0_pretrained_ce" if args.pretrained else "v1.1_scratch_ce_cuda"
+    else:
+        default_output_name = "v1.0_scratch_ce_cpu"
+    return repo_root / "outputs" / default_output_name
+
+
+def load_model_from_checkpoint(checkpoint_path: Path, device: torch.device) -> Tuple[nn.Module, Dict[str, Any]]:
+    checkpoint = torch.load(checkpoint_path, map_location=device)
+    class_names = checkpoint.get("class_names")
+    if not class_names:
+        raise ValueError(f"Checkpoint is missing class_names metadata: {checkpoint_path}")
+
+    model_name = checkpoint.get("model_name", "efficientnet_b0")
+    feature_attention = checkpoint.get("feature_attention", "none")
+    model = create_model(
+        model_name=model_name,
+        num_classes=len(class_names),
+        pretrained=False,
+        feature_attention=feature_attention,
+    ).to(device)
+    model.load_state_dict(checkpoint["model_state_dict"])
+    model.eval()
+    return model, checkpoint
+
+
+def predict_probabilities(
+    model: nn.Module,
+    image: Image.Image,
+    transform: transforms.Compose,
+    device: torch.device,
+    amp_enabled: bool,
+) -> List[float]:
+    tensor = transform(image).unsqueeze(0).to(device, non_blocking=device.type == "cuda")
+    with autocast_context(device, amp_enabled):
+        logits = model(tensor)
+        probs = torch.softmax(logits, dim=1)
+    return probs.squeeze(0).detach().cpu().tolist()
+
+
+def should_invoke_expert(
+    main_probs: Sequence[float],
+    main_class_names: Sequence[str],
+    expert_class_names: Sequence[str],
+    top_k: int,
+    margin_threshold: float,
+) -> Tuple[bool, str, float]:
+    if top_k < 2:
+        raise ValueError("--expert-trigger-topk must be at least 2.")
+    if top_k > len(main_class_names):
+        raise ValueError("--expert-trigger-topk cannot exceed the number of main classes.")
+
+    ranked_indices = sorted(range(len(main_probs)), key=lambda idx: main_probs[idx], reverse=True)
+    top_indices = ranked_indices[:top_k]
+    top_names = [main_class_names[idx] for idx in top_indices]
+    if not set(top_names).issubset(set(expert_class_names)):
+        return False, top_names[1], float(main_probs[top_indices[0]] - main_probs[top_indices[1]])
+
+    top_margin = float(main_probs[top_indices[0]] - main_probs[top_indices[1]])
+    if margin_threshold >= 0.0 and top_margin > margin_threshold:
+        return False, top_names[1], top_margin
+    return True, top_names[1], top_margin
+
+
+def merge_main_and_expert_probabilities(
+    main_probs: Sequence[float],
+    main_class_names: Sequence[str],
+    expert_probs: Sequence[float],
+    expert_class_names: Sequence[str],
+) -> List[float]:
+    final_probs = list(main_probs)
+    expert_indices = [main_class_names.index(class_name) for class_name in expert_class_names]
+    expert_mass = sum(main_probs[index] for index in expert_indices)
+    if expert_mass <= 0.0:
+        expert_mass = 1.0
+
+    for local_index, class_name in enumerate(expert_class_names):
+        global_index = main_class_names.index(class_name)
+        final_probs[global_index] = expert_probs[local_index] * expert_mass
+
+    total_prob = sum(final_probs)
+    if total_prob > 0.0:
+        final_probs = [prob / total_prob for prob in final_probs]
+    return final_probs
+
+
+def evaluate_cascade(
+    main_model: nn.Module,
+    expert_model: nn.Module,
+    samples: Sequence[Sample],
+    main_transform: transforms.Compose,
+    expert_transform: transforms.Compose,
+    main_class_names: Sequence[str],
+    expert_class_names: Sequence[str],
+    device: torch.device,
+    amp_enabled: bool,
+    args: argparse.Namespace,
+) -> Dict[str, Any]:
+    labels: List[int] = []
+    preds: List[int] = []
+    paths: List[str] = []
+    probs: List[List[float]] = []
+    records: List[Dict[str, Any]] = []
+    expert_invocations = 0
+    expert_changed_predictions = 0
+    expert_corrected_predictions = 0
+    expert_hurt_predictions = 0
+
+    for sample in samples:
+        image = Image.open(sample.image_path).convert("RGB")
+        main_probs = predict_probabilities(main_model, image, main_transform, device, amp_enabled)
+        main_pred = int(np.argmax(main_probs))
+        invoke_expert, main_runner_up_name, margin = should_invoke_expert(
+            main_probs=main_probs,
+            main_class_names=main_class_names,
+            expert_class_names=expert_class_names,
+            top_k=args.expert_trigger_topk,
+            margin_threshold=args.expert_margin_threshold,
+        )
+
+        expert_pred_name = ""
+        final_probs = list(main_probs)
+        if invoke_expert:
+            expert_invocations += 1
+            expert_probs = predict_probabilities(expert_model, image, expert_transform, device, amp_enabled)
+            final_probs = merge_main_and_expert_probabilities(
+                main_probs=main_probs,
+                main_class_names=main_class_names,
+                expert_probs=expert_probs,
+                expert_class_names=expert_class_names,
+            )
+            expert_pred_name = expert_class_names[int(np.argmax(expert_probs))]
+
+        final_pred = int(np.argmax(final_probs))
+        true_label = sample.label
+        if invoke_expert and final_pred != main_pred:
+            expert_changed_predictions += 1
+            if main_pred != true_label and final_pred == true_label:
+                expert_corrected_predictions += 1
+            elif main_pred == true_label and final_pred != true_label:
+                expert_hurt_predictions += 1
+
+        labels.append(true_label)
+        preds.append(final_pred)
+        paths.append(str(sample.image_path))
+        probs.append(final_probs)
+        records.append(
+            {
+                "image_path": str(sample.image_path),
+                "true_label": main_class_names[true_label],
+                "main_pred_label": main_class_names[main_pred],
+                "final_pred_label": main_class_names[final_pred],
+                "expert_invoked": invoke_expert,
+                "expert_pred_label": expert_pred_name,
+                "main_runner_up_label": main_runner_up_name,
+                "main_margin": margin,
+                "final_probs": final_probs,
+            }
+        )
+
+    metrics = build_prediction_report(labels, preds, main_class_names)
+    metrics.update(
+        {
+            "loss": None,
+            "labels": labels,
+            "preds": preds,
+            "paths": paths,
+            "probs": probs,
+            "records": records,
+            "cascade_stats": {
+                "expert_invocations": expert_invocations,
+                "expert_changed_predictions": expert_changed_predictions,
+                "expert_corrected_predictions": expert_corrected_predictions,
+                "expert_hurt_predictions": expert_hurt_predictions,
+            },
+        }
     )
-    parser.add_argument("--data-dir", type=Path, default=default_data_dir)
-    parser.add_argument("--output-dir", type=Path, default=None)
-    parser.add_argument("--model-name", type=str, default="efficientnet_b0")
-    parser.add_argument("--pretrained", action="store_true", help="Use timm pretrained weights if available.")
-    parser.add_argument("--loss", choices=["cross_entropy", "focal"], default="cross_entropy", help="Training loss; label smoothing applies to both options.")
-    parser.add_argument("--epochs", type=int, default=25)
-    parser.add_argument("--batch-size", type=int, default=16)
-    parser.add_argument("--image-size", type=int, default=224)
-    parser.add_argument("--lr", type=float, default=3e-4)
-    parser.add_argument("--weight-decay", type=float, default=1e-4)
-    parser.add_argument("--label-smoothing", type=float, default=0.0, help="Label smoothing factor used by cross-entropy and focal loss.")
-    parser.add_argument("--focal-gamma", type=float, default=2.0, help="Focusing parameter when --loss focal is selected.")
-    parser.add_argument("--class-weighting", choices=["none", "balanced", "manual"], default="none")
-    parser.add_argument("--class-weights", type=str, default=None, help="Comma-separated weights in CLASS_NAMES order when class-weighting=manual.")
-    parser.add_argument("--scheduler", choices=["none", "cosine", "plateau"], default="none")
-    parser.add_argument("--min-lr", type=float, default=1e-6)
-    parser.add_argument("--plateau-patience", type=int, default=3)
-    parser.add_argument("--plateau-factor", type=float, default=0.5)
-    parser.add_argument("--mixup-alpha", type=float, default=0.0, help="Enable MixUp when > 0. Typical values: 0.2 to 0.4.")
-    parser.add_argument("--cutmix-alpha", type=float, default=0.0, help="Enable CutMix when > 0. Typical values: 0.5 to 1.0.")
-    parser.add_argument("--mix-prob", type=float, default=1.0, help="Probability of applying MixUp/CutMix to a training batch.")
-    parser.add_argument("--mix-switch-prob", type=float, default=0.5, help="When MixUp and CutMix are both enabled, probability of selecting CutMix.")
-    parser.add_argument("--feature-attention", choices=["none", "se", "cbam"], default="none", help="Extra attention attached on the final feature map. EfficientNet-B0 already includes internal SE blocks.")
-    parser.add_argument("--num-workers", type=int, default=None, help="DataLoader workers. Defaults to 4 on CUDA and 0 on CPU.")
-    parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
-    parser.add_argument("--deterministic", action="store_true", help="Use deterministic backend settings. This is slower on GPU.")
-    parser.add_argument("--amp", dest="amp", action="store_true", help="Enable mixed precision on CUDA.")
-    parser.add_argument("--no-amp", dest="amp", action="store_false", help="Disable mixed precision on CUDA.")
-    parser.set_defaults(amp=None)
-    return parser.parse_args()
+    return metrics
 
 
-def main() -> None:
-    args = parse_args()
-    repo_root = Path(__file__).resolve().parents[1]
-    args.data_dir = args.data_dir.resolve()
-    device = resolve_device(args.device)
-    if args.output_dir is None:
-        if device.type == "cuda":
-            default_output_name = "v2.0_pretrained_ce" if args.pretrained else "v1.1_scratch_ce_cuda"
-        else:
-            default_output_name = "v1.0_scratch_ce_cpu"
-        args.output_dir = repo_root / "outputs" / default_output_name
-    args.output_dir.mkdir(parents=True, exist_ok=True)
+def save_cascade_predictions(output_path: Path, cascade_result: Dict[str, Any], class_names: Sequence[str]) -> None:
+    header = [
+        "image_path",
+        "true_label",
+        "main_pred_label",
+        "final_pred_label",
+        "expert_invoked",
+        "expert_pred_label",
+        "main_runner_up_label",
+        "main_margin",
+    ] + [f"final_prob_{name}" for name in class_names]
+
+    with output_path.open("w", newline="", encoding="utf-8-sig") as file:
+        writer = csv.writer(file)
+        writer.writerow(header)
+        for record in cascade_result["records"]:
+            writer.writerow(
+                [
+                    record["image_path"],
+                    record["true_label"],
+                    record["main_pred_label"],
+                    record["final_pred_label"],
+                    record["expert_invoked"],
+                    record["expert_pred_label"],
+                    record["main_runner_up_label"],
+                    f"{record['main_margin']:.6f}",
+                    *[f"{prob:.6f}" for prob in record["final_probs"]],
+                ]
+            )
+
+
+def build_cascade_run_summary(
+    args: argparse.Namespace,
+    valid_result: Dict[str, Any],
+    test_result: Dict[str, Any],
+    samples_by_split: Dict[str, List[Sample]],
+    elapsed_seconds: float,
+    device: torch.device,
+    amp_enabled: bool,
+    gpu_name: Optional[str],
+    main_checkpoint_path: Path,
+    expert_checkpoint_path: Path,
+    main_checkpoint: Dict[str, Any],
+    expert_checkpoint: Dict[str, Any],
+    class_names: Sequence[str],
+) -> Dict[str, Any]:
+    return {
+        "mode": "cascade",
+        "config": {
+            "run_mode": "cascade",
+            "data_dir": str(args.data_dir),
+            "device_request": args.device,
+            "device": str(device),
+            "amp_enabled": amp_enabled,
+            "expert_trigger_topk": args.expert_trigger_topk,
+            "expert_margin_threshold": args.expert_margin_threshold,
+            "main_checkpoint": str(main_checkpoint_path),
+            "expert_checkpoint": str(expert_checkpoint_path),
+        },
+        "hardware": {
+            "cuda_available": torch.cuda.is_available(),
+            "gpu_name": gpu_name,
+        },
+        "dataset": {
+            "class_names": list(class_names),
+            "split_sizes": {split_name: len(samples) for split_name, samples in samples_by_split.items()},
+            "class_distribution": build_class_distribution(samples_by_split, class_names),
+        },
+        "main_model": {
+            "model_name": main_checkpoint.get("model_name"),
+            "image_size": main_checkpoint.get("image_size"),
+            "feature_attention": main_checkpoint.get("feature_attention"),
+            "class_names": main_checkpoint.get("class_names"),
+            "best_epoch": main_checkpoint.get("epoch"),
+            "best_valid_accuracy": main_checkpoint.get("valid_accuracy"),
+        },
+        "expert_model": {
+            "model_name": expert_checkpoint.get("model_name"),
+            "image_size": expert_checkpoint.get("image_size"),
+            "feature_attention": expert_checkpoint.get("feature_attention"),
+            "class_names": expert_checkpoint.get("class_names"),
+            "best_epoch": expert_checkpoint.get("epoch"),
+            "best_valid_accuracy": expert_checkpoint.get("valid_accuracy"),
+        },
+        "validation": {
+            "accuracy": valid_result["accuracy"],
+            "report": valid_result["report"],
+            "cascade_stats": valid_result["cascade_stats"],
+        },
+        "test": {
+            "accuracy": test_result["accuracy"],
+            "report": test_result["report"],
+            "cascade_stats": test_result["cascade_stats"],
+        },
+        "elapsed_seconds": elapsed_seconds,
+    }
+
+
+def validate_training_args(args: argparse.Namespace) -> None:
     if args.mixup_alpha < 0.0 or args.cutmix_alpha < 0.0:
         raise ValueError("--mixup-alpha and --cutmix-alpha must be >= 0.")
     if not 0.0 <= args.mix_prob <= 1.0:
         raise ValueError("--mix-prob must be in [0, 1].")
     if not 0.0 <= args.mix_switch_prob <= 1.0:
         raise ValueError("--mix-switch-prob must be in [0, 1].")
+
+
+def train_and_evaluate(args: argparse.Namespace) -> None:
+    repo_root = Path(__file__).resolve().parents[1]
+    args.data_dir = args.data_dir.resolve()
+    device = resolve_device(args.device)
+    class_names = resolve_active_class_names(args)
+    args.output_dir = resolve_training_output_dir(args, repo_root, device, class_names)
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    validate_training_args(args)
+
     seed_everything(args.seed, deterministic=args.deterministic)
     args.num_workers = resolve_num_workers(args.num_workers, device)
     amp_enabled = resolve_amp_enabled(args.amp, device)
@@ -844,6 +1207,8 @@ def main() -> None:
         + (f" ({gpu_name})" if gpu_name else "")
         + f", amp={'on' if amp_enabled else 'off'}, num_workers={args.num_workers}"
     )
+    if args.run_mode == "expert":
+        print(f"Training expert branch for classes: {class_names}")
 
     train_loader, valid_loader, test_loader, samples_by_split = create_dataloaders(
         data_dir=args.data_dir,
@@ -851,12 +1216,13 @@ def main() -> None:
         batch_size=args.batch_size,
         num_workers=args.num_workers,
         pin_memory=pin_memory,
+        class_names=class_names,
     )
 
-    weight_tensor, class_weights = resolve_class_weights(args, samples_by_split["train"], device)
+    weight_tensor, class_weights = resolve_class_weights(args, samples_by_split["train"], device, class_names)
     model = create_model(
         args.model_name,
-        num_classes=len(CLASS_NAMES),
+        num_classes=len(class_names),
         pretrained=args.pretrained,
         feature_attention=args.feature_attention,
     ).to(device)
@@ -866,7 +1232,7 @@ def main() -> None:
     scaler = torch.amp.GradScaler("cuda", enabled=amp_enabled) if device.type == "cuda" else None
 
     if class_weights is not None:
-        formatted_weights = ", ".join(f"{name}={class_weights[name]:.4f}" for name in CLASS_NAMES)
+        formatted_weights = ", ".join(f"{name}={class_weights[name]:.4f}" for name in class_names)
         print(f"Using class weights: {formatted_weights}")
     if args.loss == "focal":
         print(f"Using focal loss: gamma={args.focal_gamma}")
@@ -898,8 +1264,9 @@ def main() -> None:
             scaler=scaler,
             amp_enabled=amp_enabled,
             args=args,
+            num_classes=len(class_names),
         )
-        valid_metrics = evaluate(model, valid_loader, criterion, device, amp_enabled=amp_enabled)
+        valid_metrics = evaluate(model, valid_loader, criterion, device, amp_enabled=amp_enabled, class_names=class_names)
         step_scheduler(scheduler, args.scheduler, valid_metrics["loss"])
         current_lr = get_current_lr(optimizer)
 
@@ -925,31 +1292,20 @@ def main() -> None:
         if valid_metrics["accuracy"] > best_val_accuracy:
             best_val_accuracy = valid_metrics["accuracy"]
             best_epoch = epoch
-            torch.save(
-                {
-                    "model_state_dict": model.state_dict(),
-                    "epoch": epoch,
-                    "valid_accuracy": valid_metrics["accuracy"],
-                    "class_names": CLASS_NAMES,
-                    "model_name": args.model_name,
-                    "image_size": args.image_size,
-                    "feature_attention": args.feature_attention,
-                },
-                best_model_path,
-            )
+            save_checkpoint(best_model_path, model, epoch, valid_metrics["accuracy"], args, class_names)
 
     checkpoint = torch.load(best_model_path, map_location=device)
     model.load_state_dict(checkpoint["model_state_dict"])
 
-    best_val_metrics = evaluate(model, valid_loader, criterion, device, amp_enabled=amp_enabled)
-    test_metrics = evaluate(model, test_loader, criterion, device, amp_enabled=amp_enabled)
+    best_val_metrics = evaluate(model, valid_loader, criterion, device, amp_enabled=amp_enabled, class_names=class_names)
+    test_metrics = evaluate(model, test_loader, criterion, device, amp_enabled=amp_enabled, class_names=class_names)
     elapsed_seconds = time.time() - start_time
 
-    save_predictions(args.output_dir / "test_predictions.csv", test_metrics)
-    save_confusion_matrix(args.output_dir / "test_confusion_matrix.csv", test_metrics["confusion_matrix"])
-    save_confusion_matrix(args.output_dir / "valid_confusion_matrix.csv", best_val_metrics["confusion_matrix"])
+    save_predictions(args.output_dir / "test_predictions.csv", test_metrics, class_names)
+    save_confusion_matrix(args.output_dir / "test_confusion_matrix.csv", test_metrics["confusion_matrix"], class_names)
+    save_confusion_matrix(args.output_dir / "valid_confusion_matrix.csv", best_val_metrics["confusion_matrix"], class_names)
 
-    summary = build_run_summary(
+    summary = build_training_run_summary(
         args=args,
         train_history=history,
         best_epoch=best_epoch,
@@ -962,6 +1318,7 @@ def main() -> None:
         pin_memory=pin_memory,
         gpu_name=gpu_name,
         class_weights=class_weights,
+        class_names=class_names,
     )
     save_json(args.output_dir / "metrics_summary.json", summary)
 
@@ -970,6 +1327,221 @@ def main() -> None:
     print(f"Validation accuracy: {best_val_metrics['accuracy']:.4f}")
     print(f"Test accuracy: {test_metrics['accuracy']:.4f}")
     print(f"Outputs saved to: {args.output_dir}")
+
+
+def run_cascade_evaluation(args: argparse.Namespace) -> None:
+    if args.main_checkpoint is None or args.expert_checkpoint is None:
+        raise ValueError("--main-checkpoint and --expert-checkpoint are required when --run-mode cascade is used.")
+
+    repo_root = Path(__file__).resolve().parents[1]
+    args.data_dir = args.data_dir.resolve()
+    device = resolve_device(args.device)
+    amp_enabled = resolve_amp_enabled(args.amp, device)
+    gpu_name = torch.cuda.get_device_name(device) if device.type == "cuda" else None
+
+    main_model, main_checkpoint = load_model_from_checkpoint(args.main_checkpoint, device)
+    expert_model, expert_checkpoint = load_model_from_checkpoint(args.expert_checkpoint, device)
+    main_class_names = list(main_checkpoint["class_names"])
+    expert_class_names = list(expert_checkpoint["class_names"])
+
+    if main_class_names != CLASS_NAMES:
+        raise ValueError(
+            "Cascade mode expects the main checkpoint to be trained on the full four-class space. "
+            f"Got {main_class_names}."
+        )
+    if len(expert_class_names) < 2:
+        raise ValueError(f"Expert checkpoint must contain at least two classes, got {expert_class_names}.")
+    if not set(expert_class_names).issubset(set(main_class_names)):
+        raise ValueError(
+            "Expert checkpoint classes must be a subset of the main checkpoint classes. "
+            f"Main: {main_class_names}, expert: {expert_class_names}"
+        )
+
+    if args.output_dir is None:
+        args.output_dir = repo_root / "outputs" / f"cascade_{build_output_slug(expert_class_names)}"
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+
+    print(
+        f"Using device: {device}"
+        + (f" ({gpu_name})" if gpu_name else "")
+        + f", amp={'on' if amp_enabled else 'off'}"
+    )
+    print(f"Main checkpoint: {args.main_checkpoint}")
+    print(f"Expert checkpoint: {args.expert_checkpoint}")
+    print(
+        "Cascade trigger: "
+        f"top-{args.expert_trigger_topk} classes must stay inside {expert_class_names}"
+        + (
+            f", margin <= {args.expert_margin_threshold:.4f}"
+            if args.expert_margin_threshold >= 0.0
+            else ", margin filter disabled"
+        )
+    )
+
+    all_samples_by_split = collect_samples_by_split(args.data_dir)
+    main_eval_transform = build_transforms(int(main_checkpoint.get("image_size", args.image_size)))[1]
+    expert_eval_transform = build_transforms(int(expert_checkpoint.get("image_size", args.image_size)))[1]
+
+    start_time = time.time()
+    valid_result = evaluate_cascade(
+        main_model=main_model,
+        expert_model=expert_model,
+        samples=all_samples_by_split["valid"],
+        main_transform=main_eval_transform,
+        expert_transform=expert_eval_transform,
+        main_class_names=main_class_names,
+        expert_class_names=expert_class_names,
+        device=device,
+        amp_enabled=amp_enabled,
+        args=args,
+    )
+    test_result = evaluate_cascade(
+        main_model=main_model,
+        expert_model=expert_model,
+        samples=all_samples_by_split["test"],
+        main_transform=main_eval_transform,
+        expert_transform=expert_eval_transform,
+        main_class_names=main_class_names,
+        expert_class_names=expert_class_names,
+        device=device,
+        amp_enabled=amp_enabled,
+        args=args,
+    )
+    elapsed_seconds = time.time() - start_time
+
+    save_cascade_predictions(args.output_dir / "valid_cascade_predictions.csv", valid_result, main_class_names)
+    save_cascade_predictions(args.output_dir / "test_cascade_predictions.csv", test_result, main_class_names)
+    save_confusion_matrix(args.output_dir / "valid_confusion_matrix.csv", valid_result["confusion_matrix"], main_class_names)
+    save_confusion_matrix(args.output_dir / "test_confusion_matrix.csv", test_result["confusion_matrix"], main_class_names)
+
+    summary = build_cascade_run_summary(
+        args=args,
+        valid_result=valid_result,
+        test_result=test_result,
+        samples_by_split=all_samples_by_split,
+        elapsed_seconds=elapsed_seconds,
+        device=device,
+        amp_enabled=amp_enabled,
+        gpu_name=gpu_name,
+        main_checkpoint_path=args.main_checkpoint,
+        expert_checkpoint_path=args.expert_checkpoint,
+        main_checkpoint=main_checkpoint,
+        expert_checkpoint=expert_checkpoint,
+        class_names=main_class_names,
+    )
+    save_json(args.output_dir / "metrics_summary.json", summary)
+
+    print()
+    print(f"Cascade validation accuracy: {valid_result['accuracy']:.4f}")
+    print(f"Cascade test accuracy: {test_result['accuracy']:.4f}")
+    print(f"Validation cascade stats: {valid_result['cascade_stats']}")
+    print(f"Test cascade stats: {test_result['cascade_stats']}")
+    print(f"Outputs saved to: {args.output_dir}")
+
+
+def parse_args() -> argparse.Namespace:
+    repo_root = Path(__file__).resolve().parents[1]
+    default_data_dir = resolve_default_data_dir(repo_root)
+
+    parser = argparse.ArgumentParser(
+        description=(
+            "Problem 2 pipeline: single four-class baseline, expert-branch subset training, "
+            "or cascade evaluation that combines a main model with an expert branch."
+        )
+    )
+    parser.add_argument("--run-mode", choices=["single", "expert", "cascade"], default="single")
+    parser.add_argument("--data-dir", type=Path, default=default_data_dir)
+    parser.add_argument("--output-dir", type=Path, default=None)
+    parser.add_argument("--model-name", type=str, default="efficientnet_b0")
+    parser.add_argument("--pretrained", action="store_true", help="Use timm pretrained weights if available.")
+    parser.add_argument(
+        "--loss",
+        choices=["cross_entropy", "focal"],
+        default="cross_entropy",
+        help="Training loss; label smoothing applies to both options.",
+    )
+    parser.add_argument("--epochs", type=int, default=25)
+    parser.add_argument("--batch-size", type=int, default=16)
+    parser.add_argument("--image-size", type=int, default=224)
+    parser.add_argument("--lr", type=float, default=3e-4)
+    parser.add_argument("--weight-decay", type=float, default=1e-4)
+    parser.add_argument(
+        "--label-smoothing",
+        type=float,
+        default=0.0,
+        help="Label smoothing factor used by cross-entropy and focal loss.",
+    )
+    parser.add_argument(
+        "--focal-gamma",
+        type=float,
+        default=2.0,
+        help="Focusing parameter when --loss focal is selected.",
+    )
+    parser.add_argument("--class-weighting", choices=["none", "balanced", "manual"], default="none")
+    parser.add_argument(
+        "--class-weights",
+        type=str,
+        default=None,
+        help="Comma-separated weights in active class order when class-weighting=manual.",
+    )
+    parser.add_argument("--scheduler", choices=["none", "cosine", "plateau"], default="none")
+    parser.add_argument("--min-lr", type=float, default=1e-6)
+    parser.add_argument("--plateau-patience", type=int, default=3)
+    parser.add_argument("--plateau-factor", type=float, default=0.5)
+    parser.add_argument("--mixup-alpha", type=float, default=0.0, help="Enable MixUp when > 0. Typical values: 0.2 to 0.4.")
+    parser.add_argument("--cutmix-alpha", type=float, default=0.0, help="Enable CutMix when > 0. Typical values: 0.5 to 1.0.")
+    parser.add_argument("--mix-prob", type=float, default=1.0, help="Probability of applying MixUp/CutMix to a training batch.")
+    parser.add_argument(
+        "--mix-switch-prob",
+        type=float,
+        default=0.5,
+        help="When MixUp and CutMix are both enabled, probability of selecting CutMix.",
+    )
+    parser.add_argument(
+        "--feature-attention",
+        choices=["none", "se", "cbam"],
+        default="none",
+        help="Extra attention attached on the final feature map. EfficientNet-B0 already includes internal SE blocks.",
+    )
+    parser.add_argument("--num-workers", type=int, default=None, help="DataLoader workers. Defaults to 4 on CUDA and 0 on CPU.")
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--device", choices=["auto", "cpu", "cuda"], default="auto")
+    parser.add_argument("--deterministic", action="store_true", help="Use deterministic backend settings. This is slower on GPU.")
+    parser.add_argument("--amp", dest="amp", action="store_true", help="Enable mixed precision on CUDA.")
+    parser.add_argument("--no-amp", dest="amp", action="store_false", help="Disable mixed precision on CUDA.")
+    parser.add_argument(
+        "--expert-classes",
+        type=str,
+        default=",".join(DEFAULT_EXPERT_CLASSES),
+        help=(
+            "Comma-separated class list for expert-branch training. "
+            "Default: adenocarcinoma,squamous.cell.carcinoma"
+        ),
+    )
+    parser.add_argument("--main-checkpoint", type=Path, default=None, help="Main four-class checkpoint used in cascade mode.")
+    parser.add_argument("--expert-checkpoint", type=Path, default=None, help="Expert-branch checkpoint used in cascade mode.")
+    parser.add_argument(
+        "--expert-trigger-topk",
+        type=int,
+        default=2,
+        help="Invoke the expert branch only when the main model's top-k classes all stay inside the expert class subset.",
+    )
+    parser.add_argument(
+        "--expert-margin-threshold",
+        type=float,
+        default=0.12,
+        help="Maximum main-model top1-top2 probability margin for invoking the expert branch. Set a negative value to disable the margin filter.",
+    )
+    parser.set_defaults(amp=None)
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = parse_args()
+    if args.run_mode == "cascade":
+        run_cascade_evaluation(args)
+        return
+    train_and_evaluate(args)
 
 
 if __name__ == "__main__":
