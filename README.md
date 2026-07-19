@@ -1,4 +1,4 @@
-﻿# APMCM 2026 B题
+# APMCM 2026 B题
 
 肺癌疾病诊断图像识别与分类问题的本地实验项目。
 
@@ -7,34 +7,32 @@
 本项目当前围绕题目中的两个任务推进：
 
 1. 问题一：完成数据集规模、比例和分层抽样合理性的统计分析。
-2. 问题二：搭建四分类肺部 CT 图像识别 baseline，并输出验证集与测试集结果。
+2. 问题二：搭建四分类肺部 CT 图像识别模型，并系统比较不同优化策略。
+3. 在四分类主模型基础上，引入专家模型与级联触发机制，尽量降低三种肿瘤亚型之间的误诊率。
 
 ## 当前状态
 
-- 问题一的题意分析已完成，核心统计结论已经整理。
-- 问题二 baseline 已实现，入口为 `src/main.py`。
-- `src/main.py` 已改为 GPU 优先版本，支持 `CUDA/CPU` 自动切换、AMP 混合精度和更适合 GPU 的数据加载配置。
-- 已保留原有 CPU baseline 结果，并新建 `..\LCC_GPU` CUDA 环境用于 GPU 训练。
-- 最新 baseline 为 `EfficientNet-B0 + AdamW`，并已支持 `CrossEntropyLoss / Focal Loss`、`label smoothing` 与学习率调度器。
-- 已完成一轮相关文献初步阅读与方法归纳，后续优化方向已明确。
-- 已在 `2026-07-18` 完成多轮正式 GPU 训练，对比了 `pretrained baseline`、`label smoothing + cosine scheduler`、`focal loss` 与 `SE` / `CBAM` 注意力模块。
-
-截至 `2026-07-18`，当前测试集表现最好的结果来自 `GPU + pretrained + focal loss(gamma=2) + label smoothing + cosine scheduler + CBAM`：
-
-- 最佳验证集轮次：`epoch 17`
-- 最佳验证集准确率：`93.06%`
-- 测试集准确率：`86.35%`
-- 测试集 `macro F1`：`0.8646`
-- 当前最明显问题：鳞癌召回率仍偏低，类别边界还要继续平衡。
+- 问题一的题意分析、数据统计口径和准确率公式计算已完成。
+- `src/main.py` 已从单一 baseline 脚本扩展为完整实验管线，支持 `single`、`expert`、`cascade` 三种运行模式。
+- 已完成 `12` 组单模型正式实验、`10` 组三肿瘤专家级联实验和 `30` 组两两肿瘤专家级联实验，共 `52` 组正式结果对比。
+- 当前最佳单模型为 `v3.4_pretrained_focal_ls_cosine_cbam`：
+  - 测试集准确率：`86.35%`
+  - 测试集 `macro F1`：`0.8646`
+- 当前全局最佳结果为 `cascade_v3.4_pretrained_focal_ls_cosine_cbam`：
+  - 测试集准确率：`87.62%`
+  - 测试集 `macro F1`：`0.8773`
+- 三肿瘤专家级联在 `10` 个主模型版本中有 `8` 个优于各自对应的单模型；两两肿瘤专家级联在 `30` 组中有 `21` 组优于各自对应的单模型。
+- 当前最稳定的结构主线是：`pretrained EfficientNet-B0 + label smoothing / focal loss + CBAM + selective cascade`。
 
 ## 文献调研结论
 
-结合上级目录 `..\相关论文` 中的参考文献，当前最值得优先借鉴的思路有：
+结合上级目录 `..\相关论文(1)` 中的参考文献，当前已验证或值得优先借鉴的思路有：
 
-1. 优先启用迁移学习。现有 baseline 未使用预训练权重，而多篇肺部 CT 分类论文都将 transfer learning 作为小样本场景的基础配置。
-2. 在 CNN backbone 上加入轻量注意力或全局上下文模块。相比直接换成更重的架构，`SE`、`CBAM`、global block 一类模块更适合当前仓库按增量方式验证。
-3. 针对腺癌和鳞癌的高误诊率，应同时尝试类别加权损失、`Focal Loss`、`label smoothing` 或采样策略，而不是只增加训练轮数。
-4. 后续实验比较不应只看准确率，还应重点记录 `macro F1`、各类召回率和混淆矩阵变化。
+1. 迁移学习是小样本肺部 CT 分类中最重要的低成本改进项。
+2. `EfficientNet` 路线适合作为当前项目的统一 backbone，便于控制变量和开展消融实验。
+3. `label smoothing`、`Focal Loss`、轻量注意力模块比单纯增加训练轮数更能改善泛化。
+4. `CBAM` 在当前数据上明显优于额外 `SE`，说明空间注意力比继续叠加通道重标定更有效。
+5. 为了解决腺癌、鳞癌和大细胞癌之间的边界混淆，仅靠单模型不够，专家级联是值得保留的工程化路线。
 
 ## 目录结构
 
@@ -42,13 +40,25 @@
 .
 ├─ src/
 │  └─ main.py
+├─ scripts/
+│  ├─ run_all_cascade_tumor3.ps1
+│  ├─ run_all_cascade_tumor_pairs.ps1
+│  ├─ generate_version_comparison_docx.py
+│  ├─ generate_outputs_version_ablation_docx.py
+│  ├─ generate_52_experiment_comparison_docx.py
+│  └─ generate_ablation_results_cn_docx.py
 ├─ doc/
-│  └─ problem2_baseline.md
+│  ├─ problem2_baseline.md
+│  ├─ literature_review.md
+│  ├─ ablation_results.md
+│  └─ progress_report_2026-07-19.md
 ├─ outputs/
 │  ├─ v1.0_scratch_ce_cpu/
-│  ├─ v2.0_pretrained_ce/                    # GPU pretrained baseline
-│  ├─ v2.3_pretrained_ce_ls_cosine/          # label smoothing + cosine 调度实验
-│  └─ v3.4_pretrained_focal_ls_cosine_cbam/  # 当前最优实验
+│  ├─ v3.4_pretrained_focal_ls_cosine_cbam/
+│  ├─ expert_tumor3_v3.4_pretrained_focal_ls_cosine_cbam/
+│  ├─ cascade_v3.4_pretrained_focal_ls_cosine_cbam/
+│  ├─ cascade_pair_lc_sq_v3.4_pretrained_focal_ls_cosine_cbam/
+│  └─ cascade_batch_logs/
 ├─ README.md
 ├─ AI_CONTEXT.md
 ├─ TODO.md
@@ -58,14 +68,16 @@
 ├─ 附件/
 │  └─ Data/
 ├─ LCC/
-└─ 相关论文/
+├─ LCC310/
+├─ LCC_GPU/
+└─ 相关论文(1)/
 ```
 
 ## 环境依赖
 
 推荐优先使用已经准备好的 `..\LCC_GPU` CUDA 环境。
 
-截至 `2026-07-18`，`..\LCC_GPU` 中已验证可用的核心依赖为：
+截至 `2026-07-19`，本地已验证可用的核心依赖为：
 
 - `torch==2.13.0+cu130`
 - `torchvision==0.28.0+cu130`
@@ -78,9 +90,9 @@
 说明：
 
 - `..\LCC_GPU` 已在本机验证通过：`torch.cuda.is_available() == True`。
-- 当前主机已经通过 `nvidia-smi` 检测到可用 GPU：`NVIDIA GeForce RTX 4060 Laptop GPU`，驱动版本 `581.80`。
-- 保留的 `..\LCC` 目录不再作为推荐运行环境；GPU 训练请直接使用 `..\LCC_GPU`。
-- 代码层面已经支持 GPU：脚本默认会自动选择 `cuda`，并默认启用 AMP 混合精度。
+- 当前主机可识别 GPU：`NVIDIA GeForce RTX 4060 Laptop GPU`。
+- `..\LCC` 目录不再作为推荐训练环境；正式 GPU 实验优先使用 `..\LCC_GPU`。
+- `outputs` 中的正式结果目录可能来自不同 CUDA 运行环境，但统一以各自目录下的 `metrics_summary.json` 为准。
 
 ## 数据格式
 
@@ -108,7 +120,7 @@
 
 ## 使用方式
 
-直接在项目根目录运行：
+在项目根目录运行：
 
 ```powershell
 ..\LCC_GPU\python.exe .\src\main.py
@@ -117,63 +129,67 @@
 常用运行方式：
 
 ```powershell
-..\LCC_GPU\python.exe .\src\main.py --epochs 20
-..\LCC_GPU\python.exe .\src\main.py --epochs 30
-..\LCC_GPU\python.exe .\src\main.py --pretrained
-..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --batch-size 32 --num-workers 4
-..\LCC_GPU\python.exe .\src\main.py --device cuda --no-amp
-..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\v2.3_pretrained_ce_ls_cosine
-..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --loss focal --focal-gamma 2 --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\v3.0_pretrained_focal_ls_cosine
+..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained
+..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --loss focal --label-smoothing 0.1 --scheduler cosine --feature-attention cbam --output-dir .\outputs\v3.4_pretrained_focal_ls_cosine_cbam
+..\LCC_GPU\python.exe .\src\main.py --run-mode expert --expert-classes adenocarcinoma,large.cell.carcinoma,squamous.cell.carcinoma --device cuda --pretrained --loss focal --label-smoothing 0.1 --scheduler cosine --feature-attention cbam --output-dir .\outputs\expert_tumor3_v3.4_pretrained_focal_ls_cosine_cbam
+..\LCC_GPU\python.exe .\src\main.py --run-mode cascade --device cuda --main-checkpoint .\outputs\v3.4_pretrained_focal_ls_cosine_cbam\best_model.pt --expert-checkpoint .\outputs\expert_tumor3_v3.4_pretrained_focal_ls_cosine_cbam\best_model.pt --output-dir .\outputs\cascade_v3.4_pretrained_focal_ls_cosine_cbam
+```
+
+批量脚本：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File ".\scripts\run_all_cascade_tumor3.ps1" -PythonExe "..\LCC_GPU\python.exe"
+powershell -ExecutionPolicy Bypass -File ".\scripts\run_all_cascade_tumor_pairs.ps1" -PythonExe "..\LCC_GPU\python.exe"
 ```
 
 主要参数说明：
 
-- `--epochs`：训练轮数，默认 `25`
-- `--batch-size`：批大小，默认 `16`
-- `--image-size`：输入尺寸，默认 `224`
-- `--lr`：学习率，默认 `3e-4`
-- `--weight-decay`：权重衰减，默认 `1e-4`
-- `--loss`：损失函数，支持 `cross_entropy / focal`
-- `--label-smoothing`：标签平滑系数，默认 `0.0`
-- `--focal-gamma`：`Focal Loss` 聚焦系数，默认 `2.0`
-- `--scheduler`：学习率调度器，支持 `none / cosine / plateau`
-- `--min-lr`：调度器最小学习率，默认 `1e-6`
-- `--device`：设备选择，支持 `auto / cpu / cuda`，默认 `auto`
-- `--amp` / `--no-amp`：是否在 CUDA 上启用混合精度，默认在 `cuda` 上自动开启
-- `--deterministic`：开启确定性后端，结果更稳定但 GPU 会更慢
-- `--num-workers`：DataLoader 进程数；默认 CPU 为 `0`，CUDA 为自动 `4`
+- `--run-mode`：支持 `single / expert / cascade`
+- `--model-name`：当前默认 `efficientnet_b0`
 - `--pretrained`：启用 `timm` 预训练权重
-
-说明：
-
-- `src/main.py` 默认会优先查找项目外部同级目录 `..\附件\Data`。
-- 如果外部路径不存在，脚本才会回退到项目内部的 `.\附件\Data`。
-- 未手动指定 `--output-dir` 时，脚本会按实验基线自动命名输出目录。
-- 默认命名规则为 `vX.Y_<change>`：`v1.x` 表示 scratch CE 系列，`v2.x` 表示 pretrained CE 系列，`v3.x` 表示 pretrained focal 系列。
+- `--loss`：支持 `cross_entropy / focal`
+- `--label-smoothing`：标签平滑系数
+- `--scheduler`：支持 `none / cosine / plateau`
+- `--feature-attention`：支持 `none / se / cbam`
+- `--class-weighting`：支持 `none / balanced / manual`
+- `--mixup-alpha`、`--cutmix-alpha`：混合增强参数
+- `--expert-classes`：专家模型负责的类别子集
+- `--expert-trigger-topk`、`--expert-margin-threshold`：级联触发阈值
 
 ## 输出结果
 
-运行完成后，结果会写入输出目录：
+单模型或专家模型训练完成后，输出目录通常包含：
 
-- CPU 默认：`outputs/v1.0_scratch_ce_cpu`
-- CUDA scratch 默认：`outputs/v1.1_scratch_ce_cuda`
-- CUDA + pretrained 默认：`outputs/v2.0_pretrained_ce`
+- `best_model.pt`
+- `metrics_summary.json`
+- `test_predictions.csv`
+- `valid_confusion_matrix.csv`
+- `test_confusion_matrix.csv`
 
-- `best_model.pt`：验证集最佳权重
-- `metrics_summary.json`：完整训练记录与指标
-- `test_predictions.csv`：测试集逐样本预测结果
-- `valid_confusion_matrix.csv`：验证集混淆矩阵
-- `test_confusion_matrix.csv`：测试集混淆矩阵
+级联评估输出目录通常包含：
+
+- `metrics_summary.json`
+- `valid_cascade_predictions.csv`
+- `test_cascade_predictions.csv`
+- `valid_confusion_matrix.csv`
+- `test_confusion_matrix.csv`
+
+正式实验目录命名约定：
+
+- `v1.x`：scratch + CE 系列
+- `v2.x`：pretrained + CE 系列
+- `v3.x`：pretrained + focal / attention 系列
+- `expert_tumor3_*`：三肿瘤专家模型
+- `expert_pair_*`：两两肿瘤专家模型
+- `cascade_*`：三肿瘤专家级联结果
+- `cascade_pair_*`：两两肿瘤专家级联结果
 
 ## 相关文档
 
-- 问题二 baseline 说明见 `doc/problem2_baseline.md`
-- 相关论文阅读与可迁移思路见 `doc/literature_review.md`
-- 阶段进度见 `AI_CONTEXT.md`
+- 问题二实验说明见 `doc/problem2_baseline.md`
+- 文献整理见 `doc/literature_review.md`
+- 12 组单模型消融汇总见 `doc/ablation_results.md`
+- 阶段进展与协作上下文见 `AI_CONTEXT.md`
 - 待办事项见 `TODO.md`
-## Ablation Summary
-
-See [doc/ablation_results.md](doc/ablation_results.md) for the consolidated 12-run table.
-All formal experiment output folders now use the `vX.Y_<change>` naming rule.
-The current best structural add-on is `CBAM`; the corresponding folder is `outputs/v3.4_pretrained_focal_ls_cosine_cbam`.
-
+- 52 组结果的 Word 汇总见 `doc/all_52_experiments_comparison_20260719.docx`
+- 各版本说明与消融分析 Word 汇总见 `doc/outputs_实验版本说明与消融对比_20260719.docx`

@@ -1,4 +1,4 @@
-﻿# 问题二分析与 Baseline 方案
+# 问题二分析与 Baseline 方案
 
 ## 1. 题目二需要完成什么
 
@@ -11,7 +11,7 @@
 ## 2. 数据集作用
 
 - 训练集：用于更新模型参数，让模型学习四类图像的判别特征。
-- 验证集：用于调参、比较不同模型配置，并作为保存最佳模型的依据。
+- 验证集：用于调参、比较不同模型配置，并作为保存最佳模型或选定最佳级联方案的依据。
 - 测试集：只在模型训练结束后使用，用于评估模型的泛化能力，不能参与训练和调参。
 
 ## 3. 准确率公式
@@ -28,20 +28,20 @@ Accuracy = 正确分类样本数 / 总样本数 × 100%
 Accuracy = 279 / 315 × 100% = 88.57%
 ```
 
-## 4. 已实现的 Baseline
+## 4. 当前实现的实验管线
 
-当前 baseline 采用如下配置：
+当前项目不再只是“单个 baseline 模型”，而是一个可复用的实验管线，入口统一为 `src/main.py`。主要支持三种模式：
 
-- 框架：PyTorch + timm
-- 主干网络：EfficientNet-B0
-- 损失函数：CrossEntropyLoss / Focal Loss
-- 优化器：AdamW
-- 默认训练轮数：25 epoch
-- 输入尺寸：224 x 224
-- 设备策略：`--device auto`，有可用 CUDA 时优先使用 GPU
-- CUDA 优化：自动混合精度 AMP、`pin_memory`、自动 `num_workers`
-- 可选优化：`label smoothing`、`Focal Loss` 与学习率调度器
-- 代码入口：`src/main.py`
+1. `single`
+   - 训练和评估完整四分类主模型。
+2. `expert`
+   - 只针对指定类别子集训练专家模型，可做二分类或三分类。
+3. `cascade`
+   - 先运行四分类主模型，再按触发规则调用专家模型，对局部高混淆类别做二次判别，最终仍输出四分类结果。
+
+当前默认 backbone 为 `EfficientNet-B0`，主模型和专家模型都沿用这一主干，只是最终分类头类别数不同。
+
+## 5. 数据与标签
 
 默认读取的数据目录为：
 
@@ -51,91 +51,92 @@ Accuracy = 279 / 315 × 100% = 88.57%
 ../附件/Data/test
 ```
 
-脚本会自动处理训练集、验证集、测试集目录命名不完全一致的问题，并统一映射到以下四类：
+脚本会自动处理目录命名不完全一致的问题，并统一映射到以下四类：
 
 1. `adenocarcinoma`
 2. `large.cell.carcinoma`
 3. `normal`
 4. `squamous.cell.carcinoma`
 
-## 5. 运行方式
+当前样本规模：
 
-在项目根目录执行：
+- 训练集：`613`
+- 验证集：`72`
+- 测试集：`315`
 
-```powershell
-..\LCC_GPU\python.exe .\src\main.py
+## 6. 当前主模型基线配置
+
+当前主线 baseline 配置为：
+
+- 框架：PyTorch + timm
+- 主干网络：`EfficientNet-B0`
+- 优化器：`AdamW`
+- 默认训练轮数：`25`
+- 输入尺寸：`224 x 224`
+- 损失函数：`CrossEntropyLoss / Focal Loss`
+- 学习率调度：`none / cosine / plateau`
+- 可选正则：`label smoothing`
+- 可选数据增强：`MixUp / CutMix`
+- 可选结构增强：`SE / CBAM`
+- 设备策略：`--device auto`，有可用 CUDA 时优先使用 GPU
+
+## 7. 级联模式原理
+
+当前 `cascade` 模式采用“主模型先判，再按条件触发专家模型”的方式：
+
+1. 主模型先输出四类概率。
+2. 如果主模型 `top-k` 预测全部落在专家模型负责的类别子集内，则该样本具备触发资格。
+3. 若主模型 `top1 - top2` 的置信差值不大于阈值 `--expert-margin-threshold`，说明该样本在局部边界上较难分，此时触发专家模型。
+4. 专家模型只在自己负责的类别子集内重新细分概率，最后再和主模型概率融合，输出最终四分类结果。
+
+当前默认触发参数为：
+
+- `expert_trigger_topk = 2`
+- `expert_margin_threshold = 0.12`
+
+## 8. 已完成的正式实验范围
+
+截至 `2026-07-19`，项目已经完成三组正式实验：
+
+1. `12` 组单模型实验
+2. `10` 组三肿瘤专家级联实验
+3. `30` 组两两肿瘤专家级联实验
+
+合计 `52` 组正式结果。
+
+单模型目录命名规则：
+
+- `v1.x`：scratch + CE
+- `v2.x`：pretrained + CE
+- `v3.x`：pretrained + focal / attention
+
+级联目录命名规则：
+
+- `expert_tumor3_*`：三肿瘤专家模型
+- `expert_pair_*`：两两肿瘤专家模型
+- `cascade_*`：三肿瘤专家级联结果
+- `cascade_pair_*`：两两肿瘤专家级联结果
+
+## 9. 当前最佳单模型结果
+
+当前最佳单模型为：
+
+```text
+v3.4_pretrained_focal_ls_cosine_cbam
 ```
 
-常见运行方式：
+其核心配置为：
 
-```powershell
-..\LCC_GPU\python.exe .\src\main.py --epochs 20
-..\LCC_GPU\python.exe .\src\main.py --epochs 30
-..\LCC_GPU\python.exe .\src\main.py --pretrained
-..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --batch-size 32 --num-workers 4
-..\LCC_GPU\python.exe .\src\main.py --device cuda --no-amp
-..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\v2.3_pretrained_ce_ls_cosine
-..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --loss focal --focal-gamma 2 --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\v3.0_pretrained_focal_ls_cosine
+```text
+pretrained + focal loss(gamma=2) + label smoothing(0.1) + cosine scheduler + CBAM
 ```
-
-路径说明：
-
-- 当前项目代码位于 `B题` 目录内。
-- 数据集位于项目外部同级目录 `..\附件\Data`。
-- 推荐 GPU 虚拟环境位于项目外部同级目录 `..\LCC_GPU`。
-- `src/main.py` 默认会优先使用 `..\附件\Data`，兼容当前目录布局。
-- 当前机器已经检测到 `NVIDIA GeForce RTX 4060 Laptop GPU`，且截至 `2026-07-18`，`..\LCC_GPU` 已验证 `torch==2.13.0+cu130`、`torchvision==0.28.0+cu130` 可正常识别 CUDA。
-
-## 6. 输出结果
-
-脚本会在输出目录下生成：
-
-- CPU 默认输出：`outputs/v1.0_scratch_ce_cpu`
-- CUDA scratch 默认输出：`outputs/v1.1_scratch_ce_cuda`
-- CUDA + pretrained 默认输出：`outputs/v2.0_pretrained_ce`
-- 调参实验示例：`outputs/v2.3_pretrained_ce_ls_cosine`
-- 当前最优实验：`outputs/v3.4_pretrained_focal_ls_cosine_cbam`
-
-- `best_model.pt`：验证集准确率最高的模型权重
-- `metrics_summary.json`：训练过程与最终指标汇总
-- `test_predictions.csv`：测试集逐样本预测结果
-- `valid_confusion_matrix.csv`：验证集混淆矩阵
-- `test_confusion_matrix.csv`：测试集混淆矩阵
-
-## 7. 当前最新实验结果与 GPU 状态
-
-截至 `2026-07-18`，当前最新已完成检查的最好测试结果来自以下 GPU 配置：
-
-- `epochs=25`
-- `batch_size=16`
-- `image_size=224`
-- `lr=3e-4`
-- `weight_decay=1e-4`
-- `loss=focal`
-- `label_smoothing=0.1`
-- `focal_gamma=2.0`
-- `scheduler=cosine`
-- `pretrained=true`
-- `feature_attention=cbam`
-- `device=cuda`
 
 对应结果：
 
-- 最佳验证集轮次：`epoch 17`
 - 最佳验证集准确率：`93.06%`
 - 测试集准确率：`86.35%`
 - 测试集 `macro F1`：`0.8646`
 - 测试集 `weighted F1`：`0.8647`
-
-当前 GPU 状态：
-
-- 主机显卡：`NVIDIA GeForce RTX 4060 Laptop GPU`
-- 驱动版本：`581.80`
-- `nvidia-smi` 可正常识别 GPU
-- 已验证环境：`..\LCC_GPU`
-- 已验证依赖：`torch==2.13.0+cu130`、`torchvision==0.28.0+cu130`
-- 已完成一次正式 `25 epoch` GPU baseline 训练、一次 `label smoothing + cosine scheduler` 对比训练、一次 `focal loss(gamma=2)` 对比训练，以及一次 `SE` / `CBAM` 注意力模块对比训练
-- 当前结论：代码与环境都已具备 GPU 运行条件，且 `pretrained` 显著优于旧 CPU 非预训练 baseline；`CBAM` 在当前版本中进一步把测试集指标推到新的最好水平
 
 测试集各类别召回率：
 
@@ -144,57 +145,73 @@ Accuracy = 279 / 315 × 100% = 88.57%
 - `normal`：`98.15%`
 - `squamous.cell.carcinoma`：`71.11%`
 
-新增注意力实验结果：
+## 10. 当前最佳全局结果
 
-- `v3.3_pretrained_focal_ls_cosine_se`：测试集准确率 `77.14%`，`macro F1` `0.7884`
-- `v3.4_pretrained_focal_ls_cosine_cbam`：测试集准确率 `86.35%`，`macro F1` `0.8646`
+当前 `52` 组实验中的全局最佳结果为：
 
-## 8. 结果解读
+```text
+cascade_v3.4_pretrained_focal_ls_cosine_cbam
+```
 
-当前 baseline 已经从“可运行”提升到了“有明显竞争力”的阶段，但模型效果还不能直接视为最终方案，主要原因有：
+其组成方式为：
 
-1. 新实验把测试集准确率提升到 `86.35%`，`macro F1` 提升到 `0.8646`，整体优于上一轮 `label smoothing + cosine scheduler`。
-2. `adenocarcinoma` 与 `large.cell.carcinoma` 召回率显著改善，但 `squamous.cell.carcinoma` 召回率回落，类别取舍发生了新的转移。
-3. 当前最优模型已经加入 `focal loss(gamma=2)`，并进一步验证了 `CBAM` 优于额外 `SE`，但仍未尝试采样策略或 `Focal Loss + 手动权重`。
-4. 从结构增量看，`SE` 的收益有限，而 `CBAM` 对整体指标提升更明显，说明注意力模块的具体形式比“是否加注意力”更关键。
+- 四分类主模型：`v3.4_pretrained_focal_ls_cosine_cbam`
+- 三肿瘤专家模型：`expert_tumor3_v3.4_pretrained_focal_ls_cosine_cbam`
+- 触发策略：`top-k=2`，`margin <= 0.12`
 
-从测试集混淆情况看：
+对应结果：
 
-- 腺癌 `120` 张中有 `82` 张预测正确，较上一轮明显改善，但仍有 `19` 张被判成大细胞癌。
-- 鳞癌 `90` 张中有 `69` 张预测正确，主要被错分到腺癌和大细胞癌。
-- 大细胞癌 `51` 张中有 `46` 张预测正确，是当前提升最明显的类别之一。
-- 正常肺部样本依然非常稳定，`54` 张中有 `53` 张预测正确，但有少量其他类别被误入 `normal`。
+- 测试集准确率：`87.62%`
+- 测试集 `macro F1`：`0.8773`
 
-## 9. 相关论文借鉴
+相对于最佳单模型：
 
-项目上级目录 `..\相关论文` 中的参考文献完成初步阅读后，当前可借鉴的思路主要包括：
+- 测试集准确率提升 `1.27` 个百分点
+- 测试集 `macro F1` 提升约 `0.0127`
 
-1. 迁移学习是四分类肺部 CT 任务中的基础配置。多篇论文都采用预训练 backbone，再针对医学影像数据做微调。
-2. 注意力机制和全局上下文增强值得优先尝试。相比直接大改架构，`SE`、`CBAM`、global block 一类轻量模块更适合当前 baseline 增量验证；当前实验已验证 `CBAM` 明显优于额外 `SE`。
-3. 对于肺癌亚型间混淆严重的问题，仅靠更长训练通常不足，往往还需要类别加权损失、焦点损失、`label smoothing` 或更针对性的采样策略。
-4. 论文中的指标对比通常不只看准确率，还会联合使用 `macro F1`、AUC、各类召回率和混淆矩阵分析。
+测试集级联统计：
 
-对当前仓库最有直接借鉴价值的论文包括：
+- `expert_invocations = 17`
+- `expert_changed_predictions = 8`
+- `expert_corrected_predictions = 5`
+- `expert_hurt_predictions = 1`
 
-- `Leveraging Transfer Learning and Attention Mechanisms for a Computed Tomography Lung Cancer Classification Model`
-  - 启发：优先把预训练与注意力模块结合，而不是继续使用纯随机初始化的 backbone。
-- `Lung-EffNet`
-  - 启发：`EfficientNet` 系列在肺部 CT 分类中是可行路线，后续可在 `B0` 之外补试 `B1`。
-- `Classification of lung cancer subtypes on CT images with synthetic pathological priors`
-  - 启发：肺癌亚型分类可结合额外先验或辅助信息，当前项目可先用更容易落地的类别加权、误差分析与辅助监督思路做弱化替代。
-- `CCT Lightweight compact convolutional transformer for lung disease CT image classification`
-  - 启发：全局上下文有价值，但现阶段应优先试轻量增强模块，而不是直接大规模重写训练框架。
+这说明当前级联机制并不是“大面积重写主模型输出”，而是在少量高混淆样本上做针对性修正。
 
-## 10. 后续优化方向
+## 11. 消融实验结论
 
-在当前 baseline 基础上，优先考虑以下优化路径：
+从 `12` 组单模型结果看：
 
-1. 在当前 `focal loss(gamma=2)` 基线上进一步尝试采样策略或手动类别权重，重点拉回鳞癌召回率。
-2. 试验 `Focal Loss + 手动权重`，平衡腺癌、鳞癌与大细胞癌之间的边界学习。
-3. 在当前 `EfficientNet` baseline 上增量试验轻量注意力模块，优先围绕 `CBAM` 做进一步调优。
-4. 加强针对易混类别的图像增强策略。
-5. 基于混淆矩阵开展误差分析，重点检查“鳞癌 -> 腺癌 / 大细胞癌”的新混淆模式，必要时补充 `Grad-CAM`。
-## Ablation Note
+1. `pretrained` 是收益最大的单步改动。
+2. `label smoothing` 是 CE 系列里最有效的低成本正则项。
+3. `balanced class-weighted CE` 在当前数据上整体不如不加权。
+4. `MixUp` 和 `CutMix` 在当前小样本医学图像设定下会破坏细粒度病灶线索。
+5. `CBAM` 明显优于额外 `SE`，是当前最佳结构增量。
 
-The consolidated 12-run comparison has been moved to [doc/ablation_results.md](ablation_results.md), and all formal result folders now use the `vX.Y_<change>` naming rule.
+从 `40` 组级联结果看：
 
+1. 三肿瘤专家级联整体更稳，`10` 组里有 `8` 组优于对应单模型。
+2. 两两肿瘤专家级联中，`large.cell.carcinoma` 与 `squamous.cell.carcinoma` 这一支平均效果最好。
+3. 不是所有级联都优于主模型，说明触发规则和专家模型质量仍然是性能上限的重要决定因素。
+
+## 12. 相关论文借鉴
+
+项目参考的论文位于上级目录 `..\相关论文(1)`。当前已经落地并被实验部分验证的思路主要包括：
+
+1. 迁移学习：`pretrained` 已验证为当前最关键改进。
+2. `EfficientNet` 路线：当前所有正式实验统一使用 `EfficientNet-B0` 作为 backbone。
+3. 轻量注意力机制：`CBAM` 已证明优于额外 `SE`。
+4. 难例聚焦与边界平滑：`Focal Loss`、`label smoothing` 已被纳入正式实验并保留为当前主线。
+
+## 13. 后续优化方向
+
+1. 在当前最佳 `v3.4` 主模型和三肿瘤专家模型上微调触发阈值。
+2. 对最佳单模型和最佳级联模型补充误差分析与高混淆样本检查。
+3. 若后续还需继续提高结果，优先优化专家触发逻辑和误差修正机制，而不是立刻大规模更换 backbone。
+
+## 14. 相关文件
+
+- `doc/ablation_results.md`：`12` 组单模型消融总结
+- `doc/progress_report_2026-07-19.md`：阶段进展汇总
+- `doc/all_52_experiments_comparison_20260719.docx`：`52` 组总对比 Word 文档
+- `doc/outputs_实验版本说明与消融对比_20260719.docx`：各版本与消融分析 Word 文档

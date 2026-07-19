@@ -2,107 +2,104 @@
 
 ## 1. 说明
 
-本文件用于整理项目上级目录 `..\相关论文` 中参考文献的初步阅读结论，目标不是复现全部论文细节，而是提炼对当前四分类肺部 CT baseline 最有价值、最容易落地的优化方向。
-
-当前归纳主要基于论文标题、摘要、方法结构与任务设定的对照，服务于本仓库下一阶段的实验设计。
+本文档用于整理项目上级目录 `..\相关论文(1)` 中参考论文的初步阅读结论。目标不是逐篇复现论文，而是提炼对当前肺部 CT 四分类任务最有价值、最容易落地的优化方向，并与本项目现有实验结果对应起来。
 
 ## 2. 总体结论
 
-对当前项目最有帮助的思路可以压缩为四点：
+对当前项目最有帮助的思路可以概括为五点：
 
-1. 优先使用迁移学习。随机初始化的 CNN baseline 在小样本四分类任务上通常偏弱。
-2. 优先试轻量注意力或全局上下文增强，而不是立刻大改为完整 Transformer 流程。
-3. 对腺癌、鳞癌高误诊问题，要从损失函数、采样策略和误差分析同时入手。
-4. 后续实验汇报不能只看准确率，应同步看 `macro F1`、各类别召回率和混淆矩阵。
+1. 优先使用迁移学习。随机初始化的 CNN 在当前小样本四分类任务上明显偏弱。
+2. 保持统一 backbone，更有利于开展可信的消融实验。当前项目固定 `EfficientNet-B0` 是合理选择。
+3. 在小样本医学图像场景中，轻量注意力机制通常比大幅改写架构更稳妥。
+4. 对肿瘤亚型间混淆问题，损失函数、边界平滑和专家式细分往往比单纯增加 epoch 更有效。
+5. 评价模型时不能只看准确率，应联合 `macro F1`、各类召回率和混淆矩阵。
 
 ## 3. 论文拆解
 
 ### 3.1 Leveraging Transfer Learning and Attention Mechanisms for a Computed Tomography Lung Cancer Classification Model
 
-- 任务相关性：高。直接面向肺癌 CT 分类。
-- 关键做法：迁移学习、注意力机制、微调训练。
+- 任务相关性：高，直接面向肺癌 CT 分类。
+- 关键词：迁移学习、注意力机制、微调训练。
 - 对本项目的启发：
-  - `--pretrained` 应作为最近一轮 baseline 优化的首选实验。
-  - 注意力模块值得在现有 CNN 框架中增量加入。
-  - 后续训练配置可考虑加入 `label smoothing` 一类缓解过度自信预测的手段。
+  - `pretrained` 应作为首要实验方向。
+  - 注意力模块可以在现有 CNN 框架中做增量验证。
+  - 若模型出现过度自信，应考虑 `label smoothing` 之类的正则手段。
 
 ### 3.2 Lung-EffNet
 
-- 任务相关性：高。核心路线与当前项目都围绕 `EfficientNet`。
-- 关键做法：`EfficientNet` 系列、迁移学习、数据增强。
+- 任务相关性：高，与当前项目都围绕 `EfficientNet` 路线展开。
+- 关键词：`EfficientNet`、迁移学习、数据增强。
 - 对本项目的启发：
-  - 当前 `EfficientNet-B0` 路线本身可继续保留。
-  - 在资源允许时，可补试 `EfficientNet-B1`，比较是否优于 `B0`。
-  - 数据增强不应只停留在基础随机裁剪与翻转，应增强对易混类别的针对性。
+  - 当前 `EfficientNet-B0` 路线可以继续保留。
+  - 若后续还要扩展 backbone，优先尝试 `EfficientNet-B1` 这类渐进升级。
+  - 数据增强需要针对医学图像纹理特征谨慎设计，不能默认越强越好。
 
 ### 3.3 Classification of lung cancer subtypes on CT images with synthetic pathological priors
 
-- 任务相关性：高。直接针对肺癌亚型分类。
-- 关键做法：融合额外先验信息，提高亚型可分性。
+- 任务相关性：高，直接关注肺癌亚型分类。
+- 关键词：亚型边界、先验信息、细粒度区分。
 - 对本项目的启发：
-  - 当前单流图像分类器过于朴素，后续应考虑辅助监督或更强先验。
-  - 在现阶段无法直接复现病理先验时，可先用类别加权、误差驱动的数据分析和辅助损失做弱化替代。
-  - 重点不是继续堆 epoch，而是增强亚型边界学习能力。
+  - 当前单模型对肿瘤亚型边界仍不够稳。
+  - 如果无法直接引入病理先验，至少应通过损失函数设计、误差分析或专家模型去强化局部边界学习。
+  - 当前的专家级联路线，本质上就是对“亚型内再细分”思路的工程化近似。
 
 ### 3.4 CCT Lightweight compact convolutional transformer for lung disease CT image classification
 
-- 任务相关性：中。任务不是完全同一问题，但方法思路有借鉴价值。
-- 关键做法：轻量卷积 Transformer，强调全局上下文建模。
+- 任务相关性：中，任务不完全相同，但方法设计有借鉴价值。
+- 关键词：轻量卷积 Transformer、全局上下文。
 - 对本项目的启发：
-  - 当前误判模式说明模型可能过度依赖局部纹理。
-  - 全局上下文增强是合理方向，但第一步应优先做轻量模块而不是全面重写训练框架。
+  - 当前误判模式提示模型可能过度依赖局部纹理。
+  - 轻量上下文增强是合理方向，但第一步应优先试兼容当前框架的小改动，例如 `CBAM`。
 
 ### 3.5 EfficientNet with attention and global blocks for accurate pulmonary disease detection in chest CT scans
 
-- 任务相关性：中。病种不同，但结构设计可迁移。
-- 关键做法：`EfficientNet` + 注意力 / global block。
+- 任务相关性：中，疾病集合不同，但结构设计可迁移。
+- 关键词：`EfficientNet`、注意力、全局块。
 - 对本项目的启发：
-  - 现有 `EfficientNet` 路线可以自然扩展到“backbone + 上下文增强”版本。
-  - 如果需要做结构升级，应优先选兼容当前代码的小改动方案。
+  - 当前 `EfficientNet` 主线可自然扩展为“backbone + attention”的版本。
+  - 如果继续做结构优化，应优先选择兼容当前代码的小模块，而不是直接推翻现有训练流程。
 
 ### 3.6 Emerging computational intelligence based techniques for lung cancer diagnosis and classification on chest CT scan images
 
-- 任务相关性：中。综述性质，适合把握共性结论。
-- 关键做法：总结肺癌 CT 分类中的常见方法组合。
+- 任务相关性：中，偏综述。
+- 关键词：方法组合、可解释性、混合路线。
 - 对本项目的启发：
-  - 高性能方案往往不是裸 CNN，而是迁移学习、注意力、损失设计、可解释性分析的组合。
-  - 论文写作时可以用它来支撑“为什么选择这些优化路线”。
+  - 高性能方案通常不是单一技巧，而是迁移学习、损失设计、注意力和分析方法的组合。
+  - 论文写作时可以用这类综述支撑“为什么选择这些优化路线”的方法论说明。
 
-## 4. 对当前仓库的具体改造建议
+## 4. 文献启发与当前实验的对应关系
 
-按投入产出比排序，建议依次做：
+截至 `2026-07-19`，当前项目的实验结果已经对部分文献启发给出了明确验证：
 
-1. `pretrained EfficientNet-B0` 复现实验。
-2. 加入学习率调度器与 `label smoothing`。
-3. 尝试类别加权 `CrossEntropyLoss`、`Focal Loss` 或采样策略。
-4. 在当前 backbone 上试验 `SE` / `CBAM` 等轻量注意力模块。
-5. 基于混淆矩阵做误差样本分析，并补充 `Grad-CAM`。
-6. 如 CPU 试验周期过长，再考虑切换 GPU 或缩小搜索范围。
+1. `pretrained` 是收益最大的单步改进。
+   - 对应实验：`v1.1_scratch_ce_cuda -> v2.0_pretrained_ce`
+2. `label smoothing` 是有效的低成本边界正则。
+   - 对应实验：`v2.0_pretrained_ce -> v2.2_pretrained_ce_ls`
+3. `CBAM` 是当前最有效的结构增量。
+   - 对应实验：`v3.0_pretrained_focal_ls_cosine -> v3.4_pretrained_focal_ls_cosine_cbam`
+4. 额外 `SE` 在 `EfficientNet-B0` 上收益有限。
+   - 对应实验：`v3.3_pretrained_focal_ls_cosine_se`
+5. 标准 `balanced weighted CE`、`MixUp`、`CutMix` 在当前小样本设定下不适合作为主线方案。
+6. 专家级联对肿瘤亚型边界修正是有价值的。
+   - 对应实验：`cascade_v*` 与 `cascade_pair_*`
 
-## 5. 实验记录建议
+## 5. 对当前仓库的具体建议
 
-后续每次实验至少记录以下项目：
+按投入产出比排序，当前最值得继续做的是：
 
-- 模型结构与是否预训练
-- 损失函数与采样策略
-- 学习率、轮数、batch size
-- 验证集准确率
-- 测试集准确率
-- 测试集 `macro F1`
-- 各类别召回率
-- 关键混淆项是否改善
+1. 以 `v3.4_pretrained_focal_ls_cosine_cbam` 为主模型，继续优化专家触发阈值。
+2. 对最佳单模型和最佳级联模型开展误差分析，定位高频误判样本。
+3. 如果还要做结构扩展，优先围绕当前最佳主模型做小步修改。
+4. 如需继续尝试新 backbone，先保证现有 `52` 组实验的结论已充分整理，再决定是否追加。
 
 ## 6. 当前结论
 
-对于本项目，最现实、最值得优先执行的路线不是直接推翻现有 baseline，而是在 `EfficientNet` 主线上逐步加入：
+对于本项目，最现实、最值得优先执行的路线不是推翻现有 baseline，而是在固定 `EfficientNet-B0` 主线的前提下逐步叠加：
 
-1. 预训练迁移
-2. 更合理的优化目标与损失设计
-3. 轻量注意力 / 全局上下文增强
-4. 更细的误差分析与可解释性检查
-## Ablation Implications
+1. 预训练迁移学习
+2. 更合理的损失与正则设计
+3. 轻量注意力模块
+4. 面向高混淆类别的专家级联机制
+5. 更细的误差分析与可解释性检查
 
-- Pretraining remains the strongest transferable improvement for this dataset.
-- Label smoothing is the best low-cost regularizer in the current runs.
-- MixUp and CutMix do not help under the present small-sample setting.
-- Extra CBAM is the strongest structural add-on; `EfficientNet-B0` already contains internal SE blocks.
+这也是当前 `52` 组实验后保留下来的主线结论。

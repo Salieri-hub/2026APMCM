@@ -1,0 +1,24 @@
+﻿**********************
+Windows PowerShell 脚本开始
+开始时间: 20260719184343
+用户名: 九月的天选\梁嘉纯
+RunAs 用户: 九月的天选\梁嘉纯
+配置名称: 
+计算机: 九月的天选 (Microsoft Windows NT 10.0.26200.0)
+主机应用程序: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -File .\scripts\run_all_cascade_tumor3.ps1 -PythonExe ..\LCC_GPU\python.exe
+进程 ID: 26180
+PSVersion: 5.1.26100.8875
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.8875
+BuildVersion: 10.0.26100.8875
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Repo root: C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\2026APMCM
+Python: ..\LCC_GPU\python.exe
+Expert classes: adenocarcinoma,large.cell.carcinoma,squamous.cell.carcinoma
+Trigger: top-2, margin <= 0.12
+
+========== TRAIN EXPERT: v2.0_pretrained_ce ==========

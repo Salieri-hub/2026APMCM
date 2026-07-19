@@ -1,15 +1,16 @@
-# APMCM 2026 B题阶段进度汇报
+# APMCM 2026 B题阶段进度汇总
 
-截至 `2026-07-19`，本项目已完成问题一的数据统计框架、问题二 baseline 搭建、GPU 环境验证，以及 `12` 组正式实验和 `1` 组 smoke test。当前工作重点已经从“先把模型跑通”转向“围绕当前最优结构继续提升泛化能力，并整理可直接用于论文与汇报的材料”。
+截至 `2026-07-19`，本项目已经完成问题一的数据统计框架、问题二的单模型 baseline、GPU 环境验证，以及从单模型到专家级联的系统扩展。当前工作重点已经从“先把模型跑通”转向“围绕当前最优主模型和专家机制总结稳定结论，并整理论文可用材料”。
 
-## 1. 当前整体进展
+## 1. 当前整体进度
 
-- 问题一：题意分析、数据规模统计和准确率公式计算已完成，后续需要整理成正式论文式表述。
-- 问题二：已完成 `EfficientNet-B0` 四分类 baseline，实现 `CUDA/CPU` 自动切换、AMP、学习率调度、`Focal Loss`、类别加权、`MixUp/CutMix`、`SE/CBAM` 等增量实验能力。
-- 环境方面：`..\LCC_GPU` 已验证可正常进行 CUDA 训练，当前主机可识别 `NVIDIA GeForce RTX 4060 Laptop GPU`。
-- 当前阶段判断：已经有可复现、可比较的稳定 baseline，但还不是最终提交方案，后续仍要围绕误分类边界继续优化。
+- 问题一：题意分析、数据规模统计和准确率公式计算已完成，后续主要是整理成正式论文表述。
+- 问题二：已完成 `EfficientNet-B0` 四分类主模型、专家模型训练和级联评估管线。
+- 环境方面：`..\LCC_GPU` 已在本机验证可用于 CUDA 训练。
+- 实验方面：已完成 `12` 组单模型实验、`10` 组三肿瘤专家级联实验和 `30` 组两两肿瘤专家级联实验，共 `52` 组正式结果。
+- 文档方面：已生成 Markdown 和 Word 两类汇总材料，能够支持后续论文写作与答辩。
 
-## 2. 数据与 baseline 情况
+## 2. 数据与基线情况
 
 当前数据集划分如下：
 
@@ -26,78 +27,133 @@
 - `normal`
 - `squamous.cell.carcinoma`
 
-当前 baseline 主体配置为：
+当前统一 backbone 为：
 
-- 主干网络：`EfficientNet-B0`
-- 优化器：`AdamW`
-- 默认轮数：`25`
-- 输入尺寸：`224 x 224`
-- 可选损失：`CrossEntropyLoss / Focal Loss`
-- 可选策略：`pretrained`、`label smoothing`、`cosine scheduler`、类别加权、`MixUp`、`CutMix`、`SE`、`CBAM`
+- `EfficientNet-B0`
 
-## 3. 实验命名规则
+这样做的目的不是证明 `B0` 一定最优，而是先固定一个轻量、稳定、易复现实验的主干网络，便于开展消融和级联对照。
 
-- 正式实验目录统一采用 `vX.Y_<change>` 规则。
-- `v1.x` 表示 scratch + CE 系列。
-- `v2.x` 表示 pretrained + CE 系列。
-- `v3.x` 表示 pretrained + focal + label smoothing + cosine 系列。
-- `ablation_smoke_mixup_cbam` 仅用于流程验证，不纳入正式比较。
+## 3. 单模型实验进展
 
-## 4. 12组正式实验结果汇总
+正式单模型实验统一采用 `vX.Y_<change>` 命名。
 
-| 实验目录 | 基于哪组 | 新增改动 | 验证集准确率 | 测试集准确率 | Macro F1 |
-| --- | --- | --- | ---: | ---: | ---: |
-| `v1.0_scratch_ce_cpu` | 无 | scratch + CE + CPU | 62.50% | 39.68% | 0.4427 |
-| `v1.1_scratch_ce_cuda` | `v1.0_scratch_ce_cpu` | 仅改为 CUDA | 69.44% | 40.63% | 0.4488 |
-| `v2.0_pretrained_ce` | `v1.1_scratch_ce_cuda` | 开启 pretrained | 91.67% | 76.19% | 0.7721 |
-| `v2.1_pretrained_ce_cosine` | `v2.0_pretrained_ce` | 加 cosine scheduler | 90.28% | 77.14% | 0.7957 |
-| `v2.2_pretrained_ce_ls` | `v2.0_pretrained_ce` | 加 label smoothing | 97.22% | 83.81% | 0.8416 |
-| `v2.3_pretrained_ce_ls_cosine` | `v2.2_pretrained_ce_ls` | 在 `v2.2` 上再加 cosine | 90.28% | 77.46% | 0.7894 |
-| `v2.4_pretrained_ce_ls_cosine_weightedce` | `v2.3_pretrained_ce_ls_cosine` | 再加 balanced weighted CE | 87.50% | 73.33% | 0.7547 |
-| `v3.0_pretrained_focal_ls_cosine` | `v2.3_pretrained_ce_ls_cosine` | 将 CE 改为 focal loss | 90.28% | 79.37% | 0.7988 |
-| `v3.1_pretrained_focal_ls_cosine_mixup` | `v3.0_pretrained_focal_ls_cosine` | 加 MixUp | 86.11% | 71.75% | 0.7320 |
-| `v3.2_pretrained_focal_ls_cosine_cutmix` | `v3.0_pretrained_focal_ls_cosine` | 加 CutMix | 91.67% | 73.97% | 0.7546 |
-| `v3.3_pretrained_focal_ls_cosine_se` | `v3.0_pretrained_focal_ls_cosine` | 加额外 SE 模块 | 93.06% | 77.14% | 0.7884 |
-| `v3.4_pretrained_focal_ls_cosine_cbam` | `v3.0_pretrained_focal_ls_cosine` | 加 CBAM 模块 | 93.06% | 86.35% | 0.8646 |
+### 3.1 单模型阶段性结论
 
-## 5. 阶段性结论
+- `pretrained` 是收益最大的单步改动。
+- `label smoothing` 是 CE 系列里最有效的低成本正则项。
+- `balanced weighted CE`、`MixUp`、`CutMix` 在当前数据上整体无益。
+- `CBAM` 是当前最有效的结构增量，明显优于额外 `SE`。
 
-- `pretrained` 是最关键的一步，测试集准确率相对 `v1.1_scratch_ce_cuda` 从 `40.63%` 提升到 `76.19%`。
-- 在 CE 系列中，`label smoothing` 的收益明显强于单独加入 `cosine scheduler`，说明当前问题更偏向过拟合与过度自信，而不是单纯学习率退火不足。
-- `v2.3_pretrained_ce_ls_cosine` 没有超过 `v2.2_pretrained_ce_ls`, 说明这两个改动在当前数据集上没有形成稳定叠加收益。
-- `v2.4_pretrained_ce_ls_cosine_weightedce` 明显下降，说明标准 `balanced weighted CE` 在当前场景下干预过强。
-- `v3.0_pretrained_focal_ls_cosine` 说明 focal loss 对难分类样本有一定帮助，但还不是最佳方案。
-- `v3.1_pretrained_focal_ls_cosine_mixup` 和 `v3.2_pretrained_focal_ls_cosine_cutmix` 均下降，说明强混合增强会破坏当前小样本医学图像中的关键纹理信息。
-- `v3.3_pretrained_focal_ls_cosine_se` 收益有限，而 `v3.4_pretrained_focal_ls_cosine_cbam` 明显优于它，说明空间注意力比额外通道重标定更有效。
-- 当前最优结果为 `v3.4_pretrained_focal_ls_cosine_cbam`，测试集准确率 `86.35%`，`Macro F1 = 0.8646`。
+### 3.2 当前最佳单模型
 
-## 6. 当前最优实验的重点解读
-
-`v3.4_pretrained_focal_ls_cosine_cbam` 的核心配置是：
+当前最佳单模型目录为：
 
 ```text
-pretrained + focal loss(gamma=2) + label smoothing(0.1) + cosine scheduler + CBAM
+v3.4_pretrained_focal_ls_cosine_cbam
 ```
 
-该实验的各类测试集召回率为：
+结果如下：
 
-- `adenocarcinoma`：`90.83%`
-- `large.cell.carcinoma`：`90.20%`
-- `normal`：`98.15%`
-- `squamous.cell.carcinoma`：`71.11%`
+- 最佳验证集准确率：`93.06%`
+- 测试集准确率：`86.35%`
+- 测试集 `macro F1`：`0.8646`
 
-这说明当前模型整体指标已经较强，但鳞癌召回率仍然偏低，仍然是下一阶段最需要解决的问题。
+该模型已经能够作为后续级联实验的稳定主模型。
 
-## 7. 下一步计划
+## 4. 专家模型与级联实验进展
 
-- 继续围绕 `v3.4_pretrained_focal_ls_cosine_cbam` 尝试采样策略或手动类别权重，优先拉回鳞癌召回率。
-- 重点验证 `Focal Loss + 手动权重` 是否能在保住腺癌和大细胞癌收益的同时，减少鳞癌漏判。
-- 开展误差分析，重点检查“鳞癌 -> 腺癌 / 大细胞癌”的高频误判样本。
-- 将问题一统计结论与问题二实验结果整理成论文可直接使用的正式文字。
+在单模型实验完成后，项目进一步扩展为“主模型 + 专家模型”的级联路线：
 
-## 8. 口头汇报压缩版
+- `expert` 模式：训练类别子集专家模型
+- `cascade` 模式：主模型先判，再按触发规则调用专家模型细分
 
-1. 目前我已经完成了问题二 baseline、GPU 环境和 `12` 组正式对比实验，项目已经从“先跑通模型”进入“围绕最优结构继续优化”的阶段。
-2. 这一轮实验里最有效的三个改动是 `pretrained`、`label smoothing` 和 `CBAM`，其中迁移学习带来的提升最大。
-3. 当前最优实验目录是 `v3.4_pretrained_focal_ls_cosine_cbam`，测试集准确率达到 `86.35%`，`Macro F1` 达到 `0.8646`。
-4. 下一步我会重点解决鳞癌召回率偏低的问题，继续尝试采样策略、手动权重和误差分析。
+当前已完成：
+
+- `10` 组三肿瘤专家级联实验
+- `30` 组两两肿瘤专家级联实验
+- 共 `40` 个专家模型训练
+
+### 4.1 三肿瘤专家级联
+
+三肿瘤专家负责：
+
+- `adenocarcinoma`
+- `large.cell.carcinoma`
+- `squamous.cell.carcinoma`
+
+阶段性结论：
+
+- `10` 组里有 `8` 组优于对应单模型
+- 整体比两两肿瘤专家级联更稳
+- 说明“先让主模型区分 normal / tumor，再在肿瘤内部细分”的思路是成立的
+
+### 4.2 两两肿瘤专家级联
+
+已完成的三条两两专家支路：
+
+- `adenocarcinoma` vs `large.cell.carcinoma`
+- `adenocarcinoma` vs `squamous.cell.carcinoma`
+- `large.cell.carcinoma` vs `squamous.cell.carcinoma`
+
+阶段性结论：
+
+- `30` 组里有 `21` 组优于对应单模型
+- 平均表现最好的是 `large.cell.carcinoma` vs `squamous.cell.carcinoma`
+- 两两专家级联有收益，但稳定性不如三肿瘤专家级联
+
+## 5. 当前最佳整体结果
+
+截至 `2026-07-19`，`52` 组正式结果中的全局最佳为：
+
+```text
+cascade_v3.4_pretrained_focal_ls_cosine_cbam
+```
+
+对应指标：
+
+- 测试集准确率：`87.62%`
+- 测试集 `macro F1`：`0.8773`
+
+相对最佳单模型：
+
+- 测试集准确率提升 `1.27` 个百分点
+- 测试集 `macro F1` 提升约 `0.0127`
+
+测试集触发统计：
+
+- `expert_invocations = 17`
+- `expert_changed_predictions = 8`
+- `expert_corrected_predictions = 5`
+- `expert_hurt_predictions = 1`
+
+这说明当前级联机制是在少量高混淆样本上产生净收益，而不是简单粗暴地大范围改写主模型输出。
+
+## 6. 训练状态判断
+
+对 `40` 个专家模型训练日志的检查结果表明：
+
+- 没有发现明显的普遍欠拟合
+- 主要问题是过拟合和验证集波动
+- `MixUp / CutMix` 专家实验中的较低训练准确率不能直接视为欠拟合，因为其训练准确率统计本身受混合标签影响
+
+因此，当前专家模型的核心问题不是“学不动”，而是“训练集学得很深，但泛化优势不总是稳定”。
+
+## 7. 当前存在的问题
+
+1. 验证集样本数较少，导致最佳 epoch 和验证指标波动较大。
+2. 单模型体系下鳞癌召回率仍然是主要短板。
+3. 级联触发规则还可以继续优化，不是所有版本都稳定优于主模型。
+4. 本地 Windows 批量训练时需要注意页面文件和 DataLoader 进程数。
+
+## 8. 下一步计划
+
+1. 以当前最佳主模型和最佳三肿瘤专家模型为基础，继续试触发阈值微调。
+2. 对最佳单模型和最佳级联模型做误差分析和高混淆样本检查。
+3. 将 `52` 组实验的主要结论压缩整理为论文正文可直接使用的实验分析。
+
+## 9. 口头汇报压缩版
+
+1. 目前项目已经从单模型 baseline 扩展到专家级联体系，正式结果达到 `52` 组。
+2. 单模型阶段最有效的改动是 `pretrained`、`label smoothing` 和 `CBAM`。
+3. 当前最佳单模型是 `v3.4_pretrained_focal_ls_cosine_cbam`，测试集准确率 `86.35%`。
+4. 当前最佳整体结果是 `cascade_v3.4_pretrained_focal_ls_cosine_cbam`，测试集准确率 `87.62%`，说明专家级联在高混淆样本上能带来进一步收益。

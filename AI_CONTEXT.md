@@ -1,135 +1,168 @@
-﻿# AI_CONTEXT
+# AI_CONTEXT
 
 ## 当前项目目标
 
 项目目标是完成 APMCM 2026 B题“肺癌疾病诊断图像识别与分类问题”的阶段性求解，当前重点包括：
 
 1. 梳理问题一的数据统计分析要求并形成可写入论文的结论。
-2. 搭建问题二的可运行 baseline 分类模型。
-3. 基于 baseline 结果定位性能瓶颈，为后续优化提供依据。
+2. 搭建问题二的可运行四分类主模型，并开展系统化消融实验。
+3. 在主模型基础上训练专家模型，并通过级联触发机制降低肿瘤亚型之间的误诊率。
+4. 将实验结果沉淀为可直接用于论文、答辩和汇报的文档材料。
 
 ## 当前整体进度
 
-当前已完成题目理解、数据结构核对、baseline 搭建、一次 `20 epoch` CPU 实跑验证、一轮相关文献初步阅读、训练脚本的 GPU 化改造、独立 GPU 环境 `..\LCC_GPU` 的建立与验证、一次正式 `25 epoch` GPU baseline 训练、一次加入 `label smoothing + cosine scheduler` 的对比实验、一次 `balanced class-weighted CrossEntropy` 对比实验、一次 `focal loss(gamma=2)` 对比实验，以及一次 `SE` / `CBAM` 注意力模块对比实验。项目已进入“围绕当前最优结构与类别边界继续优化”阶段。
+当前已完成题目理解、数据结构核对、`src/main.py` 主流程搭建、GPU 环境准备、单模型正式消融、专家模型训练和级联实验扩展。项目已从“先把 baseline 跑通”进入“围绕最佳主模型和专家级联机制做总结与针对性优化”的阶段。
+
+截至 `2026-07-19`，已完成：
+
+- `12` 组单模型正式实验
+- `10` 组三肿瘤专家级联实验
+- `30` 组两两肿瘤专家级联实验
+- 共 `52` 组正式结果对比
+- 对应的 `40` 个专家模型训练
+- 多份 Word/Markdown 总结文档与批处理脚本
 
 ## 本次已完成内容
 
-- 阅读赛题 PDF，完成问题一的任务拆解和核心计算结论。
-- 识别并核对项目外部目录 `..\附件\Data` 下 `train/valid/test` 的实际目录结构与类别映射。
-- 在项目外部目录 `..\LCC` 虚拟环境下补齐 baseline 所需依赖。
-- 实现 `src/main.py`：
-  - 自动读取数据集
-  - 统一四类标签
-  - 构建 `EfficientNet-B0`
-  - 使用 `CrossEntropyLoss + AdamW`
-  - 按验证集准确率保存最佳模型
-  - 输出测试集预测和混淆矩阵
-- 生成并更新问题二说明文档。
-- 跑通 `20 epoch` baseline，并完成结果检查。
-- 初步阅读项目上级目录 `..\相关论文` 中的参考文献，并结合公开摘要归纳后续可迁移的优化路线。
-- 核对本机 GPU 状态，确认当前主机存在 `NVIDIA GeForce RTX 4060 Laptop GPU`，驱动版本 `581.80`。
-- 将 `src/main.py` 改为 GPU 优先版本，增加：
-  - `--device auto / cpu / cuda`
-  - CUDA 自动 AMP 混合精度
-  - GPU 场景下自动 `num_workers`
-  - `pin_memory`、`non_blocking`、`persistent_workers`
-  - 按实验基线自动写入独立输出目录，例如 `outputs/v1.1_scratch_ce_cuda`、`outputs/v2.0_pretrained_ce`
-- 基于未改动的 `..\LCC310` 复制生成 `..\LCC_GPU`，并安装 CUDA 版 `torch==2.13.0+cu130`、`torchvision==0.28.0+cu130`。
-- 使用 `..\LCC_GPU\python.exe` 完成一次最小 GPU smoke test，确认 CUDA 训练路径可用。
-- 使用 `..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained` 完成一次正式 `25 epoch` 训练。
-- 在 `src/main.py` 中加入 `label smoothing`、学习率调度器和每轮学习率记录。
-- 使用 `..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --label-smoothing 0.1 --scheduler cosine` 完成一轮对比实验。
-- 在 `src/main.py` 中加入类别加权 `CrossEntropyLoss` 参数，支持 `balanced` 与 `manual` 两种模式。
-- 使用 `..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --label-smoothing 0.1 --scheduler cosine --class-weighting balanced` 完成一轮对比实验。
-- 在 `src/main.py` 中加入 `FocalLoss` 实现与 `--loss / --focal-gamma` 参数，兼容现有类别权重、`label smoothing` 与学习率调度器配置。
-- 使用 `--loss focal --focal-gamma 2 --label-smoothing 0.1 --scheduler cosine` 完成一轮对比实验，并输出 `outputs/v3.0_pretrained_focal_ls_cosine`。
-- 完成 `SE` / `CBAM` 注意力模块对比实验，确认 `CBAM` 为当前最优结构增量。
+- 阅读赛题 PDF，完成问题一任务拆解和核心计算结论。
+- 核对项目外部目录 `..\附件\Data` 下 `train/valid/test` 的目录结构与类别映射。
+- 在 `src/main.py` 中实现四分类训练、验证、测试主流程。
+- 将 `src/main.py` 扩展为支持三种模式：
+  - `single`：四分类主模型训练与评估
+  - `expert`：类别子集专家模型训练
+  - `cascade`：主模型 + 专家模型级联评估
+- 在训练脚本中加入：
+  - `CUDA/CPU` 自动切换
+  - AMP 混合精度
+  - `label smoothing`
+  - 学习率调度器
+  - `Focal Loss`
+  - 类别加权 `CrossEntropy`
+  - `MixUp / CutMix`
+  - `SE / CBAM`
+- 建立并验证 `..\LCC_GPU` CUDA 环境。
+- 完成 `v1.0` 到 `v3.4` 的 `12` 组单模型正式消融实验。
+- 完成 `10` 组三肿瘤专家模型训练与级联评估。
+- 完成 `30` 组两两肿瘤专家模型训练与级联评估。
+- 编写批处理脚本：
+  - `scripts/run_all_cascade_tumor3.ps1`
+  - `scripts/run_all_cascade_tumor_pairs.ps1`
+- 生成并更新文档：
+  - `README.md`
+  - `doc/problem2_baseline.md`
+  - `doc/ablation_results.md`
+  - `doc/progress_report_2026-07-19.md`
+  - 多个 `.docx` 汇总文档与生成脚本
 
 ## 已修改模块
 
 - `src/main.py`
 - `README.md`
-- `doc/problem2_baseline.md`
 - `AI_CONTEXT.md`
 - `TODO.md`
+- `doc/problem2_baseline.md`
+- `doc/literature_review.md`
+- `doc/ablation_results.md`
+- `doc/progress_report_2026-07-19.md`
+- `scripts/run_all_cascade_tumor3.ps1`
+- `scripts/run_all_cascade_tumor_pairs.ps1`
+- `scripts/generate_version_comparison_docx.py`
+- `scripts/generate_outputs_version_ablation_docx.py`
+- `scripts/generate_52_experiment_comparison_docx.py`
+- `scripts/generate_ablation_results_cn_docx.py`
 - `..\LCC_GPU\*`
 
 ## 当前模型 / 算法状态
 
-当前 baseline 配置：
+当前主线配置：
 
 - 框架：PyTorch + timm
 - 主干网络：`efficientnet_b0`
-- 损失函数：支持 `CrossEntropyLoss / Focal Loss`
+- 主模型任务：四分类
+- 专家模型任务：二分类或三分类子任务
+- 专家模型 backbone：同样使用 `efficientnet_b0`
 - 优化器：`AdamW`
+- 损失函数：支持 `CrossEntropyLoss / Focal Loss`
 - 学习率调度：支持 `none / cosine / plateau`
-- 默认轮数：`25`
-- 最近一次已验证运行：`25 epoch`
+- 结构增量：支持 `SE / CBAM`
+- 数据增强：支持 `MixUp / CutMix`
 - 设备策略：`auto -> cuda if available else cpu`
-- CUDA 优化：AMP、自动 `num_workers`、`pin_memory`
-- 预训练：已启用
 
-当前最新对比实验中，测试集表现最好的核心结果：
+级联触发逻辑：
 
-- 最佳验证集轮次：`epoch 17`
+1. 先由四分类主模型输出 4 类概率。
+2. 只有当主模型 `top-k` 预测全部落在专家类别子集内时，专家模型才有资格触发。
+3. 当 `top1 - top2` 的置信差值不大于 `--expert-margin-threshold` 时，认为主模型在该局部边界上不够确定，触发专家模型二次判别。
+4. 触发后不是直接覆盖主模型，而是对专家子集内的概率做重新分配，再输出最终四分类结果。
+
+## 当前最佳结果
+
+当前最佳单模型：
+
+- 目录：`outputs/v3.4_pretrained_focal_ls_cosine_cbam`
+- 配置：`pretrained + focal loss(gamma=2) + label smoothing(0.1) + cosine scheduler + CBAM`
 - 最佳验证集准确率：`93.06%`
 - 测试集准确率：`86.35%`
 - 测试集 `macro F1`：`0.8646`
-- 测试集 `weighted F1`：`0.8647`
-- 配置：`pretrained + focal_loss(gamma=2) + label_smoothing=0.1 + cosine scheduler + CBAM`
-- 总训练耗时：约 `195.1s`
 
-当前运行环境状态：
+当前全局最佳结果：
 
-- 主机 GPU 已存在并可被 `nvidia-smi` 识别。
-- 截至 `2026-07-18`，`..\LCC_GPU` 已验证 `torch.cuda.is_available() == True`。
-- 当前最新完整训练指标已经来自 GPU 调参实验。
+- 目录：`outputs/cascade_v3.4_pretrained_focal_ls_cosine_cbam`
+- 主模型：`v3.4_pretrained_focal_ls_cosine_cbam`
+- 专家模型：三肿瘤专家模型 `expert_tumor3_v3.4_pretrained_focal_ls_cosine_cbam`
+- 触发参数：`top-k=2`，`margin <= 0.12`
+- 测试集准确率：`87.62%`
+- 测试集 `macro F1`：`0.8773`
+- 测试集触发统计：
+  - `expert_invocations = 17`
+  - `expert_changed_predictions = 8`
+  - `expert_corrected_predictions = 5`
+  - `expert_hurt_predictions = 1`
 
-当前模型误差特征：
+当前最佳两两肿瘤专家级联结果：
 
-- `normal` 类仍然相对稳定，但精度略受其他类别误入影响。
-- `CBAM` 将 `adenocarcinoma` 与 `large.cell.carcinoma` 召回率进一步推高，但 `squamous.cell.carcinoma` 召回率回落到 `71.11%`。
-- 相比 `SE`，`CBAM` 的整体收益明显更大，说明额外注意力不是“越多越好”，而是要看插入位置和交互形式。
-- 相比旧 CPU baseline，泛化落差已明显缩小，但三种癌症亚型之间的边界仍未完全稳定。
-- 标准 `balanced` 类别加权仍低于当前 `CBAM` 方案。
+- 目录：`outputs/cascade_pair_lc_sq_v3.4_pretrained_focal_ls_cosine_cbam`
+- 测试集准确率：`86.67%`
+- 测试集 `macro F1`：`0.8681`
 
-## 文献调研结论
+## 当前分析结论
 
-本轮文献梳理后，当前可直接迁移到本项目的结论如下：
-
-1. `transfer learning` 是当前最应优先落地的低成本优化项，现有 baseline 未启用预训练权重，和文献中的常见做法相比明显偏弱。
-2. 注意力机制是比“直接换重模型”更稳妥的下一步，但当前实验证明 `CBAM` 明显优于额外 `SE`，优先级应放在 `CBAM` 或轻量 global context 模块，而不是立刻全面改写为 Transformer 方案。
-3. 腺癌与鳞癌被误判为大细胞癌的问题，本质上更接近类间边界不清和训练偏置，宜优先尝试类别加权损失、`Focal Loss`、`label smoothing`、采样策略与误差样本分析。
-4. 后续实验汇报不应只看验证集准确率，应同步比较 `macro F1`、各类别召回率和混淆矩阵。
+1. `pretrained` 是最重要的单步提升，显著强于单纯从 CPU 切到 CUDA。
+2. 在单模型体系中，`label smoothing` 是当前最有效的低成本正则项。
+3. `balanced class-weighted CE`、`MixUp`、`CutMix` 在当前小样本设置下整体无益。
+4. `CBAM` 明显优于额外 `SE`，是当前最有效的结构增量。
+5. 三肿瘤专家级联整体比两两肿瘤专家级联更稳，平均收益更一致。
+6. 两两肿瘤专家中，`large.cell.carcinoma` vs `squamous.cell.carcinoma` 这一支平均效果最好。
+7. 从训练日志看，绝大多数专家模型并不存在典型欠拟合，主要问题是过拟合和验证波动。
 
 ## 当前存在的问题
 
-1. `CBAM` 已把测试集准确率提升到 `86.35%`、`macro F1` 提升到 `0.8646`，但鳞癌召回率回落到 `71.11%`，仍需继续平衡类别取舍。
-2. 标准 `balanced class-weighted CrossEntropy` 已完成验证，但测试集准确率降到 `73.33%`、`macro F1` 降到 `0.7547`，不适合作为当前首选方案。
-3. `SE` 已验证但收益有限，不如 `CBAM` 明显。
-4. 当前最佳模型仍以验证集准确率为主要保存依据，实验评价维度还可以继续扩展。
+1. 验证集只有 `72` 张，导致验证准确率和最佳轮次存在较明显波动。
+2. 单模型体系下鳞癌召回率仍是主要短板之一。
+3. 不是所有级联版本都优于单模型，说明当前触发规则仍有优化空间。
+4. 专家模型多数已把训练集学得很深，但泛化优势不稳定，提示需要继续控制过拟合。
+5. Windows 本地批量训练时若 DataLoader 进程数过高，容易触发页面文件不足问题。
+
+## 文献调研结论
+
+基于 `..\相关论文(1)` 的整理，当前可以视为已经被实验验证或部分验证的结论如下：
+
+1. 迁移学习是该任务中收益最大的低成本配置。
+2. `EfficientNet` 作为统一 backbone 是合理路线，适合在固定主干上做消融。
+3. 对于肿瘤亚型混淆问题，损失设计和注意力模块比盲目增加训练轮数更有效。
+4. 文献中的“轻量注意力 + 迁移学习 + 局部边界增强”思路，与当前项目中的 `CBAM + focal + cascade` 路线是一致的。
 
 ## 下一步计划
 
-1. 在当前 `CBAM` 基线上继续尝试采样策略或手动权重，优先拉回鳞癌召回率，同时保住腺癌与大细胞癌提升。
-2. 如需继续试类别加权，优先考虑 `Focal Loss + 手动权重`，而不是直接使用标准 `balanced` 权重。
-3. 如果继续做结构优化，优先微调 `CBAM` 的插入位置或与其他轻量上下文模块组合，而不是单独回到 `SE`。
-4. 基于混淆矩阵与高频误判样本开展误差分析，重点检查“鳞癌 -> 腺癌 / 大细胞癌”与“其他类别 -> normal”的新误判路径。
+1. 以 `v3.4` 主模型为核心，继续分析是否需要微调 `expert_margin_threshold` 和 `expert_trigger_topk`。
+2. 对最佳单模型和最佳级联模型补充误差分析，重点检查高频混淆样本。
+3. 如需继续扩展结构实验，优先围绕当前最佳主模型做小范围修改，而不是重新开大量 backbone 试验。
+4. 将 `52` 组实验的结论整理为论文正文所需的实验分析段落。
 
 ## 需要提醒后续协作者的事项
 
 - 后续回答和修改应优先参考本文件，其次是 `README.md` 和 `doc/problem2_baseline.md`。
-- 文献阅读结论的细化整理见 `doc/literature_review.md`。
-- `outputs/v1.0_scratch_ce_cpu/best_model.pt` 对应的是最近一次 `20 epoch` 运行中验证集最佳的 `epoch 15`。
-- 后续 GPU 实验默认应使用 `..\LCC_GPU\python.exe`，并写入新的输出目录，避免覆盖现有 `v2.0_pretrained_ce`、`v2.3_pretrained_ce_ls_cosine`、`v3.0_pretrained_focal_ls_cosine` 与 `v3.4_pretrained_focal_ls_cosine_cbam` 结果。
-- 当前最新有效结果并不代表最终可提交方案，只能视为 baseline。
-- 当前资源布局为“项目代码在 `B题` 目录内，数据集和虚拟环境在项目外部同级目录”。
-- 如果继续训练或替换模型，必须同步更新 `AI_CONTEXT.md` 与 `TODO.md`。
-## 2026-07-18 Ablation Update
-
-- All formal experiment folders now follow the `vX.Y_<change>` naming rule.
-- The consolidated 12-run ablation table is in `doc/ablation_results.md`.
-- Best overall result: `v3.4_pretrained_focal_ls_cosine_cbam` with `86.35%` test accuracy and `0.8646` macro F1.
-- MixUp and CutMix hurt here; label smoothing and CBAM helped most.
-- The added SE block is weaker than CBAM and does not improve the focal baseline.
-
+- 正式文档中关于论文来源的路径应写为 `..\相关论文(1)`，不要再写旧的 `..\相关论文`。
+- 后续 GPU 训练默认使用 `..\LCC_GPU\python.exe`。
+- `outputs` 中已经存在完整的 `12 + 10 + 30` 组正式结果，新增实验不要覆盖这些目录。
+- 如果继续训练或新增结果，必须同步更新 `AI_CONTEXT.md`、`TODO.md` 和至少一份对外说明文档。

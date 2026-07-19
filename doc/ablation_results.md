@@ -1,11 +1,19 @@
 # Ablation Results
 
+## Scope
+
+This file summarizes the `12` formal single-model runs only.
+
+- It does not include the later `10` three-tumor cascade runs.
+- It does not include the later `30` pairwise cascade runs.
+- For the full `52`-run comparison, use the Word summaries in `doc/`.
+
 ## Naming Rule
 
-- Formal experiment folders follow `vX.Y_<change>`.
+- Formal single-model folders follow `vX.Y_<change>`.
 - `v1.x` is the scratch + CE family.
 - `v2.x` is the pretrained + CE family.
-- `v3.x` is the pretrained + focal + label smoothing + cosine family.
+- `v3.x` is the pretrained + focal + attention family.
 - `ablation_smoke_mixup_cbam` is only a smoke test and is excluded from the formal comparison.
 
 ## Summary
@@ -23,19 +31,19 @@
 | `v3.1_pretrained_focal_ls_cosine_mixup` | `v3.0_pretrained_focal_ls_cosine` | add MixUp | 71.75% | 0.7320 | too aggressive here |
 | `v3.2_pretrained_focal_ls_cosine_cutmix` | `v3.0_pretrained_focal_ls_cosine` | add CutMix | 73.97% | 0.7546 | also degrades |
 | `v3.3_pretrained_focal_ls_cosine_se` | `v3.0_pretrained_focal_ls_cosine` | add extra SE block | 77.14% | 0.7884 | weak structural gain |
-| `v3.4_pretrained_focal_ls_cosine_cbam` | `v3.0_pretrained_focal_ls_cosine` | add CBAM attention | 86.35% | 0.8646 | best overall |
+| `v3.4_pretrained_focal_ls_cosine_cbam` | `v3.0_pretrained_focal_ls_cosine` | add CBAM attention | 86.35% | 0.8646 | best single model |
 
 ## Interpretation
 
-- `v1.1_scratch_ce_cuda` only changes hardware. Its small gain shows that better speed alone does not solve the classification problem.
-- `v2.0_pretrained_ce` is the most important step. Transfer learning gives the model useful visual priors and lifts test accuracy by `36.51` points over the scratch CUDA run.
+- `v1.1_scratch_ce_cuda` only changes hardware. Its small gain shows that speed alone does not solve the classification problem.
+- `v2.0_pretrained_ce` is the most important step. Transfer learning lifts test accuracy by `36.51` points over the scratch CUDA run.
 - `v2.2_pretrained_ce_ls` is much stronger than `v2.1_pretrained_ce_cosine`, so overconfidence is a bigger problem than the raw learning-rate schedule.
-- `v2.3_pretrained_ce_ls_cosine` does not beat `v2.2_pretrained_ce_ls`, so label smoothing and cosine do not create a positive stacking effect here.
+- `v2.3_pretrained_ce_ls_cosine` does not beat `v2.2_pretrained_ce_ls`, so label smoothing and cosine do not create a stable stacking gain here.
 - `v2.4_pretrained_ce_ls_cosine_weightedce` drops further, which indicates standard balanced weights are too blunt for this dataset.
-- `v3.0_pretrained_focal_ls_cosine` helps hard-sample learning, so it beats the CE family with the same backbone settings.
+- `v3.0_pretrained_focal_ls_cosine` helps hard-sample learning, but is still not the best single-model configuration.
 - `v3.1_pretrained_focal_ls_cosine_mixup` and `v3.2_pretrained_focal_ls_cosine_cutmix` both hurt performance. In this small medical-image setting, aggressive mixed augmentation likely destroys subtle lesion cues.
-- `v3.3_pretrained_focal_ls_cosine_se` is weaker than expected because `EfficientNet-B0` already contains SE-style channel attention.
-- `v3.4_pretrained_focal_ls_cosine_cbam` is the best result. Compared with `v3.3_pretrained_focal_ls_cosine_se`, it improves accuracy by `9.21` points and Macro F1 by `0.0762`, which means spatial attention is more useful than another channel-only recalibration block here.
+- `v3.3_pretrained_focal_ls_cosine_se` is weaker than expected because `EfficientNet-B0` already contains internal SE-style channel attention.
+- `v3.4_pretrained_focal_ls_cosine_cbam` is the best single-model result. Compared with `v3.3_pretrained_focal_ls_cosine_se`, it improves accuracy by `9.21` points and Macro F1 by `0.0762`.
 
 ## Conclusions
 
@@ -43,4 +51,5 @@
 - Label smoothing is the strongest low-cost regularizer in the CE family.
 - Standard balanced weighted CE, MixUp, and CutMix are not helpful in the current small-sample setting.
 - Extra SE is weaker than CBAM and looks redundant on top of `EfficientNet-B0`.
-- Best run: `v3.4_pretrained_focal_ls_cosine_cbam`.
+- Best single-model run: `v3.4_pretrained_focal_ls_cosine_cbam`.
+- Best overall result is no longer in this file; after adding expert cascade, the global best becomes `cascade_v3.4_pretrained_focal_ls_cosine_cbam` with `87.62%` test accuracy and `0.8773` Macro F1.
