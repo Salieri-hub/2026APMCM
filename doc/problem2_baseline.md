@@ -74,8 +74,8 @@ Accuracy = 279 / 315 × 100% = 88.57%
 ..\LCC_GPU\python.exe .\src\main.py --pretrained
 ..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --batch-size 32 --num-workers 4
 ..\LCC_GPU\python.exe .\src\main.py --device cuda --no-amp
-..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\ablation_pretrained_ce_ls_cosine
-..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --loss focal --focal-gamma 2 --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\ablation_pretrained_focal_ls_cosine
+..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\v2.3_pretrained_ce_ls_cosine
+..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --loss focal --focal-gamma 2 --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\v3.0_pretrained_focal_ls_cosine
 ```
 
 路径说明：
@@ -90,10 +90,11 @@ Accuracy = 279 / 315 × 100% = 88.57%
 
 脚本会在输出目录下生成：
 
-- CPU 默认输出：`outputs/ablation_scratch_ce`
-- GPU 默认输出：`outputs/ablation_pretrained_ce`
-- 调参实验示例：`outputs/ablation_pretrained_ce_ls_cosine`
-- 当前最优实验：`outputs/ablation_pretrained_focal_ls_cosine_cbam`
+- CPU 默认输出：`outputs/v1.0_scratch_ce_cpu`
+- CUDA scratch 默认输出：`outputs/v1.1_scratch_ce_cuda`
+- CUDA + pretrained 默认输出：`outputs/v2.0_pretrained_ce`
+- 调参实验示例：`outputs/v2.3_pretrained_ce_ls_cosine`
+- 当前最优实验：`outputs/v3.4_pretrained_focal_ls_cosine_cbam`
 
 - `best_model.pt`：验证集准确率最高的模型权重
 - `metrics_summary.json`：训练过程与最终指标汇总
@@ -145,8 +146,8 @@ Accuracy = 279 / 315 × 100% = 88.57%
 
 新增注意力实验结果：
 
-- `ablation_pretrained_focal_ls_cosine_se`：测试集准确率 `77.14%`，`macro F1` `0.7884`
-- `ablation_pretrained_focal_ls_cosine_cbam`：测试集准确率 `86.35%`，`macro F1` `0.8646`
+- `v3.3_pretrained_focal_ls_cosine_se`：测试集准确率 `77.14%`，`macro F1` `0.7884`
+- `v3.4_pretrained_focal_ls_cosine_cbam`：测试集准确率 `86.35%`，`macro F1` `0.8646`
 
 ## 8. 结果解读
 
@@ -195,4 +196,5 @@ Accuracy = 279 / 315 × 100% = 88.57%
 5. 基于混淆矩阵开展误差分析，重点检查“鳞癌 -> 腺癌 / 大细胞癌”的新混淆模式，必要时补充 `Grad-CAM`。
 ## Ablation Note
 
-The consolidated 12-run comparison has been moved to [doc/ablation_results.md](ablation_results.md), and all result folders now use the `ablation_*` prefix.
+The consolidated 12-run comparison has been moved to [doc/ablation_results.md](ablation_results.md), and all formal result folders now use the `vX.Y_<change>` naming rule.
+

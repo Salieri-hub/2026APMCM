@@ -50,7 +50,8 @@
 - 低优先级：整理目录和长期维护文档
 ## Latest Update
 
-- [x] Renamed all experiment output folders to the unified `ablation_*` format.
+- [x] Renamed all formal experiment output folders to the `vX.Y_<change>` format.
 - [x] Added the consolidated ablation report at `doc/ablation_results.md`.
-- [x] Confirmed the best overall run is `ablation_pretrained_focal_ls_cosine_cbam`.
+- [x] Confirmed the best overall run is `v3.4_pretrained_focal_ls_cosine_cbam`.
 - [x] Verified the attention module comparison: `SE` is weaker, `CBAM` is best.
+

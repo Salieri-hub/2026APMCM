@@ -819,9 +819,9 @@ def main() -> None:
     device = resolve_device(args.device)
     if args.output_dir is None:
         if device.type == "cuda":
-            default_output_name = "ablation_pretrained_ce" if args.pretrained else "ablation_scratch_ce_cuda"
+            default_output_name = "v2.0_pretrained_ce" if args.pretrained else "v1.1_scratch_ce_cuda"
         else:
-            default_output_name = "ablation_scratch_ce"
+            default_output_name = "v1.0_scratch_ce_cpu"
         args.output_dir = repo_root / "outputs" / default_output_name
     args.output_dir.mkdir(parents=True, exist_ok=True)
     if args.mixup_alpha < 0.0 or args.cutmix_alpha < 0.0:

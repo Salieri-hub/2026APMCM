@@ -45,10 +45,10 @@
 ├─ doc/
 │  └─ problem2_baseline.md
 ├─ outputs/
-│  ├─ ablation_scratch_ce/
-│  ├─ ablation_pretrained_ce/   # GPU pretrained baseline
-│  ├─ ablation_pretrained_ce_ls_cosine/   # label smoothing + cosine 调度实验
-│  └─ ablation_pretrained_focal_ls_cosine/   # focal loss(gamma=2) 实验
+│  ├─ v1.0_scratch_ce_cpu/
+│  ├─ v2.0_pretrained_ce/                    # GPU pretrained baseline
+│  ├─ v2.3_pretrained_ce_ls_cosine/          # label smoothing + cosine 调度实验
+│  └─ v3.4_pretrained_focal_ls_cosine_cbam/  # 当前最优实验
 ├─ README.md
 ├─ AI_CONTEXT.md
 ├─ TODO.md
@@ -122,8 +122,8 @@
 ..\LCC_GPU\python.exe .\src\main.py --pretrained
 ..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --batch-size 32 --num-workers 4
 ..\LCC_GPU\python.exe .\src\main.py --device cuda --no-amp
-..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\ablation_pretrained_ce_ls_cosine
-..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --loss focal --focal-gamma 2 --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\ablation_pretrained_focal_ls_cosine
+..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\v2.3_pretrained_ce_ls_cosine
+..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --loss focal --focal-gamma 2 --label-smoothing 0.1 --scheduler cosine --output-dir .\outputs\v3.0_pretrained_focal_ls_cosine
 ```
 
 主要参数说明：
@@ -148,14 +148,16 @@
 
 - `src/main.py` 默认会优先查找项目外部同级目录 `..\附件\Data`。
 - 如果外部路径不存在，脚本才会回退到项目内部的 `.\附件\Data`。
-- 当设备实际运行在 GPU 且未手动指定 `--output-dir` 时，默认输出目录为 `outputs/ablation_pretrained_ce`，避免覆盖现有 CPU baseline 结果。
+- 未手动指定 `--output-dir` 时，脚本会按实验基线自动命名输出目录。
+- 默认命名规则为 `vX.Y_<change>`：`v1.x` 表示 scratch CE 系列，`v2.x` 表示 pretrained CE 系列，`v3.x` 表示 pretrained focal 系列。
 
 ## 输出结果
 
 运行完成后，结果会写入输出目录：
 
-- CPU 默认：`outputs/ablation_scratch_ce`
-- GPU 默认：`outputs/ablation_pretrained_ce`
+- CPU 默认：`outputs/v1.0_scratch_ce_cpu`
+- CUDA scratch 默认：`outputs/v1.1_scratch_ce_cuda`
+- CUDA + pretrained 默认：`outputs/v2.0_pretrained_ce`
 
 - `best_model.pt`：验证集最佳权重
 - `metrics_summary.json`：完整训练记录与指标
@@ -172,5 +174,6 @@
 ## Ablation Summary
 
 See [doc/ablation_results.md](doc/ablation_results.md) for the consolidated 12-run table.
-All experiment output folders now use the `ablation_*` prefix.
-The current best structural add-on is `CBAM`; the extra `SE` block is weaker.
+All formal experiment output folders now use the `vX.Y_<change>` naming rule.
+The current best structural add-on is `CBAM`; the corresponding folder is `outputs/v3.4_pretrained_focal_ls_cosine_cbam`.
+

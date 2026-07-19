@@ -33,7 +33,7 @@
   - CUDA 自动 AMP 混合精度
   - GPU 场景下自动 `num_workers`
   - `pin_memory`、`non_blocking`、`persistent_workers`
-  - GPU 默认独立输出目录 `outputs/ablation_pretrained_ce`
+  - 按实验基线自动写入独立输出目录，例如 `outputs/v1.1_scratch_ce_cuda`、`outputs/v2.0_pretrained_ce`
 - 基于未改动的 `..\LCC310` 复制生成 `..\LCC_GPU`，并安装 CUDA 版 `torch==2.13.0+cu130`、`torchvision==0.28.0+cu130`。
 - 使用 `..\LCC_GPU\python.exe` 完成一次最小 GPU smoke test，确认 CUDA 训练路径可用。
 - 使用 `..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained` 完成一次正式 `25 epoch` 训练。
@@ -42,7 +42,7 @@
 - 在 `src/main.py` 中加入类别加权 `CrossEntropyLoss` 参数，支持 `balanced` 与 `manual` 两种模式。
 - 使用 `..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --label-smoothing 0.1 --scheduler cosine --class-weighting balanced` 完成一轮对比实验。
 - 在 `src/main.py` 中加入 `FocalLoss` 实现与 `--loss / --focal-gamma` 参数，兼容现有类别权重、`label smoothing` 与学习率调度器配置。
-- 使用 `--loss focal --focal-gamma 2 --label-smoothing 0.1 --scheduler cosine` 完成一轮对比实验，并输出 `outputs/ablation_pretrained_focal_ls_cosine`。
+- 使用 `--loss focal --focal-gamma 2 --label-smoothing 0.1 --scheduler cosine` 完成一轮对比实验，并输出 `outputs/v3.0_pretrained_focal_ls_cosine`。
 - 完成 `SE` / `CBAM` 注意力模块对比实验，确认 `CBAM` 为当前最优结构增量。
 
 ## 已修改模块
@@ -120,15 +120,16 @@
 
 - 后续回答和修改应优先参考本文件，其次是 `README.md` 和 `doc/problem2_baseline.md`。
 - 文献阅读结论的细化整理见 `doc/literature_review.md`。
-- `outputs/ablation_scratch_ce/best_model.pt` 对应的是最近一次 `20 epoch` 运行中验证集最佳的 `epoch 15`。
-- 后续 GPU 实验默认应使用 `..\LCC_GPU\python.exe`，并写入新的输出目录，避免覆盖现有 `ablation_pretrained_ce`、`ablation_pretrained_ce_ls_cosine`、`ablation_pretrained_focal_ls_cosine` 与 `ablation_pretrained_focal_ls_cosine_cbam` 结果。
+- `outputs/v1.0_scratch_ce_cpu/best_model.pt` 对应的是最近一次 `20 epoch` 运行中验证集最佳的 `epoch 15`。
+- 后续 GPU 实验默认应使用 `..\LCC_GPU\python.exe`，并写入新的输出目录，避免覆盖现有 `v2.0_pretrained_ce`、`v2.3_pretrained_ce_ls_cosine`、`v3.0_pretrained_focal_ls_cosine` 与 `v3.4_pretrained_focal_ls_cosine_cbam` 结果。
 - 当前最新有效结果并不代表最终可提交方案，只能视为 baseline。
 - 当前资源布局为“项目代码在 `B题` 目录内，数据集和虚拟环境在项目外部同级目录”。
 - 如果继续训练或替换模型，必须同步更新 `AI_CONTEXT.md` 与 `TODO.md`。
 ## 2026-07-18 Ablation Update
 
-- All experiment folders have been renamed to the unified `ablation_*` format.
+- All formal experiment folders now follow the `vX.Y_<change>` naming rule.
 - The consolidated 12-run ablation table is in `doc/ablation_results.md`.
-- Best overall result: `ablation_pretrained_focal_ls_cosine_cbam` with `86.35%` test accuracy and `0.8646` macro F1.
+- Best overall result: `v3.4_pretrained_focal_ls_cosine_cbam` with `86.35%` test accuracy and `0.8646` macro F1.
 - MixUp and CutMix hurt here; label smoothing and CBAM helped most.
 - The added SE block is weaker than CBAM and does not improve the focal baseline.
+
