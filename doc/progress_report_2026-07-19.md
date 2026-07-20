@@ -1,124 +1,80 @@
-# APMCM 2026 B题阶段进度汇总
+﻿# Progress Report 2026-07-19
 
-截至 `2026-07-19`，本项目已经完成问题一的数据统计框架、问题二的 B0 单模型 baseline、GPU 环境验证，以及从单模型到专家级联的系统扩展。当前工作重点已经从“先把 B0 主线跑通”转向“保留 B0 已完成结果，并切换到 B1 重新执行正式实验”。
+## 1. Summary
 
-## 1. 当前整体进度
+The repository has been migrated from the user-restored `EfficientNet-B1` baseline to a new `EfficientNet-B2` baseline.
 
-- 问题一：题意分析、数据规模统计和准确率公式计算已完成，后续主要是整理成正式论文表述。
-- 问题二：已完成 `EfficientNet-B0` 四分类主模型、专家模型训练和级联评估管线。
-- 环境方面：`..\LCC_GPU` 已在本机验证可用于 CUDA 训练。
-- 实验方面：已完成 B0 `12` 组单模型实验、`10` 组三肿瘤专家级联实验和 `30` 组两两肿瘤专家级联实验，共 `52` 组正式结果。
-- 代码方面：当前默认 backbone 已切换为 `EfficientNet-B1`。
-- 脚本方面：B1 的 `50` 组正式实验一键脚本已写好。
+This migration keeps the existing training, expert, and cascade framework, while updating the default backbone and output organization.
 
-## 2. 历史 B0 实验进展
+## 2. Completed Changes
 
-### 2.1 单模型阶段性结论
+### 2.1 Backbone Migration
 
-- `pretrained` 是收益最大的单步改动。
-- `label smoothing` 是 CE 系列里最有效的低成本正则项。
-- `balanced weighted CE`、`MixUp`、`CutMix` 在当前数据上整体无益。
-- `CBAM` 是当前最有效的结构增量，明显优于额外 `SE`。
+- default `--model-name`: `efficientnet_b2`
+- default `--image-size`: `256`
+- local pretrained weight loading added for `B2`
+- compatibility with historical `B0/B1` checkpoints preserved
 
-### 2.2 当前已验证最佳单模型
+### 2.2 Output Layout Migration
 
-当前最佳单模型目录为：
+All new experiments now write into shared folders under `outputs/`.
 
-```text
-v3.4_pretrained_focal_ls_cosine_cbam
+Weights:
+- `outputs/weights/<experiment_name>/best_model.pt`
+
+Other results:
+- `outputs/results/<experiment_name>/metrics_summary.json`
+- `outputs/results/<experiment_name>/...csv files...`
+
+This replaces the older per-experiment nested layout.
+
+### 2.3 Batch Script Migration
+
+Created:
+- `scripts/run_all_efficientnet_b2_50.ps1`
+- `scripts/run_all_efficientnet_b2_50.cmd`
+
+The batch script covers:
+- `10` single-model runs
+- `10` tumor3 cascade runs
+- `30` pairwise cascade runs
+- total: `50`
+
+## 3. Current Reference Results
+
+Fully completed historical best single model from `B0`:
+- `v3.4_pretrained_focal_ls_cosine_cbam`
+- test accuracy: `86.35%`
+- macro F1: `0.8646`
+
+Fully completed historical best cascade from `B0`:
+- `cascade_v3.4_pretrained_focal_ls_cosine_cbam`
+- test accuracy: `87.62%`
+- macro F1: `0.8773`
+
+## 4. Current Status
+
+The `B2` code path and documents are ready.
+
+Not yet completed:
+- the actual `50` formal `B2` runs
+- `B2` vs `B0` result comparison
+- post-run docx summaries
+
+## 5. Run Command
+
+If you are in `2026APMCM`:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File ".\scripts\run_all_efficientnet_b2_50.ps1" -PythonExe "..\LCC_GPU\python.exe"
 ```
 
-结果如下：
+or
 
-- 最佳验证集准确率：`93.06%`
-- 测试集准确率：`86.35%`
-- 测试集 `macro F1`：`0.8646`
-
-## 3. 历史 B0 专家级联实验进展
-
-已完成：
-
-- `10` 组三肿瘤专家级联实验
-- `30` 组两两肿瘤专家级联实验
-- 共 `40` 个专家模型训练
-
-### 3.1 三肿瘤专家级联
-
-阶段性结论：
-
-- `10` 组里有 `8` 组优于对应单模型
-- 整体比两两肿瘤专家级联更稳
-- 说明“先让主模型区分 normal / tumor，再在肿瘤内部细分”的思路成立
-
-### 3.2 两两肿瘤专家级联
-
-阶段性结论：
-
-- `30` 组里有 `21` 组优于对应单模型
-- 平均表现最好的是 `large.cell.carcinoma` vs `squamous.cell.carcinoma`
-- 两两专家级联有收益，但稳定性不如三肿瘤专家级联
-
-## 4. 当前已验证最佳整体结果
-
-截至 `2026-07-19`，B0 `52` 组正式结果中的全局最佳为：
-
-```text
-cascade_v3.4_pretrained_focal_ls_cosine_cbam
+```powershell
+.\scripts\run_all_efficientnet_b2_50.cmd
 ```
 
-对应指标：
+## 6. Next Step
 
-- 测试集准确率：`87.62%`
-- 测试集 `macro F1`：`0.8773`
-
-## 5. 当前代码迁移到 B1 的情况
-
-本轮代码更新已经完成以下切换：
-
-- 默认 `--model-name`：`efficientnet_b1`
-- 默认 `--image-size`：`240`
-- 保留 B0 checkpoint 兼容性
-- 为 B1 新结果增加 `_b1` 后缀输出命名
-
-这意味着：
-
-1. 历史 B0 结果不会被覆盖
-2. 后续新实验默认落到 B1 目录
-3. B1 与 B0 的对照会更清晰
-
-## 6. B1 新一轮正式实验计划
-
-B1 新一轮正式实验共 `50` 组，排除：
-
-- `v1.0_scratch_ce_cpu`
-- `v1.1_scratch_ce_cuda`
-
-保留并重跑：
-
-- `10` 组迁移学习单模型实验
-- `10` 组三肿瘤专家级联实验
-- `30` 组两两肿瘤专家级联实验
-
-已新增一键脚本：
-
-- `scripts/run_all_efficientnet_b1_50.ps1`
-- `scripts/run_all_efficientnet_b1_50.cmd`
-
-## 7. 当前存在的问题
-
-1. 验证集样本数较少，导致最佳 epoch 和验证指标波动较大。
-2. 单模型体系下鳞癌召回率仍然是主要短板。
-3. 级联触发规则还可以继续优化，不是所有版本都稳定优于主模型。
-4. B1 结果尚未批量跑完，因此当前最好结果仍来自 B0 历史实验。
-
-## 8. 下一步计划
-
-1. 先运行 B1 的 `50` 组正式实验。
-2. 再比较 B1 与 B0 在单模型和级联两条主线上的收益差异。
-3. 若 B1 确认更优，再更新 Word 汇总与论文正文实验分析。
-
-## 9. 口头汇报压缩版
-
-1. 项目已经完成 B0 的 `52` 组正式实验，并得到稳定的单模型与级联结论。
-2. 当前已验证最佳结果仍是 B0 的 `cascade_v3.4_pretrained_focal_ls_cosine_cbam`，测试集准确率 `87.62%`。
-3. 现在代码默认 backbone 已切到 `EfficientNet-B1`，并准备重跑除 CPU baseline 和非迁移 GPU baseline 外的其余 `50` 组正式实验。
+Run the `B2` batch experiments, then generate the new cross-backbone comparison documents.

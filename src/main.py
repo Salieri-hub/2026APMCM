@@ -47,15 +47,22 @@ DEFAULT_EXPERT_CLASSES = [
     "adenocarcinoma",
     "squamous.cell.carcinoma",
 ]
-DEFAULT_MODEL_NAME = "efficientnet_b1"
+DEFAULT_MODEL_NAME = "efficientnet_b2"
 MODEL_DEFAULT_IMAGE_SIZE = {
     "efficientnet_b0": 224,
     "efficientnet_b1": 240,
+    "efficientnet_b2": 256,
 }
-LOCAL_PRETRAINED_SAFETENSORS = {
+LOCAL_PRETRAINED_FILES = {
     "efficientnet_b1": {
+        "format": "safetensors",
         "url": "https://huggingface.co/timm/efficientnet_b1.ra4_e3600_r240_in1k/resolve/main/model.safetensors",
         "relative_path": Path(".cache") / "weights" / "efficientnet_b1.ra4_e3600_r240_in1k" / "model.safetensors",
+    },
+    "efficientnet_b2": {
+        "format": "torch",
+        "url": "https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-weights/efficientnet_b2_ra-bcdf34b7.pth",
+        "relative_path": Path(".cache") / "weights" / "efficientnet_b2.ra_in1k" / "model.pth",
     },
 }
 
@@ -90,6 +97,8 @@ def build_backbone_tag(model_name: str) -> str:
         return "b0"
     if model_name == "efficientnet_b1":
         return "b1"
+    if model_name == "efficientnet_b2":
+        return "b2"
     return sanitize_name(model_name)
 
 
@@ -131,32 +140,69 @@ def download_file(url: str, destination: Path, timeout_seconds: int = 120, max_r
     raise RuntimeError(f"Failed to download pretrained weights from {url}: {last_error}") from last_error
 
 
-def ensure_local_pretrained_file(model_name: str) -> Optional[Path]:
-    spec = LOCAL_PRETRAINED_SAFETENSORS.get(model_name)
+def ensure_local_pretrained_file(model_name: str) -> Optional[Tuple[Path, str]]:
+    spec = LOCAL_PRETRAINED_FILES.get(model_name)
     if spec is None:
         return None
 
     local_path = PROJECT_ROOT / spec["relative_path"]
     if local_path.exists():
-        return local_path
+        return local_path, str(spec["format"])
 
     print(f"Downloading local pretrained weights for {model_name} -> {local_path}")
-    return download_file(spec["url"], local_path)
+    return download_file(spec["url"], local_path), str(spec["format"])
 
 
 def build_pretrained_backbone(model_name: str, num_classes: int) -> nn.Module:
-    local_weights = ensure_local_pretrained_file(model_name)
-    if local_weights is None:
+    local_pretrained = ensure_local_pretrained_file(model_name)
+    if local_pretrained is None:
         return timm.create_model(model_name, pretrained=True, num_classes=num_classes)
 
+    local_weights, weight_format = local_pretrained
     backbone = timm.create_model(model_name, pretrained=False, num_classes=1000)
-    state_dict = load_safetensors_file(str(local_weights))
+    if weight_format == "safetensors":
+        state_dict = load_safetensors_file(str(local_weights))
+    elif weight_format == "torch":
+        state_dict = torch.load(local_weights, map_location="cpu")
+        if isinstance(state_dict, dict):
+            if "state_dict" in state_dict and isinstance(state_dict["state_dict"], dict):
+                state_dict = state_dict["state_dict"]
+            elif "model" in state_dict and isinstance(state_dict["model"], dict):
+                state_dict = state_dict["model"]
+        if any(key.startswith("module.") for key in state_dict):
+            state_dict = {
+                key[len("module.") :] if key.startswith("module.") else key: value
+                for key, value in state_dict.items()
+            }
+    else:
+        raise ValueError(f"Unsupported local pretrained weight format for {model_name}: {weight_format}")
     backbone.load_state_dict(state_dict, strict=True)
     if hasattr(backbone, "reset_classifier"):
         backbone.reset_classifier(num_classes)
     else:
         raise ValueError(f"Backbone {model_name} does not support reset_classifier after local weight loading.")
     return backbone
+
+
+def build_output_subdirs(output_dir: Path) -> Tuple[Path, Path]:
+    output_dir = output_dir.resolve()
+    if output_dir.name in {"outputs", "weights", "results"}:
+        raise ValueError(
+            "--output-dir must include an experiment name, for example outputs/v2.0_pretrained_ce_b2."
+        )
+
+    if output_dir.parent.name in {"weights", "results"}:
+        outputs_root = output_dir.parent.parent
+        experiment_name = output_dir.name
+    else:
+        outputs_root = output_dir.parent
+        experiment_name = output_dir.name
+
+    weights_dir = outputs_root / "weights" / experiment_name
+    results_dir = outputs_root / "results" / experiment_name
+    weights_dir.mkdir(parents=True, exist_ok=True)
+    results_dir.mkdir(parents=True, exist_ok=True)
+    return weights_dir, results_dir
 
 
 def build_target_distribution(
@@ -824,6 +870,7 @@ def evaluate(
 
 
 def save_predictions(output_path: Path, eval_result: Dict[str, Any], class_names: Sequence[str]) -> None:
+    ensure_parent_dir(output_path)
     header = ["image_path", "true_label", "pred_label"] + [f"prob_{name}" for name in class_names]
     with output_path.open("w", newline="", encoding="utf-8-sig") as file:
         writer = csv.writer(file)
@@ -845,6 +892,7 @@ def save_predictions(output_path: Path, eval_result: Dict[str, Any], class_names
 
 
 def save_confusion_matrix(output_path: Path, matrix: np.ndarray, class_names: Sequence[str]) -> None:
+    ensure_parent_dir(output_path)
     with output_path.open("w", newline="", encoding="utf-8-sig") as file:
         writer = csv.writer(file)
         writer.writerow(["true/pred", *class_names])
@@ -853,6 +901,7 @@ def save_confusion_matrix(output_path: Path, matrix: np.ndarray, class_names: Se
 
 
 def save_json(output_path: Path, payload: Dict[str, Any]) -> None:
+    ensure_parent_dir(output_path)
     with output_path.open("w", encoding="utf-8") as file:
         json.dump(payload, file, ensure_ascii=False, indent=2)
 
@@ -1194,6 +1243,7 @@ def evaluate_cascade(
 
 
 def save_cascade_predictions(output_path: Path, cascade_result: Dict[str, Any], class_names: Sequence[str]) -> None:
+    ensure_parent_dir(output_path)
     header = [
         "image_path",
         "true_label",
@@ -1308,7 +1358,7 @@ def train_and_evaluate(args: argparse.Namespace) -> None:
     args.image_size = resolve_image_size(args.model_name, args.image_size)
     class_names = resolve_active_class_names(args)
     args.output_dir = resolve_training_output_dir(args, repo_root, device, class_names)
-    args.output_dir.mkdir(parents=True, exist_ok=True)
+    weights_dir, results_dir = build_output_subdirs(args.output_dir)
     validate_training_args(args)
 
     seed_everything(args.seed, deterministic=args.deterministic)
@@ -1369,7 +1419,7 @@ def train_and_evaluate(args: argparse.Namespace) -> None:
     history: List[Dict[str, float]] = []
     best_val_accuracy = -1.0
     best_epoch = 0
-    best_model_path = args.output_dir / "best_model.pt"
+    best_model_path = weights_dir / "best_model.pt"
 
     start_time = time.time()
     for epoch in range(1, args.epochs + 1):
@@ -1419,9 +1469,9 @@ def train_and_evaluate(args: argparse.Namespace) -> None:
     test_metrics = evaluate(model, test_loader, criterion, device, amp_enabled=amp_enabled, class_names=class_names)
     elapsed_seconds = time.time() - start_time
 
-    save_predictions(args.output_dir / "test_predictions.csv", test_metrics, class_names)
-    save_confusion_matrix(args.output_dir / "test_confusion_matrix.csv", test_metrics["confusion_matrix"], class_names)
-    save_confusion_matrix(args.output_dir / "valid_confusion_matrix.csv", best_val_metrics["confusion_matrix"], class_names)
+    save_predictions(results_dir / "test_predictions.csv", test_metrics, class_names)
+    save_confusion_matrix(results_dir / "test_confusion_matrix.csv", test_metrics["confusion_matrix"], class_names)
+    save_confusion_matrix(results_dir / "valid_confusion_matrix.csv", best_val_metrics["confusion_matrix"], class_names)
 
     summary = build_training_run_summary(
         args=args,
@@ -1438,13 +1488,14 @@ def train_and_evaluate(args: argparse.Namespace) -> None:
         class_weights=class_weights,
         class_names=class_names,
     )
-    save_json(args.output_dir / "metrics_summary.json", summary)
+    save_json(results_dir / "metrics_summary.json", summary)
 
     print()
     print(f"Best epoch: {best_epoch}")
     print(f"Validation accuracy: {best_val_metrics['accuracy']:.4f}")
     print(f"Test accuracy: {test_metrics['accuracy']:.4f}")
-    print(f"Outputs saved to: {args.output_dir}")
+    print(f"Weights saved to: {weights_dir}")
+    print(f"Results saved to: {results_dir}")
 
 
 def run_cascade_evaluation(args: argparse.Namespace) -> None:
@@ -1477,13 +1528,16 @@ def run_cascade_evaluation(args: argparse.Namespace) -> None:
         )
 
     if args.output_dir is None:
-        expert_parent_name = args.expert_checkpoint.resolve().parent.name
+        expert_checkpoint_dir = args.expert_checkpoint.resolve().parent
+        expert_parent_name = expert_checkpoint_dir.name
+        if expert_parent_name == "weights":
+            expert_parent_name = expert_checkpoint_dir.parent.name
         if expert_parent_name.startswith("expert_"):
             output_name = f"cascade_{expert_parent_name[len('expert_'):]}"
         else:
             output_name = f"cascade_{build_output_slug(expert_class_names)}"
         args.output_dir = repo_root / "outputs" / output_name
-    args.output_dir.mkdir(parents=True, exist_ok=True)
+    _, results_dir = build_output_subdirs(args.output_dir)
 
     print(
         f"Using device: {device}"
@@ -1533,10 +1587,10 @@ def run_cascade_evaluation(args: argparse.Namespace) -> None:
     )
     elapsed_seconds = time.time() - start_time
 
-    save_cascade_predictions(args.output_dir / "valid_cascade_predictions.csv", valid_result, main_class_names)
-    save_cascade_predictions(args.output_dir / "test_cascade_predictions.csv", test_result, main_class_names)
-    save_confusion_matrix(args.output_dir / "valid_confusion_matrix.csv", valid_result["confusion_matrix"], main_class_names)
-    save_confusion_matrix(args.output_dir / "test_confusion_matrix.csv", test_result["confusion_matrix"], main_class_names)
+    save_cascade_predictions(results_dir / "valid_cascade_predictions.csv", valid_result, main_class_names)
+    save_cascade_predictions(results_dir / "test_cascade_predictions.csv", test_result, main_class_names)
+    save_confusion_matrix(results_dir / "valid_confusion_matrix.csv", valid_result["confusion_matrix"], main_class_names)
+    save_confusion_matrix(results_dir / "test_confusion_matrix.csv", test_result["confusion_matrix"], main_class_names)
 
     summary = build_cascade_run_summary(
         args=args,
@@ -1553,14 +1607,14 @@ def run_cascade_evaluation(args: argparse.Namespace) -> None:
         expert_checkpoint=expert_checkpoint,
         class_names=main_class_names,
     )
-    save_json(args.output_dir / "metrics_summary.json", summary)
+    save_json(results_dir / "metrics_summary.json", summary)
 
     print()
     print(f"Cascade validation accuracy: {valid_result['accuracy']:.4f}")
     print(f"Cascade test accuracy: {test_result['accuracy']:.4f}")
     print(f"Validation cascade stats: {valid_result['cascade_stats']}")
     print(f"Test cascade stats: {test_result['cascade_stats']}")
-    print(f"Outputs saved to: {args.output_dir}")
+    print(f"Results saved to: {results_dir}")
 
 
 def parse_args() -> argparse.Namespace:
@@ -1575,7 +1629,15 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--run-mode", choices=["single", "expert", "cascade"], default="single")
     parser.add_argument("--data-dir", type=Path, default=default_data_dir)
-    parser.add_argument("--output-dir", type=Path, default=None)
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=None,
+        help=(
+            "Experiment slug path. For example outputs/v2.0_pretrained_ce_b2. "
+            "Checkpoints are written to outputs/weights/<experiment>/ and reports to outputs/results/<experiment>/."
+        ),
+    )
     parser.add_argument("--model-name", type=str, default=DEFAULT_MODEL_NAME)
     parser.add_argument("--pretrained", action="store_true", help="Use timm pretrained weights if available.")
     parser.add_argument(
@@ -1590,7 +1652,7 @@ def parse_args() -> argparse.Namespace:
         "--image-size",
         type=int,
         default=None,
-        help="Input image size. Defaults to 240 for EfficientNet-B1 and 224 for EfficientNet-B0.",
+        help="Input image size. Defaults to 256 for EfficientNet-B2, 240 for EfficientNet-B1, and 224 for EfficientNet-B0.",
     )
     parser.add_argument("--lr", type=float, default=3e-4)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
