@@ -4,13 +4,15 @@
 
 仓库默认代码路径已经从 `EfficientNet-B3` 切换为 `EfficientNet-B4`。
 
-当前默认行为如下：
+当前进度如下：
 
-- 主干网络：`efficientnet_b4`
+- `B0` 到 `B4` 的单模型、专家模型和级联实验结果均已落盘到 `outputs/results/`
+- 默认主干网络：`efficientnet_b4`
 - 默认输入尺寸：`320`
 - 支持模式：`single`、`expert`、`cascade`
 - 本地预训练缓存已支持 `B4`
 - 输出目录继续采用共享的 `weights/` 与 `results/` 结构
+- `src/main.py` 已完成拆分，当前仅保留入口，核心实现位于 `src/lcc/`
 
 当前 `B4` 本地预训练权重约定路径为：
 
@@ -28,32 +30,34 @@
 
 不要再使用旧的平铺目录形式 `outputs/<experiment_name>/weights/...`。
 
-## 历史完整结果
+## 当前最佳结果
 
-当前已经完整跑通并验证的正式结果仍然是历史 `B0` 线路。
+以下结果均以四分类完整测试集（`test=315`）为准，不将专家子集实验与全任务结果混排。
 
-历史单模型最佳结果：
+当前最佳单模型：
 
-- 实验名：`v3.4_pretrained_focal_ls_cosine_cbam`
-- 主干网络：`efficientnet_b0`
-- 测试集准确率：`86.35%`
-- 测试集 Macro F1：`0.8646`
+- 实验名：`v3.2_pretrained_focal_ls_cosine_cutmix_b4`
+- 主干网络：`efficientnet_b4`
+- 关键配置：`pretrained + focal + label_smoothing + cosine + cutmix`
+- 测试集准确率：`94.29%`
+- 测试集 Macro F1：`0.9415`
 
-历史级联最佳结果：
+当前最佳级联结果（全仓库 overall best）：
 
-- 实验名：`cascade_v3.4_pretrained_focal_ls_cosine_cbam`
-- 主模型：`v3.4_pretrained_focal_ls_cosine_cbam`
-- 专家模型：`expert_tumor3_v3.4_pretrained_focal_ls_cosine_cbam`
+- 实验名：`cascade_pair_ad_sq_v3.2_pretrained_focal_ls_cosine_cutmix_b4`
+- 主模型：`v3.2_pretrained_focal_ls_cosine_cutmix_b4`
+- 专家模型：`expert_pair_ad_sq_v3.2_pretrained_focal_ls_cosine_cutmix_b4`
+- 专家子集：`adenocarcinoma` / `squamous.cell.carcinoma`
 - 触发条件：`top-k=2`，`margin <= 0.12`
-- 测试集准确率：`87.62%`
-- 测试集 Macro F1：`0.8773`
+- 测试集准确率：`94.60%`
+- 测试集 Macro F1：`0.9439`
 
-## 当前 B4 目标
+## B4 批量脚本
 
-执行 `50` 组正式 `B4` 实验，不包含：
+`B4` 的 `50` 组正式实验已经跑完，相关脚本保留用于复现或重新执行：
 
-- `v1.0_scratch_ce_cpu`
-- `v1.1_scratch_ce_cuda`
+- `scripts/run_all_efficientnet_b4_50.ps1`
+- `scripts/run_all_efficientnet_b4_50.cmd`
 
 这 `50` 组正式输出包括：
 
@@ -61,10 +65,12 @@
 - `10` 组三分类肿瘤专家级联实验
 - `30` 组两两专家级联实验
 
-对应脚本如下：
+## 代码结构
 
-- `scripts/run_all_efficientnet_b4_50.ps1`
-- `scripts/run_all_efficientnet_b4_50.cmd`
+- `src/main.py`：程序入口，仅调用 `lcc.cli.main()`
+- `src/lcc/cli.py`：命令行参数与模式分发
+- `src/lcc/data.py`、`models.py`、`losses.py`、`train.py`：数据、模型、损失与训练流程
+- `src/lcc/cascade.py`、`reporting.py`、`runtime.py`：级联推理、结果导出与运行时工具
 
 ## 模型逻辑
 
@@ -93,6 +99,6 @@
 
 ## 下一步
 
-1. 运行 `B4` 批量脚本。
-2. 对比 `B4` 与历史 `B0` 的结果。
-3. 如果 `B4` 效果更优，再更新 Word 摘要与论文式实验分析。
+1. 将当前最佳 `B4` 结果继续同步到最终 Word 报告与论文正文。
+2. 整理 `B0` 到 `B4` 的横向对比摘要与图表。
+3. 如需继续优化，再调 `expert_margin_threshold`、`top-k` 与专家触发策略。

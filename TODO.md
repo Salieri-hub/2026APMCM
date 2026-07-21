@@ -10,16 +10,20 @@
 - [x] `outputs/weights/<experiment_name>/`
 - [x] `outputs/results/<experiment_name>/`
 - [x] 新增 `B4` 的 `50` 组正式实验批量脚本
-- [x] 将全部项目 Markdown 文档改为中文并同步到 `B4` 基线
+- [x] 完成 `B0` 到 `B4` 的单模型、专家模型和级联实验归档
+- [x] 完成 `B4` 的 `50` 组正式实验批量运行
+- [x] 已在 `outputs/results` 中确认当前最佳单模型：`v3.2_pretrained_focal_ls_cosine_cutmix_b4`（测试集准确率 `94.29%`，Macro F1 `0.9415`）
+- [x] 已在 `outputs/results` 中确认当前最佳级联结果：`cascade_pair_ad_sq_v3.2_pretrained_focal_ls_cosine_cutmix_b4`（测试集准确率 `94.60%`，Macro F1 `0.9439`）
+- [x] `src/main.py` 已完成拆分，当前仅保留入口，核心逻辑迁移到 `src/lcc/`
+- [x] 将全部项目 Markdown 文档改为中文并同步到当前 `B4` 基线与实验进度
 
 ## 进行中
 
-- [ ] 运行 `50` 组正式 `B4` 实验
-- [ ] 汇总 `B4` 与历史 `B0` 的对比结果
-- [ ] 在拿到 `B4` 结果后更新 Word 报告
+- [ ] 将当前最佳 `B4` 结果继续同步到最终 Word 报告与论文正文
+- [ ] 整理 `B0` 到 `B4` 的横向对比摘要与图表
 
 ## 可选后续
 
-- [ ] 在 `B4` 跑完后继续调节级联触发阈值
-- [ ] 增补 `B0`、`B3`、`B4` 的横向对比文档
-- [ ] 为 `40` 组专家模型训练单独整理结果摘要
+- [ ] 继续调节 `expert_margin_threshold` 与 `top-k` 触发策略
+- [ ] 围绕 `v3.2_pretrained_focal_ls_cosine_cutmix_b4` 继续做局部增量实验
+- [ ] 为专家模型与级联策略单独整理最终结果摘要

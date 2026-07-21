@@ -10,7 +10,11 @@
 - 默认输入尺寸：`320`
 - 支持模式：`single`、`expert`、`cascade`
 
-已经完整验证的历史正式结果仍然是 `B0` 线路；当前仓库默认运行线路已经切换为 `B4`，并准备执行新一轮 `50` 组正式实验。
+当前进度如下：
+
+- `B0` 到 `B4` 的单模型、专家模型和级联实验均已完成并归档到 `outputs/results/`
+- 仓库默认运行线路仍为 `B4`
+- `src/main.py` 已拆分为轻量入口，核心逻辑位于 `src/lcc/`
 
 ## 数据任务
 
@@ -38,6 +42,26 @@
 - `--class-weighting none/balanced/manual`
 - `--mixup-alpha` 与 `--cutmix-alpha`
 
+## 当前最佳结果
+
+以下结果均来自 `outputs/results/`，并以四分类完整测试集（`test=315`）为准。
+
+当前最佳单模型：
+
+- 实验名：`v3.2_pretrained_focal_ls_cosine_cutmix_b4`
+- 主干网络：`efficientnet_b4`
+- 测试集准确率：`94.29%`
+- 测试集 Macro F1：`0.9415`
+
+当前最佳级联结果（全仓库 overall best）：
+
+- 实验名：`cascade_pair_ad_sq_v3.2_pretrained_focal_ls_cosine_cutmix_b4`
+- 主模型：`v3.2_pretrained_focal_ls_cosine_cutmix_b4`
+- 专家模型：`expert_pair_ad_sq_v3.2_pretrained_focal_ls_cosine_cutmix_b4`
+- 触发条件：`top-k=2`，`margin <= 0.12`
+- 测试集准确率：`94.60%`
+- 测试集 Macro F1：`0.9439`
+
 ## 输出目录规范
 
 所有实验产物统一写入 `outputs/` 下的共享目录：
@@ -59,6 +83,14 @@
 
 代码会自动将权重写入 `outputs/weights/<experiment_name>/`，并将结果写入 `outputs/results/<experiment_name>/`。
 
+## 代码结构
+
+- `src/main.py`：程序入口，仅调用 `lcc.cli.main()`
+- `src/lcc/cli.py`：命令行参数与模式分发
+- `src/lcc/config.py`、`constants.py`：配置与常量
+- `src/lcc/data.py`、`models.py`、`losses.py`、`train.py`：数据、模型、损失与训练流程
+- `src/lcc/cascade.py`、`reporting.py`、`runtime.py`：级联推理、结果导出与运行时工具
+
 ## 快速开始
 
 如果当前目录位于 `2026APMCM`：
@@ -75,7 +107,7 @@
 ..\LCC_GPU\python.exe .\src\main.py --run-mode cascade --device cuda --main-checkpoint .\outputs\weights\v3.4_pretrained_focal_ls_cosine_cbam_b4\best_model.pt --expert-checkpoint .\outputs\weights\expert_tumor3_v3.4_pretrained_focal_ls_cosine_cbam_b4\best_model.pt --output-dir .\outputs\cascade_v3.4_pretrained_focal_ls_cosine_cbam_b4
 ```
 
-## 批量运行 50 组正式实验
+## B4 批量脚本（已完成，可复现）
 
 脚本文件：
 
@@ -94,26 +126,12 @@
 powershell -ExecutionPolicy Bypass -File ".\scripts\run_all_efficientnet_b4_50.ps1" -PythonExe "..\LCC_GPU\python.exe"
 ```
 
-批量脚本会产出：
+该批量脚本已经完成过一轮正式运行，产出：
 
 - `10` 组单模型实验
 - `10` 组三分类肿瘤专家级联实验
 - `30` 组两两专家级联实验
 - 正式输出总数：`50`
-
-## 历史已验证最佳结果
-
-历史 `B0` 单模型最佳结果：
-
-- 实验名：`v3.4_pretrained_focal_ls_cosine_cbam`
-- 测试集准确率：`86.35%`
-- 测试集 Macro F1：`0.8646`
-
-历史 `B0` 级联最佳结果：
-
-- 实验名：`cascade_v3.4_pretrained_focal_ls_cosine_cbam`
-- 测试集准确率：`87.62%`
-- 测试集 Macro F1：`0.8773`
 
 ## 文档索引
 
