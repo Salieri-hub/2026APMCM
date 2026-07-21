@@ -1,0 +1,309 @@
+﻿**********************
+Windows PowerShell 脚本开始
+开始时间: 20260721182248
+用户名: 九月的天选\梁嘉纯
+RunAs 用户: 九月的天选\梁嘉纯
+配置名称: 
+计算机: 九月的天选 (Microsoft Windows NT 10.0.26200.0)
+主机应用程序: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -File .\scripts\run_all_efficientnet_b4_50.ps1 -PythonExe ..\LCC_GPU\python.exe
+进程 ID: 13992
+PSVersion: 5.1.26100.8875
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.8875
+BuildVersion: 10.0.26100.8875
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Repo root: C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\2026APMCM
+Python: C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\LCC_GPU\python.exe
+Model: efficientnet_b4
+Image size: 320
+Epochs: 25
+Batch size: 16
+Num workers: 0
+Trigger: top-2, margin <= 0.12
+Single-model runs: 10
+Tumor3 cascade runs: 10
+Pairwise cascade runs: 30
+Formal experiment outputs to produce: 50
+Expert training runs to produce: 40
+
+========== TRAIN MAIN: v2.0_pretrained_ce_b4 ==========
+
+
+========== TRAIN TUMOR3 EXPERT: v2.0_pretrained_ce_b4 ==========
+
+
+========== RUN TUMOR3 CASCADE: v2.0_pretrained_ce_b4 ==========
+
+
+========== TRAIN PAIR EXPERT: v2.0_pretrained_ce_b4 / adenocarcinoma vs large.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v2.0_pretrained_ce_b4 / adenocarcinoma vs large.cell.carcinoma ==========
+
+
+========== TRAIN PAIR EXPERT: v2.0_pretrained_ce_b4 / adenocarcinoma vs squamous.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v2.0_pretrained_ce_b4 / adenocarcinoma vs squamous.cell.carcinoma ==========
+
+
+========== TRAIN PAIR EXPERT: v2.0_pretrained_ce_b4 / large.cell.carcinoma vs squamous.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v2.0_pretrained_ce_b4 / large.cell.carcinoma vs squamous.cell.carcinoma ==========
+
+
+========== TRAIN MAIN: v2.1_pretrained_ce_cosine_b4 ==========
+
+
+========== TRAIN TUMOR3 EXPERT: v2.1_pretrained_ce_cosine_b4 ==========
+
+
+========== RUN TUMOR3 CASCADE: v2.1_pretrained_ce_cosine_b4 ==========
+
+
+========== TRAIN PAIR EXPERT: v2.1_pretrained_ce_cosine_b4 / adenocarcinoma vs large.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v2.1_pretrained_ce_cosine_b4 / adenocarcinoma vs large.cell.carcinoma ==========
+
+
+========== TRAIN PAIR EXPERT: v2.1_pretrained_ce_cosine_b4 / adenocarcinoma vs squamous.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v2.1_pretrained_ce_cosine_b4 / adenocarcinoma vs squamous.cell.carcinoma ==========
+
+
+========== TRAIN PAIR EXPERT: v2.1_pretrained_ce_cosine_b4 / large.cell.carcinoma vs squamous.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v2.1_pretrained_ce_cosine_b4 / large.cell.carcinoma vs squamous.cell.carcinoma ==========
+
+
+========== TRAIN MAIN: v2.2_pretrained_ce_ls_b4 ==========
+
+
+========== TRAIN TUMOR3 EXPERT: v2.2_pretrained_ce_ls_b4 ==========
+
+
+========== RUN TUMOR3 CASCADE: v2.2_pretrained_ce_ls_b4 ==========
+
+
+========== TRAIN PAIR EXPERT: v2.2_pretrained_ce_ls_b4 / adenocarcinoma vs large.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v2.2_pretrained_ce_ls_b4 / adenocarcinoma vs large.cell.carcinoma ==========
+
+
+========== TRAIN PAIR EXPERT: v2.2_pretrained_ce_ls_b4 / adenocarcinoma vs squamous.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v2.2_pretrained_ce_ls_b4 / adenocarcinoma vs squamous.cell.carcinoma ==========
+
+
+========== TRAIN PAIR EXPERT: v2.2_pretrained_ce_ls_b4 / large.cell.carcinoma vs squamous.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v2.2_pretrained_ce_ls_b4 / large.cell.carcinoma vs squamous.cell.carcinoma ==========
+
+
+========== TRAIN MAIN: v2.3_pretrained_ce_ls_cosine_b4 ==========
+
+
+========== TRAIN TUMOR3 EXPERT: v2.3_pretrained_ce_ls_cosine_b4 ==========
+
+
+========== RUN TUMOR3 CASCADE: v2.3_pretrained_ce_ls_cosine_b4 ==========
+
+
+========== TRAIN PAIR EXPERT: v2.3_pretrained_ce_ls_cosine_b4 / adenocarcinoma vs large.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v2.3_pretrained_ce_ls_cosine_b4 / adenocarcinoma vs large.cell.carcinoma ==========
+
+
+========== TRAIN PAIR EXPERT: v2.3_pretrained_ce_ls_cosine_b4 / adenocarcinoma vs squamous.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v2.3_pretrained_ce_ls_cosine_b4 / adenocarcinoma vs squamous.cell.carcinoma ==========
+
+
+========== TRAIN PAIR EXPERT: v2.3_pretrained_ce_ls_cosine_b4 / large.cell.carcinoma vs squamous.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v2.3_pretrained_ce_ls_cosine_b4 / large.cell.carcinoma vs squamous.cell.carcinoma ==========
+
+
+========== TRAIN MAIN: v2.4_pretrained_ce_ls_cosine_weightedce_b4 ==========
+
+
+========== TRAIN TUMOR3 EXPERT: v2.4_pretrained_ce_ls_cosine_weightedce_b4 ==========
+
+
+========== RUN TUMOR3 CASCADE: v2.4_pretrained_ce_ls_cosine_weightedce_b4 ==========
+
+
+========== TRAIN PAIR EXPERT: v2.4_pretrained_ce_ls_cosine_weightedce_b4 / adenocarcinoma vs large.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v2.4_pretrained_ce_ls_cosine_weightedce_b4 / adenocarcinoma vs large.cell.carcinoma ==========
+
+
+========== TRAIN PAIR EXPERT: v2.4_pretrained_ce_ls_cosine_weightedce_b4 / adenocarcinoma vs squamous.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v2.4_pretrained_ce_ls_cosine_weightedce_b4 / adenocarcinoma vs squamous.cell.carcinoma ==========
+
+
+========== TRAIN PAIR EXPERT: v2.4_pretrained_ce_ls_cosine_weightedce_b4 / large.cell.carcinoma vs squamous.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v2.4_pretrained_ce_ls_cosine_weightedce_b4 / large.cell.carcinoma vs squamous.cell.carcinoma ==========
+
+
+========== TRAIN MAIN: v3.0_pretrained_focal_ls_cosine_b4 ==========
+
+
+========== TRAIN TUMOR3 EXPERT: v3.0_pretrained_focal_ls_cosine_b4 ==========
+
+
+========== RUN TUMOR3 CASCADE: v3.0_pretrained_focal_ls_cosine_b4 ==========
+
+
+========== TRAIN PAIR EXPERT: v3.0_pretrained_focal_ls_cosine_b4 / adenocarcinoma vs large.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v3.0_pretrained_focal_ls_cosine_b4 / adenocarcinoma vs large.cell.carcinoma ==========
+
+
+========== TRAIN PAIR EXPERT: v3.0_pretrained_focal_ls_cosine_b4 / adenocarcinoma vs squamous.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v3.0_pretrained_focal_ls_cosine_b4 / adenocarcinoma vs squamous.cell.carcinoma ==========
+
+
+========== TRAIN PAIR EXPERT: v3.0_pretrained_focal_ls_cosine_b4 / large.cell.carcinoma vs squamous.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v3.0_pretrained_focal_ls_cosine_b4 / large.cell.carcinoma vs squamous.cell.carcinoma ==========
+
+
+========== TRAIN MAIN: v3.1_pretrained_focal_ls_cosine_mixup_b4 ==========
+
+
+========== TRAIN TUMOR3 EXPERT: v3.1_pretrained_focal_ls_cosine_mixup_b4 ==========
+
+
+========== RUN TUMOR3 CASCADE: v3.1_pretrained_focal_ls_cosine_mixup_b4 ==========
+
+
+========== TRAIN PAIR EXPERT: v3.1_pretrained_focal_ls_cosine_mixup_b4 / adenocarcinoma vs large.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v3.1_pretrained_focal_ls_cosine_mixup_b4 / adenocarcinoma vs large.cell.carcinoma ==========
+
+
+========== TRAIN PAIR EXPERT: v3.1_pretrained_focal_ls_cosine_mixup_b4 / adenocarcinoma vs squamous.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v3.1_pretrained_focal_ls_cosine_mixup_b4 / adenocarcinoma vs squamous.cell.carcinoma ==========
+
+
+========== TRAIN PAIR EXPERT: v3.1_pretrained_focal_ls_cosine_mixup_b4 / large.cell.carcinoma vs squamous.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v3.1_pretrained_focal_ls_cosine_mixup_b4 / large.cell.carcinoma vs squamous.cell.carcinoma ==========
+
+
+========== TRAIN MAIN: v3.2_pretrained_focal_ls_cosine_cutmix_b4 ==========
+
+
+========== TRAIN TUMOR3 EXPERT: v3.2_pretrained_focal_ls_cosine_cutmix_b4 ==========
+
+
+========== RUN TUMOR3 CASCADE: v3.2_pretrained_focal_ls_cosine_cutmix_b4 ==========
+
+
+========== TRAIN PAIR EXPERT: v3.2_pretrained_focal_ls_cosine_cutmix_b4 / adenocarcinoma vs large.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v3.2_pretrained_focal_ls_cosine_cutmix_b4 / adenocarcinoma vs large.cell.carcinoma ==========
+
+
+========== TRAIN PAIR EXPERT: v3.2_pretrained_focal_ls_cosine_cutmix_b4 / adenocarcinoma vs squamous.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v3.2_pretrained_focal_ls_cosine_cutmix_b4 / adenocarcinoma vs squamous.cell.carcinoma ==========
+
+
+========== TRAIN PAIR EXPERT: v3.2_pretrained_focal_ls_cosine_cutmix_b4 / large.cell.carcinoma vs squamous.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v3.2_pretrained_focal_ls_cosine_cutmix_b4 / large.cell.carcinoma vs squamous.cell.carcinoma ==========
+
+
+========== TRAIN MAIN: v3.3_pretrained_focal_ls_cosine_se_b4 ==========
+
+
+========== TRAIN TUMOR3 EXPERT: v3.3_pretrained_focal_ls_cosine_se_b4 ==========
+
+
+========== RUN TUMOR3 CASCADE: v3.3_pretrained_focal_ls_cosine_se_b4 ==========
+
+
+========== TRAIN PAIR EXPERT: v3.3_pretrained_focal_ls_cosine_se_b4 / adenocarcinoma vs large.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v3.3_pretrained_focal_ls_cosine_se_b4 / adenocarcinoma vs large.cell.carcinoma ==========
+
+
+========== TRAIN PAIR EXPERT: v3.3_pretrained_focal_ls_cosine_se_b4 / adenocarcinoma vs squamous.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v3.3_pretrained_focal_ls_cosine_se_b4 / adenocarcinoma vs squamous.cell.carcinoma ==========
+
+
+========== TRAIN PAIR EXPERT: v3.3_pretrained_focal_ls_cosine_se_b4 / large.cell.carcinoma vs squamous.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v3.3_pretrained_focal_ls_cosine_se_b4 / large.cell.carcinoma vs squamous.cell.carcinoma ==========
+
+
+========== TRAIN MAIN: v3.4_pretrained_focal_ls_cosine_cbam_b4 ==========
+
+
+========== TRAIN TUMOR3 EXPERT: v3.4_pretrained_focal_ls_cosine_cbam_b4 ==========
+
+
+========== RUN TUMOR3 CASCADE: v3.4_pretrained_focal_ls_cosine_cbam_b4 ==========
+
+
+========== TRAIN PAIR EXPERT: v3.4_pretrained_focal_ls_cosine_cbam_b4 / adenocarcinoma vs large.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v3.4_pretrained_focal_ls_cosine_cbam_b4 / adenocarcinoma vs large.cell.carcinoma ==========
+
+
+========== TRAIN PAIR EXPERT: v3.4_pretrained_focal_ls_cosine_cbam_b4 / adenocarcinoma vs squamous.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v3.4_pretrained_focal_ls_cosine_cbam_b4 / adenocarcinoma vs squamous.cell.carcinoma ==========
+
+
+========== TRAIN PAIR EXPERT: v3.4_pretrained_focal_ls_cosine_cbam_b4 / large.cell.carcinoma vs squamous.cell.carcinoma ==========
+
+
+========== RUN PAIR CASCADE: v3.4_pretrained_focal_ls_cosine_cbam_b4 / large.cell.carcinoma vs squamous.cell.carcinoma ==========
+
+
+All EfficientNet-B4 formal experiments finished.
+Results saved under: C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\2026APMCM\outputs
+Batch log saved to: C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\2026APMCM\outputs\cascade_batch_logs\run_all_efficientnet_b4_50_20260721_182248.log
+**********************
+Windows PowerShell 脚本结束
+结束时间: 20260721214422
+**********************

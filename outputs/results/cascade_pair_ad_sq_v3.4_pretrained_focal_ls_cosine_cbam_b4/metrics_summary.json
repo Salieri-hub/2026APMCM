@@ -1,0 +1,172 @@
+{
+  "mode": "cascade",
+  "config": {
+    "run_mode": "cascade",
+    "data_dir": "C:\\Users\\梁嘉纯\\Desktop\\2026年APMCM亚太地区大学生大模型竞赛赛题\\2026年APMCM亚太地区大学生大模型竞赛赛题\\B题\\基线\\附件\\Data",
+    "device_request": "cuda",
+    "device": "cuda",
+    "amp_enabled": true,
+    "expert_trigger_topk": 2,
+    "expert_margin_threshold": 0.12,
+    "main_checkpoint": "C:\\Users\\梁嘉纯\\Desktop\\2026年APMCM亚太地区大学生大模型竞赛赛题\\2026年APMCM亚太地区大学生大模型竞赛赛题\\B题\\基线\\2026APMCM\\outputs\\weights\\v3.4_pretrained_focal_ls_cosine_cbam_b4\\best_model.pt",
+    "expert_checkpoint": "C:\\Users\\梁嘉纯\\Desktop\\2026年APMCM亚太地区大学生大模型竞赛赛题\\2026年APMCM亚太地区大学生大模型竞赛赛题\\B题\\基线\\2026APMCM\\outputs\\weights\\expert_pair_ad_sq_v3.4_pretrained_focal_ls_cosine_cbam_b4\\best_model.pt"
+  },
+  "hardware": {
+    "cuda_available": true,
+    "gpu_name": "NVIDIA GeForce RTX 4060 Laptop GPU"
+  },
+  "dataset": {
+    "class_names": [
+      "adenocarcinoma",
+      "large.cell.carcinoma",
+      "normal",
+      "squamous.cell.carcinoma"
+    ],
+    "split_sizes": {
+      "train": 613,
+      "valid": 72,
+      "test": 315
+    },
+    "class_distribution": {
+      "train": {
+        "adenocarcinoma": 195,
+        "large.cell.carcinoma": 115,
+        "normal": 148,
+        "squamous.cell.carcinoma": 155
+      },
+      "valid": {
+        "adenocarcinoma": 23,
+        "large.cell.carcinoma": 21,
+        "normal": 13,
+        "squamous.cell.carcinoma": 15
+      },
+      "test": {
+        "adenocarcinoma": 120,
+        "large.cell.carcinoma": 51,
+        "normal": 54,
+        "squamous.cell.carcinoma": 90
+      }
+    }
+  },
+  "main_model": {
+    "model_name": "efficientnet_b4",
+    "image_size": 320,
+    "feature_attention": "cbam",
+    "class_names": [
+      "adenocarcinoma",
+      "large.cell.carcinoma",
+      "normal",
+      "squamous.cell.carcinoma"
+    ],
+    "best_epoch": 11,
+    "best_valid_accuracy": 0.8888888888888888
+  },
+  "expert_model": {
+    "model_name": "efficientnet_b4",
+    "image_size": 320,
+    "feature_attention": "cbam",
+    "class_names": [
+      "adenocarcinoma",
+      "squamous.cell.carcinoma"
+    ],
+    "best_epoch": 8,
+    "best_valid_accuracy": 0.9736842105263158
+  },
+  "validation": {
+    "accuracy": 0.8888888888888888,
+    "report": {
+      "adenocarcinoma": {
+        "precision": 0.7931034482758621,
+        "recall": 1.0,
+        "f1-score": 0.8846153846153846,
+        "support": 23.0
+      },
+      "large.cell.carcinoma": {
+        "precision": 1.0,
+        "recall": 0.6666666666666666,
+        "f1-score": 0.8,
+        "support": 21.0
+      },
+      "normal": {
+        "precision": 1.0,
+        "recall": 0.9230769230769231,
+        "f1-score": 0.96,
+        "support": 13.0
+      },
+      "squamous.cell.carcinoma": {
+        "precision": 0.8823529411764706,
+        "recall": 1.0,
+        "f1-score": 0.9375,
+        "support": 15.0
+      },
+      "accuracy": 0.8888888888888888,
+      "macro avg": {
+        "precision": 0.9188640973630832,
+        "recall": 0.8974358974358974,
+        "f1-score": 0.8955288461538462,
+        "support": 72.0
+      },
+      "weighted avg": {
+        "precision": 0.9093982420554428,
+        "recall": 0.8888888888888888,
+        "f1-score": 0.8845646367521369,
+        "support": 72.0
+      }
+    },
+    "cascade_stats": {
+      "expert_invocations": 0,
+      "expert_changed_predictions": 0,
+      "expert_corrected_predictions": 0,
+      "expert_hurt_predictions": 0
+    }
+  },
+  "test": {
+    "accuracy": 0.9015873015873016,
+    "report": {
+      "adenocarcinoma": {
+        "precision": 0.9035087719298246,
+        "recall": 0.8583333333333333,
+        "f1-score": 0.8803418803418803,
+        "support": 120.0
+      },
+      "large.cell.carcinoma": {
+        "precision": 0.8035714285714286,
+        "recall": 0.8823529411764706,
+        "f1-score": 0.8411214953271028,
+        "support": 51.0
+      },
+      "normal": {
+        "precision": 1.0,
+        "recall": 0.9629629629629629,
+        "f1-score": 0.9811320754716981,
+        "support": 54.0
+      },
+      "squamous.cell.carcinoma": {
+        "precision": 0.9032258064516129,
+        "recall": 0.9333333333333333,
+        "f1-score": 0.9180327868852459,
+        "support": 90.0
+      },
+      "accuracy": 0.9015873015873016,
+      "macro avg": {
+        "precision": 0.9025765017382166,
+        "recall": 0.909245642701525,
+        "f1-score": 0.9051570595064817,
+        "support": 315.0
+      },
+      "weighted avg": {
+        "precision": 0.9037889462519586,
+        "recall": 0.9015873015873016,
+        "f1-score": 0.9020390628503229,
+        "support": 315.0
+      }
+    },
+    "cascade_stats": {
+      "expert_invocations": 8,
+      "expert_changed_predictions": 2,
+      "expert_corrected_predictions": 1,
+      "expert_hurt_predictions": 1
+    }
+  },
+  "elapsed_seconds": 15.205569982528687
+}

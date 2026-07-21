@@ -1,0 +1,262 @@
+﻿image_path,true_label,pred_label,prob_adenocarcinoma,prob_large.cell.carcinoma,prob_squamous.cell.carcinoma
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000108 (3).png,adenocarcinoma,adenocarcinoma,0.958794,0.001018,0.040188
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000109 (2).png,adenocarcinoma,squamous.cell.carcinoma,0.420879,0.017723,0.561398
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000109 (4).png,adenocarcinoma,adenocarcinoma,0.593745,0.041262,0.364993
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000109 (5).png,adenocarcinoma,adenocarcinoma,0.866407,0.021105,0.112488
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000112 (2).png,adenocarcinoma,adenocarcinoma,0.818760,0.109837,0.071403
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000113 (7).png,adenocarcinoma,adenocarcinoma,0.462105,0.146691,0.391203
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000114 (5).png,adenocarcinoma,adenocarcinoma,0.971860,0.005060,0.023080
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000114.png,adenocarcinoma,adenocarcinoma,0.870838,0.037779,0.091383
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000115 (4).png,adenocarcinoma,large.cell.carcinoma,0.026653,0.935871,0.037476
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000115 (8).png,adenocarcinoma,adenocarcinoma,0.786418,0.045775,0.167806
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000115.png,adenocarcinoma,squamous.cell.carcinoma,0.456676,0.066598,0.476726
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000116 (5).png,adenocarcinoma,adenocarcinoma,0.705579,0.080175,0.214246
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000116 (7).png,adenocarcinoma,adenocarcinoma,0.655459,0.001157,0.343385
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000116 (9).png,adenocarcinoma,adenocarcinoma,0.826848,0.032693,0.140459
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000117 (4).png,adenocarcinoma,squamous.cell.carcinoma,0.416242,0.095218,0.488540
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000117 (8).png,adenocarcinoma,adenocarcinoma,0.664315,0.102375,0.233310
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000117.png,adenocarcinoma,adenocarcinoma,0.886322,0.079244,0.034434
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000118 (5).png,adenocarcinoma,adenocarcinoma,0.941343,0.009805,0.048853
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000118 (7).png,adenocarcinoma,adenocarcinoma,0.928424,0.006518,0.065058
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000119 (4).png,adenocarcinoma,adenocarcinoma,0.797493,0.046465,0.156042
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000119 (5).png,adenocarcinoma,adenocarcinoma,0.931901,0.027867,0.040231
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000119 (6).png,adenocarcinoma,adenocarcinoma,0.815021,0.008707,0.176271
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000120.png,adenocarcinoma,adenocarcinoma,0.929216,0.013490,0.057295
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000121 (6).png,adenocarcinoma,adenocarcinoma,0.727478,0.140684,0.131838
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000121 (7).png,adenocarcinoma,adenocarcinoma,0.751286,0.083799,0.164915
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000121.png,adenocarcinoma,adenocarcinoma,0.596018,0.286217,0.117765
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000122 (4).png,adenocarcinoma,squamous.cell.carcinoma,0.324795,0.128880,0.546325
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000122.png,adenocarcinoma,adenocarcinoma,0.874148,0.052754,0.073098
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000123 (4).png,adenocarcinoma,adenocarcinoma,0.920380,0.024938,0.054683
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000123 (6).png,adenocarcinoma,squamous.cell.carcinoma,0.253422,0.294585,0.451993
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000123 (9).png,adenocarcinoma,adenocarcinoma,0.936471,0.004763,0.058766
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000124 (6).png,adenocarcinoma,squamous.cell.carcinoma,0.442827,0.081277,0.475896
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000124 (9).png,adenocarcinoma,adenocarcinoma,0.879258,0.061373,0.059369
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000125 (2).png,adenocarcinoma,squamous.cell.carcinoma,0.309116,0.050709,0.640176
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000125 (4).png,adenocarcinoma,adenocarcinoma,0.820346,0.057541,0.122112
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000125 (5).png,adenocarcinoma,squamous.cell.carcinoma,0.398233,0.187974,0.413793
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000125 (6).png,adenocarcinoma,adenocarcinoma,0.954856,0.012946,0.032198
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000125 (8).png,adenocarcinoma,adenocarcinoma,0.727941,0.191337,0.080721
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000126 (6).png,adenocarcinoma,adenocarcinoma,0.928556,0.014718,0.056725
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000127 (5).png,adenocarcinoma,adenocarcinoma,0.741513,0.045365,0.213122
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000128 (5).png,adenocarcinoma,squamous.cell.carcinoma,0.221198,0.058812,0.719989
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000129 (5).png,adenocarcinoma,adenocarcinoma,0.929285,0.018083,0.052632
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000129.png,adenocarcinoma,adenocarcinoma,0.607573,0.318648,0.073779
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000130 (6).png,adenocarcinoma,large.cell.carcinoma,0.181599,0.432876,0.385525
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000131 (2).png,adenocarcinoma,adenocarcinoma,0.761852,0.071769,0.166379
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000132 (2).png,adenocarcinoma,adenocarcinoma,0.377741,0.303061,0.319198
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000132 (7).png,adenocarcinoma,adenocarcinoma,0.555958,0.377837,0.066205
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000132 (8).png,adenocarcinoma,adenocarcinoma,0.844291,0.025948,0.129761
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000132.png,adenocarcinoma,adenocarcinoma,0.870916,0.058978,0.070106
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000133 (2).png,adenocarcinoma,adenocarcinoma,0.918373,0.013755,0.067872
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000133 (4).png,adenocarcinoma,squamous.cell.carcinoma,0.375512,0.220120,0.404368
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000134 (2).png,adenocarcinoma,adenocarcinoma,0.925356,0.041298,0.033346
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000134 (9).png,adenocarcinoma,adenocarcinoma,0.794995,0.030496,0.174509
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000134.png,adenocarcinoma,adenocarcinoma,0.829365,0.093416,0.077218
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000135 (5).png,adenocarcinoma,adenocarcinoma,0.871604,0.011498,0.116898
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000136 (2).png,adenocarcinoma,adenocarcinoma,0.497784,0.409866,0.092351
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000136 (8).png,adenocarcinoma,large.cell.carcinoma,0.382847,0.476054,0.141100
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000137 (2).png,adenocarcinoma,adenocarcinoma,0.840172,0.127219,0.032609
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000137 (4).png,adenocarcinoma,adenocarcinoma,0.661019,0.110846,0.228135
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000137 (8).png,adenocarcinoma,adenocarcinoma,0.801875,0.042332,0.155793
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000138 (6).png,adenocarcinoma,large.cell.carcinoma,0.248309,0.415940,0.335751
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000138 (9).png,adenocarcinoma,adenocarcinoma,0.937369,0.008994,0.053637
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000139 (5).png,adenocarcinoma,adenocarcinoma,0.735506,0.027160,0.237334
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000139 (6).png,adenocarcinoma,adenocarcinoma,0.649678,0.053095,0.297227
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000139 (8).png,adenocarcinoma,adenocarcinoma,0.850504,0.055552,0.093944
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000139 (9).png,adenocarcinoma,adenocarcinoma,0.606104,0.086006,0.307890
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000139.png,adenocarcinoma,adenocarcinoma,0.715611,0.199545,0.084844
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000140.png,adenocarcinoma,large.cell.carcinoma,0.315091,0.392928,0.291981
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000141 (2).png,adenocarcinoma,adenocarcinoma,0.749442,0.057285,0.193273
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000142.png,adenocarcinoma,adenocarcinoma,0.843202,0.033831,0.122967
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000143 (5).png,adenocarcinoma,squamous.cell.carcinoma,0.410410,0.140490,0.449100
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000143 (6).png,adenocarcinoma,squamous.cell.carcinoma,0.378706,0.021127,0.600168
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000144 (2).png,adenocarcinoma,adenocarcinoma,0.472154,0.172597,0.355249
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000144 (5).png,adenocarcinoma,adenocarcinoma,0.542334,0.247451,0.210214
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000145 (9).png,adenocarcinoma,adenocarcinoma,0.881609,0.065187,0.053204
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000146 (3).png,adenocarcinoma,adenocarcinoma,0.354750,0.331720,0.313530
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000146 (6).png,adenocarcinoma,adenocarcinoma,0.867679,0.010484,0.121837
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000147.png,adenocarcinoma,adenocarcinoma,0.590806,0.110901,0.298293
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000148 (3).png,adenocarcinoma,adenocarcinoma,0.408972,0.307430,0.283598
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000148 (6).png,adenocarcinoma,squamous.cell.carcinoma,0.133391,0.103480,0.763129
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000148 (8).png,adenocarcinoma,adenocarcinoma,0.658117,0.144569,0.197313
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000148.png,adenocarcinoma,adenocarcinoma,0.703189,0.120831,0.175980
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000149 (2).png,adenocarcinoma,large.cell.carcinoma,0.330124,0.365826,0.304050
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000149 (4).png,adenocarcinoma,adenocarcinoma,0.485007,0.208243,0.306750
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000149 (7).png,adenocarcinoma,adenocarcinoma,0.943199,0.019942,0.036859
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000151 (5).png,adenocarcinoma,squamous.cell.carcinoma,0.351469,0.258730,0.389801
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000153 (5).png,adenocarcinoma,adenocarcinoma,0.443856,0.253829,0.302314
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000155 (4).png,adenocarcinoma,adenocarcinoma,0.552268,0.076776,0.370956
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000155.png,adenocarcinoma,adenocarcinoma,0.440800,0.260211,0.298989
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000156 (4).png,adenocarcinoma,adenocarcinoma,0.930248,0.014376,0.055377
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000157 (5).png,adenocarcinoma,adenocarcinoma,0.841732,0.025768,0.132500
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000157 (6).png,adenocarcinoma,adenocarcinoma,0.958260,0.010876,0.030863
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000158 (2).png,adenocarcinoma,adenocarcinoma,0.956387,0.007105,0.036508
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000158 (3).png,adenocarcinoma,large.cell.carcinoma,0.005044,0.989817,0.005139
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000158 (5).png,adenocarcinoma,adenocarcinoma,0.778506,0.062362,0.159131
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000158 (6).png,adenocarcinoma,adenocarcinoma,0.765248,0.055326,0.179426
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000158.png,adenocarcinoma,adenocarcinoma,0.871692,0.025814,0.102495
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000160 (4).png,adenocarcinoma,adenocarcinoma,0.918676,0.015261,0.066063
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000160 (6).png,adenocarcinoma,large.cell.carcinoma,0.207000,0.506239,0.286761
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000161 (4).png,adenocarcinoma,adenocarcinoma,0.578170,0.258511,0.163319
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000161 (5).png,adenocarcinoma,adenocarcinoma,0.910070,0.007382,0.082548
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000163 (3).png,adenocarcinoma,adenocarcinoma,0.545017,0.171246,0.283737
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000163 (7).png,adenocarcinoma,adenocarcinoma,0.971425,0.002125,0.026450
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000164 (5).png,adenocarcinoma,adenocarcinoma,0.937192,0.006908,0.055899
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000165 (6).png,adenocarcinoma,squamous.cell.carcinoma,0.176598,0.042690,0.780712
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000166 (2).png,adenocarcinoma,adenocarcinoma,0.823101,0.095002,0.081897
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000166 (3).png,adenocarcinoma,large.cell.carcinoma,0.029516,0.881326,0.089158
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000166 (4).png,adenocarcinoma,squamous.cell.carcinoma,0.404739,0.118594,0.476667
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000167 (3).png,adenocarcinoma,large.cell.carcinoma,0.040794,0.877341,0.081865
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000167 (8).png,adenocarcinoma,adenocarcinoma,0.859361,0.010403,0.130236
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000168 (3).png,adenocarcinoma,adenocarcinoma,0.894825,0.021085,0.084090
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000171 (5).png,adenocarcinoma,adenocarcinoma,0.946850,0.004797,0.048353
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000171.png,adenocarcinoma,adenocarcinoma,0.881350,0.045273,0.073377
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000172 (3).png,adenocarcinoma,squamous.cell.carcinoma,0.125823,0.063268,0.810909
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000173 (5).png,adenocarcinoma,adenocarcinoma,0.857660,0.016592,0.125749
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000173 (7).png,adenocarcinoma,adenocarcinoma,0.544340,0.280784,0.174876
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000174 (4).png,adenocarcinoma,adenocarcinoma,0.557824,0.232252,0.209925
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000176 (2).png,adenocarcinoma,adenocarcinoma,0.775763,0.084196,0.140041
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000177 (4).png,adenocarcinoma,adenocarcinoma,0.844288,0.036201,0.119512
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\adenocarcinoma\000177.png,adenocarcinoma,large.cell.carcinoma,0.255818,0.401201,0.342982
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000108.png,large.cell.carcinoma,squamous.cell.carcinoma,0.184505,0.407299,0.408195
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000110.png,large.cell.carcinoma,large.cell.carcinoma,0.280765,0.650808,0.068427
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000111 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.131136,0.697244,0.171620
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000111.png,large.cell.carcinoma,large.cell.carcinoma,0.035283,0.948509,0.016209
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000113 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.015018,0.930977,0.054004
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000113.png,large.cell.carcinoma,large.cell.carcinoma,0.013729,0.977646,0.008625
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000114.png,large.cell.carcinoma,large.cell.carcinoma,0.020065,0.944408,0.035527
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000115 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.018449,0.968697,0.012854
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000116.png,large.cell.carcinoma,large.cell.carcinoma,0.053314,0.905709,0.040977
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000118.png,large.cell.carcinoma,large.cell.carcinoma,0.218583,0.688029,0.093388
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000120.png,large.cell.carcinoma,large.cell.carcinoma,0.073195,0.878307,0.048497
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000122.png,large.cell.carcinoma,large.cell.carcinoma,0.003370,0.988810,0.007820
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000123.png,large.cell.carcinoma,large.cell.carcinoma,0.006575,0.979687,0.013738
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000124 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.008049,0.984493,0.007458
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000126.png,large.cell.carcinoma,large.cell.carcinoma,0.022200,0.960728,0.017072
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000127 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.348800,0.484497,0.166703
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000128 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.021499,0.959913,0.018588
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000128.png,large.cell.carcinoma,large.cell.carcinoma,0.214687,0.709235,0.076078
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000130.png,large.cell.carcinoma,large.cell.carcinoma,0.163030,0.737458,0.099512
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000131 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.138317,0.665048,0.196636
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000131.png,large.cell.carcinoma,large.cell.carcinoma,0.193551,0.761967,0.044482
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000132 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.104524,0.865820,0.029656
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000133 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.060612,0.928430,0.010958
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000133.png,large.cell.carcinoma,large.cell.carcinoma,0.055416,0.915138,0.029446
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000136 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.023550,0.961140,0.015309
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000137.png,large.cell.carcinoma,large.cell.carcinoma,0.024243,0.966006,0.009752
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000138 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.021040,0.957960,0.020999
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000141.png,large.cell.carcinoma,large.cell.carcinoma,0.097336,0.742418,0.160246
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000143.png,large.cell.carcinoma,large.cell.carcinoma,0.065117,0.857744,0.077139
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000147 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.009269,0.981214,0.009517
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000148 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.023839,0.959232,0.016929
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000148.png,large.cell.carcinoma,large.cell.carcinoma,0.041219,0.859200,0.099581
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000149.png,large.cell.carcinoma,large.cell.carcinoma,0.142249,0.792625,0.065126
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000150.png,large.cell.carcinoma,large.cell.carcinoma,0.022085,0.963218,0.014697
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000154 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.027846,0.936660,0.035494
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000154.png,large.cell.carcinoma,large.cell.carcinoma,0.040835,0.944025,0.015140
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000155.png,large.cell.carcinoma,large.cell.carcinoma,0.008943,0.986290,0.004768
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000158.png,large.cell.carcinoma,large.cell.carcinoma,0.039112,0.928824,0.032063
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000159 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.029477,0.949363,0.021159
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000159.png,large.cell.carcinoma,large.cell.carcinoma,0.045504,0.915763,0.038732
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000160.png,large.cell.carcinoma,large.cell.carcinoma,0.190311,0.598930,0.210758
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000162.png,large.cell.carcinoma,large.cell.carcinoma,0.020658,0.970413,0.008928
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000163.png,large.cell.carcinoma,large.cell.carcinoma,0.077251,0.860249,0.062499
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000169.png,large.cell.carcinoma,large.cell.carcinoma,0.102073,0.825121,0.072806
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000170.png,large.cell.carcinoma,large.cell.carcinoma,0.283620,0.573041,0.143339
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000171.png,large.cell.carcinoma,large.cell.carcinoma,0.010986,0.898656,0.090358
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000172 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.029868,0.932814,0.037317
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000172.png,large.cell.carcinoma,large.cell.carcinoma,0.158888,0.791946,0.049166
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000173 (2).png,large.cell.carcinoma,large.cell.carcinoma,0.017265,0.906538,0.076196
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000173.png,large.cell.carcinoma,large.cell.carcinoma,0.136304,0.666341,0.197355
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\large.cell.carcinoma\000174.png,large.cell.carcinoma,large.cell.carcinoma,0.019774,0.952759,0.027467
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000108 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.318317,0.054021,0.627662
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000110 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.102912,0.057841,0.839247
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000111.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.034074,0.012031,0.953895
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000112.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.050043,0.166385,0.783572
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000114 (2).png,squamous.cell.carcinoma,adenocarcinoma,0.444662,0.151603,0.403735
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000114 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.012319,0.003290,0.984391
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000115 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.036546,0.007935,0.955519
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000115 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.017884,0.007587,0.974529
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000116 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.032745,0.008913,0.958343
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000117 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.033609,0.351753,0.614638
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000117 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.006498,0.002322,0.991180
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000117 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.101299,0.026169,0.872532
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000118 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.446557,0.028298,0.525146
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000118 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.012089,0.000471,0.987440
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000119 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.045680,0.031426,0.922894
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000119.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.009986,0.031244,0.958770
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000120 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.256692,0.024803,0.718505
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000120 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.002051,0.001588,0.996360
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000120 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.008102,0.000816,0.991081
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000121 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.006089,0.001325,0.992586
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000121.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.004822,0.005475,0.989703
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000122 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.146769,0.231070,0.622161
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000122.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.017258,0.034931,0.947811
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000124 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.031697,0.059015,0.909288
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000124 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.026731,0.012383,0.960886
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000124.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.022930,0.017157,0.959912
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000125 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.395370,0.171778,0.432853
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000125 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.018967,0.059082,0.921950
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000125.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.034890,0.172565,0.792545
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000126 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.035870,0.006390,0.957739
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000127 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.025319,0.026431,0.948250
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000127 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.009450,0.043379,0.947170
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000127.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.013063,0.112217,0.874720
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000129 (2).png,squamous.cell.carcinoma,adenocarcinoma,0.618000,0.085788,0.296212
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000129 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.035281,0.102389,0.862330
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000130 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.016445,0.012708,0.970847
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000131 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.075997,0.076071,0.847932
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000132 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.198185,0.337124,0.464691
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000133 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.174789,0.048906,0.776305
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000133 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.017351,0.042693,0.939956
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000134 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.039621,0.023590,0.936789
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000135 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.027668,0.006482,0.965850
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000135.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.016161,0.053693,0.930146
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000136 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.134698,0.131064,0.734238
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000136 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.161064,0.242554,0.596382
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000137 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.226564,0.066825,0.706611
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000137.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.033884,0.024004,0.942113
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000139 (4).png,squamous.cell.carcinoma,adenocarcinoma,0.611049,0.070047,0.318905
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000139 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.228093,0.122448,0.649459
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000139 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.004003,0.001195,0.994803
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000141 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.029977,0.182425,0.787598
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000141 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.127620,0.262051,0.610329
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000142 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.113769,0.100745,0.785486
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000142 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.031127,0.047602,0.921272
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000144 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.183426,0.131730,0.684844
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000145 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.010853,0.045939,0.943208
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000146 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.015057,0.014423,0.970520
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000148 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.028427,0.120296,0.851278
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000148 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.119984,0.089557,0.790459
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000149 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.007428,0.019648,0.972924
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000151 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.094320,0.122477,0.783203
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000151.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.139589,0.016934,0.843477
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000153 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.310715,0.031261,0.658024
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000153 (4).png,squamous.cell.carcinoma,adenocarcinoma,0.415980,0.243158,0.340862
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000153.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.023712,0.159782,0.816506
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000154 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.249532,0.349275,0.401192
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000154 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.220689,0.016797,0.762514
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000154 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.117660,0.063225,0.819115
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000155 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.004364,0.002238,0.993398
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000155.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.225768,0.014373,0.759859
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000156 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.024387,0.139944,0.835669
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000157 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.030036,0.146963,0.823001
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000158 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.177810,0.024913,0.797277
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000158 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.072467,0.016241,0.911293
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000159 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.022507,0.005398,0.972095
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000160 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.061097,0.164184,0.774719
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000162 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.063548,0.065182,0.871271
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000162.png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.146389,0.020202,0.833409
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000163 (4).png,squamous.cell.carcinoma,large.cell.carcinoma,0.089891,0.726651,0.183457
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000163 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.004292,0.001281,0.994426
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000163 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.120768,0.016432,0.862800
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000164 (5).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.031685,0.009203,0.959112
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000166 (4).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.436820,0.114635,0.448545
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000167 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.025857,0.100141,0.874002
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000168 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.199122,0.053606,0.747272
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000169 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.106587,0.097333,0.796080
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000170 (2).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.044740,0.325461,0.629799
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000172 (6).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.019958,0.040711,0.939332
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000174 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.110448,0.012927,0.876625
+C:\Users\梁嘉纯\Desktop\2026年APMCM亚太地区大学生大模型竞赛赛题\2026年APMCM亚太地区大学生大模型竞赛赛题\B题\基线\附件\Data\test\squamous.cell.carcinoma\000177 (3).png,squamous.cell.carcinoma,squamous.cell.carcinoma,0.018580,0.000613,0.980807

@@ -1,0 +1,350 @@
+{
+  "mode": "expert",
+  "config": {
+    "run_mode": "expert",
+    "model_name": "efficientnet_b4",
+    "pretrained": true,
+    "loss": "cross_entropy",
+    "epochs": 25,
+    "batch_size": 16,
+    "image_size": 320,
+    "learning_rate": 0.0003,
+    "weight_decay": 0.0001,
+    "label_smoothing": 0.1,
+    "focal_gamma": 2.0,
+    "class_weighting": "none",
+    "class_weights": null,
+    "scheduler": "none",
+    "min_lr": 1e-06,
+    "mixup_alpha": 0.0,
+    "cutmix_alpha": 0.0,
+    "mix_prob": 1.0,
+    "mix_switch_prob": 0.5,
+    "feature_attention": "none",
+    "num_workers": 0,
+    "seed": 42,
+    "device_request": "cuda",
+    "device": "cuda",
+    "amp_enabled": true,
+    "deterministic": false,
+    "pin_memory": true,
+    "active_class_names": [
+      "adenocarcinoma",
+      "large.cell.carcinoma",
+      "squamous.cell.carcinoma"
+    ],
+    "expert_classes_arg": "adenocarcinoma,large.cell.carcinoma,squamous.cell.carcinoma"
+  },
+  "hardware": {
+    "cuda_available": true,
+    "gpu_name": "NVIDIA GeForce RTX 4060 Laptop GPU"
+  },
+  "dataset": {
+    "data_dir": "C:\\Users\\梁嘉纯\\Desktop\\2026年APMCM亚太地区大学生大模型竞赛赛题\\2026年APMCM亚太地区大学生大模型竞赛赛题\\B题\\基线\\附件\\Data",
+    "class_names": [
+      "adenocarcinoma",
+      "large.cell.carcinoma",
+      "squamous.cell.carcinoma"
+    ],
+    "split_sizes": {
+      "train": 465,
+      "valid": 59,
+      "test": 261
+    },
+    "class_distribution": {
+      "train": {
+        "adenocarcinoma": 195,
+        "large.cell.carcinoma": 115,
+        "squamous.cell.carcinoma": 155
+      },
+      "valid": {
+        "adenocarcinoma": 23,
+        "large.cell.carcinoma": 21,
+        "squamous.cell.carcinoma": 15
+      },
+      "test": {
+        "adenocarcinoma": 120,
+        "large.cell.carcinoma": 51,
+        "squamous.cell.carcinoma": 90
+      }
+    }
+  },
+  "training_history": [
+    {
+      "epoch": 1,
+      "train_loss": 1.0518624786407718,
+      "train_accuracy": 0.4752688172043011,
+      "valid_loss": 1.0756059420310844,
+      "valid_accuracy": 0.423728813559322,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.85079063318109,
+      "train_accuracy": 0.621505376344086,
+      "valid_loss": 0.9642008300554954,
+      "valid_accuracy": 0.576271186440678,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.5811934299366448,
+      "train_accuracy": 0.8516129032258064,
+      "valid_loss": 1.070225715637207,
+      "valid_accuracy": 0.559322033898305,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.4280077886837785,
+      "train_accuracy": 0.9440860215053763,
+      "valid_loss": 0.7292961276183694,
+      "valid_accuracy": 0.7796610169491526,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.37374583546833323,
+      "train_accuracy": 0.9741935483870968,
+      "valid_loss": 0.6315705634779849,
+      "valid_accuracy": 0.7966101694915254,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.37319845012439196,
+      "train_accuracy": 0.967741935483871,
+      "valid_loss": 0.6270587338229358,
+      "valid_accuracy": 0.8305084745762712,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.37029068854547315,
+      "train_accuracy": 0.9698924731182795,
+      "valid_loss": 0.5755522407717624,
+      "valid_accuracy": 0.847457627118644,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.3543740546831521,
+      "train_accuracy": 0.9806451612903225,
+      "valid_loss": 0.6765709984100471,
+      "valid_accuracy": 0.7627118644067796,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.34588298554061564,
+      "train_accuracy": 0.9849462365591398,
+      "valid_loss": 0.6283055437823474,
+      "valid_accuracy": 0.7966101694915254,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.32062256515667004,
+      "train_accuracy": 0.9913978494623656,
+      "valid_loss": 0.653409812409999,
+      "valid_accuracy": 0.8135593220338984,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.3280498872521103,
+      "train_accuracy": 0.989247311827957,
+      "valid_loss": 0.5495896278801611,
+      "valid_accuracy": 0.8305084745762712,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.31259152338068974,
+      "train_accuracy": 0.9956989247311828,
+      "valid_loss": 0.5474029749126758,
+      "valid_accuracy": 0.8305084745762712,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.315225617090861,
+      "train_accuracy": 0.9913978494623656,
+      "valid_loss": 0.5702217761742867,
+      "valid_accuracy": 0.864406779661017,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.3099783303917095,
+      "train_accuracy": 0.9956989247311828,
+      "valid_loss": 0.56546212252924,
+      "valid_accuracy": 0.8305084745762712,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.30449006865101474,
+      "train_accuracy": 0.9956989247311828,
+      "valid_loss": 0.5795818299560224,
+      "valid_accuracy": 0.864406779661017,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 16,
+      "train_loss": 0.31611556417198594,
+      "train_accuracy": 0.9935483870967742,
+      "valid_loss": 0.5709799376584715,
+      "valid_accuracy": 0.8135593220338984,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 17,
+      "train_loss": 0.3184389688635385,
+      "train_accuracy": 0.9935483870967742,
+      "valid_loss": 0.6165903341972222,
+      "valid_accuracy": 0.8305084745762712,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 18,
+      "train_loss": 0.3130183260927918,
+      "train_accuracy": 0.9935483870967742,
+      "valid_loss": 0.6329779801732403,
+      "valid_accuracy": 0.8305084745762712,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 19,
+      "train_loss": 0.3213902601631739,
+      "train_accuracy": 0.989247311827957,
+      "valid_loss": 0.6663442142939163,
+      "valid_accuracy": 0.8135593220338984,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 20,
+      "train_loss": 0.31659948313108055,
+      "train_accuracy": 0.9935483870967742,
+      "valid_loss": 0.709339958126262,
+      "valid_accuracy": 0.7966101694915254,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 21,
+      "train_loss": 0.3082503570023403,
+      "train_accuracy": 0.9956989247311828,
+      "valid_loss": 0.6672011093567993,
+      "valid_accuracy": 0.7966101694915254,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 22,
+      "train_loss": 0.319529361878672,
+      "train_accuracy": 0.989247311827957,
+      "valid_loss": 0.6347891597424523,
+      "valid_accuracy": 0.8135593220338984,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 23,
+      "train_loss": 0.3130100665553924,
+      "train_accuracy": 0.9913978494623656,
+      "valid_loss": 0.6337241308163788,
+      "valid_accuracy": 0.8305084745762712,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 24,
+      "train_loss": 0.30822859310334727,
+      "train_accuracy": 0.9913978494623656,
+      "valid_loss": 0.6366490842932362,
+      "valid_accuracy": 0.8135593220338984,
+      "learning_rate": 0.0003
+    },
+    {
+      "epoch": 25,
+      "train_loss": 0.30508081477175475,
+      "train_accuracy": 0.9956989247311828,
+      "valid_loss": 0.6170616316593299,
+      "valid_accuracy": 0.8305084745762712,
+      "learning_rate": 0.0003
+    }
+  ],
+  "best_epoch": 13,
+  "best_validation": {
+    "loss": 0.5702217761742867,
+    "accuracy": 0.864406779661017,
+    "report": {
+      "adenocarcinoma": {
+        "precision": 0.7931034482758621,
+        "recall": 1.0,
+        "f1-score": 0.8846153846153846,
+        "support": 23.0
+      },
+      "large.cell.carcinoma": {
+        "precision": 1.0,
+        "recall": 0.6666666666666666,
+        "f1-score": 0.8,
+        "support": 21.0
+      },
+      "squamous.cell.carcinoma": {
+        "precision": 0.875,
+        "recall": 0.9333333333333333,
+        "f1-score": 0.9032258064516129,
+        "support": 15.0
+      },
+      "accuracy": 0.864406779661017,
+      "macro avg": {
+        "precision": 0.889367816091954,
+        "recall": 0.8666666666666666,
+        "f1-score": 0.8626137303556658,
+        "support": 59.0
+      },
+      "weighted avg": {
+        "precision": 0.8875657510227937,
+        "recall": 0.864406779661017,
+        "f1-score": 0.859229507507255,
+        "support": 59.0
+      }
+    }
+  },
+  "test": {
+    "loss": 0.48023513827287373,
+    "accuracy": 0.9042145593869731,
+    "report": {
+      "adenocarcinoma": {
+        "precision": 0.9230769230769231,
+        "recall": 0.9,
+        "f1-score": 0.9113924050632911,
+        "support": 120.0
+      },
+      "large.cell.carcinoma": {
+        "precision": 0.8936170212765957,
+        "recall": 0.8235294117647058,
+        "f1-score": 0.8571428571428571,
+        "support": 51.0
+      },
+      "squamous.cell.carcinoma": {
+        "precision": 0.8865979381443299,
+        "recall": 0.9555555555555556,
+        "f1-score": 0.9197860962566845,
+        "support": 90.0
+      },
+      "accuracy": 0.9042145593869731,
+      "macro avg": {
+        "precision": 0.9010972941659495,
+        "recall": 0.8930283224400872,
+        "f1-score": 0.896107119487611,
+        "support": 261.0
+      },
+      "weighted avg": {
+        "precision": 0.904741430219643,
+        "recall": 0.9042145593869731,
+        "f1-score": 0.9036862949616178,
+        "support": 261.0
+      }
+    }
+  },
+  "elapsed_seconds": 227.91180896759033
+}

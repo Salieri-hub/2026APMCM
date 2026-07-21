@@ -47,12 +47,13 @@ DEFAULT_EXPERT_CLASSES = [
     "adenocarcinoma",
     "squamous.cell.carcinoma",
 ]
-DEFAULT_MODEL_NAME = "efficientnet_b3"
+DEFAULT_MODEL_NAME = "efficientnet_b4"
 MODEL_DEFAULT_IMAGE_SIZE = {
     "efficientnet_b0": 224,
     "efficientnet_b1": 240,
     "efficientnet_b2": 256,
     "efficientnet_b3": 288,
+    "efficientnet_b4": 320,
 }
 LOCAL_PRETRAINED_FILES = {
     "efficientnet_b1": {
@@ -69,6 +70,11 @@ LOCAL_PRETRAINED_FILES = {
         "format": "safetensors",
         "url": "https://huggingface.co/timm/efficientnet_b3.ra2_in1k/resolve/main/model.safetensors",
         "relative_path": Path(".cache") / "weights" / "efficientnet_b3.ra2_in1k" / "model.safetensors",
+    },
+    "efficientnet_b4": {
+        "format": "safetensors",
+        "url": "https://huggingface.co/timm/efficientnet_b4.ra2_in1k/resolve/main/model.safetensors",
+        "relative_path": Path(".cache") / "weights" / "efficientnet_b4.ra2_in1k" / "model.safetensors",
     },
 }
 
@@ -107,6 +113,8 @@ def build_backbone_tag(model_name: str) -> str:
         return "b2"
     if model_name == "efficientnet_b3":
         return "b3"
+    if model_name == "efficientnet_b4":
+        return "b4"
     return sanitize_name(model_name)
 
 
@@ -133,8 +141,20 @@ def download_file(url: str, destination: Path, timeout_seconds: int = 120, max_r
 
     for attempt in range(1, max_retries + 1):
         try:
+            bytes_written = 0
             with urllib.request.urlopen(url, timeout=timeout_seconds) as response, temp_path.open("wb") as output_file:
-                shutil.copyfileobj(response, output_file)
+                expected_length_header = response.headers.get("Content-Length")
+                expected_length = int(expected_length_header) if expected_length_header and expected_length_header.isdigit() else None
+                while True:
+                    chunk = response.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    output_file.write(chunk)
+                    bytes_written += len(chunk)
+            if expected_length is not None and bytes_written != expected_length:
+                raise RuntimeError(
+                    f"Downloaded file size mismatch for {url}: expected {expected_length} bytes, got {bytes_written} bytes."
+                )
             temp_path.replace(destination)
             return destination
         except Exception as error:
@@ -148,26 +168,24 @@ def download_file(url: str, destination: Path, timeout_seconds: int = 120, max_r
     raise RuntimeError(f"Failed to download pretrained weights from {url}: {last_error}") from last_error
 
 
-def ensure_local_pretrained_file(model_name: str) -> Optional[Tuple[Path, str]]:
+def ensure_local_pretrained_file(model_name: str, force_redownload: bool = False) -> Optional[Tuple[Path, str]]:
     spec = LOCAL_PRETRAINED_FILES.get(model_name)
     if spec is None:
         return None
 
     local_path = PROJECT_ROOT / spec["relative_path"]
-    if local_path.exists():
+    if local_path.exists() and not force_redownload:
         return local_path, str(spec["format"])
+
+    if force_redownload and local_path.exists():
+        local_path.unlink(missing_ok=True)
 
     print(f"Downloading local pretrained weights for {model_name} -> {local_path}")
     return download_file(spec["url"], local_path), str(spec["format"])
 
 
-def build_pretrained_backbone(model_name: str, num_classes: int) -> nn.Module:
-    local_pretrained = ensure_local_pretrained_file(model_name)
-    if local_pretrained is None:
-        return timm.create_model(model_name, pretrained=True, num_classes=num_classes)
-
-    local_weights, weight_format = local_pretrained
-    backbone = timm.create_model(model_name, pretrained=False, num_classes=1000)
+def load_pretrained_state_dict(local_weights: Path, weight_format: str) -> Dict[str, Any]:
+    state_dict: Any
     if weight_format == "safetensors":
         state_dict = load_safetensors_file(str(local_weights))
     elif weight_format == "torch":
@@ -183,20 +201,50 @@ def build_pretrained_backbone(model_name: str, num_classes: int) -> nn.Module:
                 for key, value in state_dict.items()
             }
     else:
-        raise ValueError(f"Unsupported local pretrained weight format for {model_name}: {weight_format}")
-    backbone.load_state_dict(state_dict, strict=True)
-    if hasattr(backbone, "reset_classifier"):
-        backbone.reset_classifier(num_classes)
-    else:
-        raise ValueError(f"Backbone {model_name} does not support reset_classifier after local weight loading.")
-    return backbone
+        raise ValueError(f"Unsupported local pretrained weight format: {weight_format}")
+
+    if not isinstance(state_dict, dict):
+        raise TypeError(f"Unsupported pretrained state dict type: {type(state_dict)!r}")
+    return state_dict
+
+
+def build_pretrained_backbone(model_name: str, num_classes: int) -> nn.Module:
+    local_pretrained = ensure_local_pretrained_file(model_name)
+    if local_pretrained is None:
+        return timm.create_model(model_name, pretrained=True, num_classes=num_classes)
+
+    last_error: Optional[Exception] = None
+    for attempt in range(2):
+        local_weights, weight_format = local_pretrained
+        backbone = timm.create_model(model_name, pretrained=False, num_classes=1000)
+        try:
+            state_dict = load_pretrained_state_dict(local_weights, weight_format)
+            backbone.load_state_dict(state_dict, strict=True)
+            if hasattr(backbone, "reset_classifier"):
+                backbone.reset_classifier(num_classes)
+            else:
+                raise ValueError(
+                    f"Backbone {model_name} does not support reset_classifier after local weight loading."
+                )
+            return backbone
+        except Exception as error:
+            last_error = error
+            if attempt == 0:
+                print(f"Detected invalid local pretrained file for {model_name}, deleting and re-downloading: {local_weights}")
+                local_pretrained = ensure_local_pretrained_file(model_name, force_redownload=True)
+                continue
+            break
+
+    raise RuntimeError(
+        f"Failed to load local pretrained weights for {model_name} after re-download: {last_error}"
+    ) from last_error
 
 
 def build_output_subdirs(output_dir: Path) -> Tuple[Path, Path]:
     output_dir = output_dir.resolve()
     if output_dir.name in {"outputs", "weights", "results"}:
         raise ValueError(
-            "--output-dir must include an experiment name, for example outputs/v2.0_pretrained_ce_b3."
+            "--output-dir must include an experiment name, for example outputs/v2.0_pretrained_ce_b4."
         )
 
     if output_dir.parent.name in {"weights", "results"}:
@@ -1642,7 +1690,7 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=None,
         help=(
-            "Experiment slug path. For example outputs/v2.0_pretrained_ce_b3. "
+            "Experiment slug path. For example outputs/v2.0_pretrained_ce_b4. "
             "Checkpoints are written to outputs/weights/<experiment>/ and reports to outputs/results/<experiment>/."
         ),
     )
@@ -1660,7 +1708,7 @@ def parse_args() -> argparse.Namespace:
         "--image-size",
         type=int,
         default=None,
-        help="Input image size. Defaults to 288 for EfficientNet-B3, 256 for EfficientNet-B2, 240 for EfficientNet-B1, and 224 for EfficientNet-B0.",
+        help="Input image size. Defaults to 320 for EfficientNet-B4, 288 for EfficientNet-B3, 256 for EfficientNet-B2, 240 for EfficientNet-B1, and 224 for EfficientNet-B0.",
     )
     parser.add_argument("--lr", type=float, default=3e-4)
     parser.add_argument("--weight-decay", type=float, default=1e-4)

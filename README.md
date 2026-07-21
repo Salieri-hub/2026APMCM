@@ -6,11 +6,11 @@
 
 当前代码默认基线为：
 
-- 主干网络：`EfficientNet-B3`
-- 默认输入尺寸：`288`
+- 主干网络：`EfficientNet-B4`
+- 默认输入尺寸：`320`
 - 支持模式：`single`、`expert`、`cascade`
 
-已经完整验证的历史正式结果仍然是 `B0` 线路；当前仓库默认运行线路已经切换为 `B3`，并准备执行新一轮 `50` 组正式实验。
+已经完整验证的历史正式结果仍然是 `B0` 线路；当前仓库默认运行线路已经切换为 `B4`，并准备执行新一轮 `50` 组正式实验。
 
 ## 数据任务
 
@@ -29,8 +29,8 @@
 
 ## 当前默认参数
 
-- `--model-name efficientnet_b3`
-- `--image-size 288`
+- `--model-name efficientnet_b4`
+- `--image-size 320`
 - `--device auto/cpu/cuda`
 - `--loss cross_entropy` 或 `focal`
 - `--scheduler none/cosine/plateau`
@@ -64,34 +64,34 @@
 如果当前目录位于 `2026APMCM`：
 
 ```powershell
-..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --model-name efficientnet_b3
+..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --model-name efficientnet_b4
 ```
 
 主模型、专家模型和级联模型的手动运行示例如下：
 
 ```powershell
-..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --model-name efficientnet_b3 --loss focal --label-smoothing 0.1 --scheduler cosine --feature-attention cbam --output-dir .\outputs\v3.4_pretrained_focal_ls_cosine_cbam_b3
-..\LCC_GPU\python.exe .\src\main.py --run-mode expert --model-name efficientnet_b3 --expert-classes adenocarcinoma,large.cell.carcinoma,squamous.cell.carcinoma --device cuda --pretrained --loss focal --label-smoothing 0.1 --scheduler cosine --feature-attention cbam --output-dir .\outputs\expert_tumor3_v3.4_pretrained_focal_ls_cosine_cbam_b3
-..\LCC_GPU\python.exe .\src\main.py --run-mode cascade --device cuda --main-checkpoint .\outputs\weights\v3.4_pretrained_focal_ls_cosine_cbam_b3\best_model.pt --expert-checkpoint .\outputs\weights\expert_tumor3_v3.4_pretrained_focal_ls_cosine_cbam_b3\best_model.pt --output-dir .\outputs\cascade_v3.4_pretrained_focal_ls_cosine_cbam_b3
+..\LCC_GPU\python.exe .\src\main.py --device cuda --pretrained --model-name efficientnet_b4 --loss focal --label-smoothing 0.1 --scheduler cosine --feature-attention cbam --output-dir .\outputs\v3.4_pretrained_focal_ls_cosine_cbam_b4
+..\LCC_GPU\python.exe .\src\main.py --run-mode expert --model-name efficientnet_b4 --expert-classes adenocarcinoma,large.cell.carcinoma,squamous.cell.carcinoma --device cuda --pretrained --loss focal --label-smoothing 0.1 --scheduler cosine --feature-attention cbam --output-dir .\outputs\expert_tumor3_v3.4_pretrained_focal_ls_cosine_cbam_b4
+..\LCC_GPU\python.exe .\src\main.py --run-mode cascade --device cuda --main-checkpoint .\outputs\weights\v3.4_pretrained_focal_ls_cosine_cbam_b4\best_model.pt --expert-checkpoint .\outputs\weights\expert_tumor3_v3.4_pretrained_focal_ls_cosine_cbam_b4\best_model.pt --output-dir .\outputs\cascade_v3.4_pretrained_focal_ls_cosine_cbam_b4
 ```
 
 ## 批量运行 50 组正式实验
 
 脚本文件：
 
-- `scripts/run_all_efficientnet_b3_50.ps1`
-- `scripts/run_all_efficientnet_b3_50.cmd`
+- `scripts/run_all_efficientnet_b4_50.ps1`
+- `scripts/run_all_efficientnet_b4_50.cmd`
 
 如果当前目录位于 `2026APMCM`：
 
 ```powershell
-.\scripts\run_all_efficientnet_b3_50.cmd
+.\scripts\run_all_efficientnet_b4_50.cmd
 ```
 
 或者：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File ".\scripts\run_all_efficientnet_b3_50.ps1" -PythonExe "..\LCC_GPU\python.exe"
+powershell -ExecutionPolicy Bypass -File ".\scripts\run_all_efficientnet_b4_50.ps1" -PythonExe "..\LCC_GPU\python.exe"
 ```
 
 批量脚本会产出：

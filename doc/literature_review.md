@@ -26,7 +26,7 @@
 - 历史完整正式结果：`EfficientNet-B0`
 - 用户此前恢复的默认基线：`EfficientNet-B1`
 - 中间迁移版本：`EfficientNet-B2`
-- 当前默认线路：`EfficientNet-B3`
+- 当前默认线路：`EfficientNet-B4`
 
 ### 3. 损失函数与正则化
 
@@ -82,11 +82,11 @@
 - 任务定义不变
 - 主训练流程不变
 - 专家模型与级联框架不变
-- 默认主干升级为 `EfficientNet-B3`
+- 默认主干升级为 `EfficientNet-B4`
 
 ## 输出规范
 
-所有新的 `B3` 实验统一使用：
+所有新的 `B4` 实验统一使用：
 
 - `outputs/weights/<experiment_name>/`
 - `outputs/results/<experiment_name>/`

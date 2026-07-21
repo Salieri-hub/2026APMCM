@@ -4,7 +4,7 @@
 
 ## 1. 概要
 
-仓库默认基线已经从 `EfficientNet-B2` 继续迁移到 `EfficientNet-B3`。
+仓库默认基线已经从 `EfficientNet-B3` 继续迁移到 `EfficientNet-B4`。
 
 本次迁移保留了既有的单模型、专家模型和级联框架，同时更新了默认主干、默认输入尺寸和对应的批量脚本。
 
@@ -12,10 +12,10 @@
 
 ### 2.1 主干迁移
 
-- 默认 `--model-name` 更新为 `efficientnet_b3`
-- 默认 `--image-size` 更新为 `288`
-- 新增 `B3` 本地预训练权重加载配置
-- 保留历史 `B0/B1/B2` checkpoint 兼容性
+- 默认 `--model-name` 更新为 `efficientnet_b4`
+- 默认 `--image-size` 更新为 `320`
+- 新增 `B4` 本地预训练权重加载配置
+- 保留历史 `B0/B1/B2/B3` checkpoint 兼容性
 
 ### 2.2 输出结构
 
@@ -31,8 +31,8 @@
 
 本次新增：
 
-- `scripts/run_all_efficientnet_b3_50.ps1`
-- `scripts/run_all_efficientnet_b3_50.cmd`
+- `scripts/run_all_efficientnet_b4_50.ps1`
+- `scripts/run_all_efficientnet_b4_50.cmd`
 
 脚本覆盖范围如下：
 
@@ -57,28 +57,28 @@
 
 ## 4. 当前状态
 
-`B3` 代码路径、文档和批量脚本已经就绪。
+`B4` 代码路径、文档和批量脚本已经就绪。
 
 尚未完成的部分包括：
 
-- 正式 `50` 组 `B3` 实验
-- `B3` 与历史 `B0` 的结果对比
-- 基于 `B3` 结果的后续 Word 文档整理
+- 正式 `50` 组 `B4` 实验
+- `B4` 与历史 `B0` 的结果对比
+- 基于 `B4` 结果的后续 Word 文档整理
 
 ## 5. 运行命令
 
 如果当前目录位于 `2026APMCM`：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File ".\scripts\run_all_efficientnet_b3_50.ps1" -PythonExe "..\LCC_GPU\python.exe"
+powershell -ExecutionPolicy Bypass -File ".\scripts\run_all_efficientnet_b4_50.ps1" -PythonExe "..\LCC_GPU\python.exe"
 ```
 
 或者：
 
 ```powershell
-.\scripts\run_all_efficientnet_b3_50.cmd
+.\scripts\run_all_efficientnet_b4_50.cmd
 ```
 
 ## 6. 下一步
 
-运行 `B3` 的 `50` 组正式实验，随后整理跨主干版本的对比文档。
+运行 `B4` 的 `50` 组正式实验，随后整理跨主干版本的对比文档。

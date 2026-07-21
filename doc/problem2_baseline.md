@@ -17,8 +17,8 @@
 
 当前仓库默认基线已经切换为：
 
-- 主干网络：`EfficientNet-B3`
-- 默认输入尺寸：`288`
+- 主干网络：`EfficientNet-B4`
+- 默认输入尺寸：`320`
 - 优化器：`AdamW`
 - 损失函数：`cross_entropy` 与 `focal`
 - 学习率调度：`none`、`cosine`、`plateau`
@@ -50,9 +50,9 @@
 
 专家模型不会直接硬覆盖主模型输出，而是只在专家子集内部重新分配概率并返回最终四分类结果。
 
-## 4. 正式 B3 实验计划
+## 4. 正式 B4 实验计划
 
-本轮实验沿用此前非 CPU、预训练线路的正式设置，并将其整体迁移到 `B3`。
+本轮实验沿用此前非 CPU、预训练线路的正式设置，并将其整体迁移到 `B4`。
 
 明确排除：
 
@@ -90,19 +90,19 @@
 如果当前目录位于 `2026APMCM`：
 
 ```powershell
-.\scripts\run_all_efficientnet_b3_50.cmd
+.\scripts\run_all_efficientnet_b4_50.cmd
 ```
 
 或者：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File ".\scripts\run_all_efficientnet_b3_50.ps1" -PythonExe "..\LCC_GPU\python.exe"
+powershell -ExecutionPolicy Bypass -File ".\scripts\run_all_efficientnet_b4_50.ps1" -PythonExe "..\LCC_GPU\python.exe"
 ```
 
 手动执行级联实验的示例如下：
 
 ```powershell
-..\LCC_GPU\python.exe .\src\main.py --run-mode cascade --device cuda --main-checkpoint .\outputs\weights\v3.4_pretrained_focal_ls_cosine_cbam_b3\best_model.pt --expert-checkpoint .\outputs\weights\expert_tumor3_v3.4_pretrained_focal_ls_cosine_cbam_b3\best_model.pt --output-dir .\outputs\cascade_v3.4_pretrained_focal_ls_cosine_cbam_b3
+..\LCC_GPU\python.exe .\src\main.py --run-mode cascade --device cuda --main-checkpoint .\outputs\weights\v3.4_pretrained_focal_ls_cosine_cbam_b4\best_model.pt --expert-checkpoint .\outputs\weights\expert_tumor3_v3.4_pretrained_focal_ls_cosine_cbam_b4\best_model.pt --output-dir .\outputs\cascade_v3.4_pretrained_focal_ls_cosine_cbam_b4
 ```
 
 ## 7. 历史参考结果
@@ -119,4 +119,4 @@ powershell -ExecutionPolicy Bypass -File ".\scripts\run_all_efficientnet_b3_50.p
 - 测试集准确率：`87.62%`
 - Macro F1：`0.8773`
 
-当前 `B3` 线路已经准备完成，但还没有完成正式 `50` 组复现实验。
+当前 `B4` 线路已经准备完成，但还没有完成正式 `50` 组复现实验。
