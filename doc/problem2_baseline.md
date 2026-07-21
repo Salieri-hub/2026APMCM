@@ -1,118 +1,122 @@
-﻿# Problem 2 Baseline Plan
+﻿# Problem 2 基线方案
 
-## 1. Task Definition
+## 1. 任务定义
 
-This project solves a four-class lung pathology image classification task for APMCM Problem 2.
+本项目解决 APMCM Problem 2 的肺癌病理图像四分类任务。
 
-Classes:
+类别如下：
+
 - `adenocarcinoma`
 - `large.cell.carcinoma`
 - `normal`
 - `squamous.cell.carcinoma`
 
-The main evaluation target is the full four-class task. Expert models are auxiliary subset classifiers used in cascade mode.
+主评价目标是完整四分类任务。专家模型用于特定易混类别子集，并在级联模式中辅助主模型。
 
-## 2. Current Baseline Line
+## 2. 当前基线线路
 
-The current code baseline has been migrated to:
-- backbone: `EfficientNet-B2`
-- default image size: `256`
-- optimizer: `AdamW`
-- losses: `cross_entropy` and `focal`
-- schedulers: `none`, `cosine`, `plateau`
-- optional additions: `label smoothing`, `MixUp`, `CutMix`, `SE`, `CBAM`
+当前仓库默认基线已经切换为：
 
-## 3. Supported Run Modes
+- 主干网络：`EfficientNet-B3`
+- 默认输入尺寸：`288`
+- 优化器：`AdamW`
+- 损失函数：`cross_entropy` 与 `focal`
+- 学习率调度：`none`、`cosine`、`plateau`
+- 可选增强项：`label smoothing`、`MixUp`、`CutMix`、`SE`、`CBAM`
+
+## 3. 支持的运行模式
 
 ### 3.1 Single
 
-Four-class main model training and evaluation.
+用于四分类主模型训练与评估。
 
 ### 3.2 Expert
 
-Subset expert model training.
+用于训练类别子集专家模型。
 
-Supported subset types:
-- tumor3 expert:
-  - `adenocarcinoma,large.cell.carcinoma,squamous.cell.carcinoma`
-- pair experts:
-  - `adenocarcinoma,large.cell.carcinoma`
-  - `adenocarcinoma,squamous.cell.carcinoma`
-  - `large.cell.carcinoma,squamous.cell.carcinoma`
+当前支持的专家子集包括：
+
+- 三分类肿瘤专家：`adenocarcinoma,large.cell.carcinoma,squamous.cell.carcinoma`
+- 两两专家一：`adenocarcinoma,large.cell.carcinoma`
+- 两两专家二：`adenocarcinoma,squamous.cell.carcinoma`
+- 两两专家三：`large.cell.carcinoma,squamous.cell.carcinoma`
 
 ### 3.3 Cascade
 
-Main model predicts first. The expert branch is invoked only when:
-1. the main model top-k classes all stay inside the expert class subset
-2. `top1 - top2 <= expert_margin_threshold`
+级联模式先由主模型预测，再决定是否进入专家分支。触发条件如下：
 
-The expert branch does not hard override the main model. It refines probability mass inside the expert subset and then returns a final four-class decision.
+1. 主模型的 top-k 类别必须全部落在专家子集内。
+2. `top1 - top2 <= expert_margin_threshold`。
 
-## 4. Formal B2 Experiment Plan
+专家模型不会直接硬覆盖主模型输出，而是只在专家子集内部重新分配概率并返回最终四分类结果。
 
-This round keeps the same formal experiment conditions as the previous non-CPU, pretrained line, and reruns them on `B2`.
+## 4. 正式 B3 实验计划
 
-Excluded:
+本轮实验沿用此前非 CPU、预训练线路的正式设置，并将其整体迁移到 `B3`。
+
+明确排除：
+
 - `v1.0_scratch_ce_cpu`
 - `v1.1_scratch_ce_cuda`
 
-Formal outputs to produce:
-- `10` single-model runs
-- `10` tumor3 cascade runs
-- `30` pairwise cascade runs
-- total: `50`
+计划产出如下：
 
-## 5. Output Layout
+- `10` 组单模型实验
+- `10` 组三分类肿瘤专家级联实验
+- `30` 组两两专家级联实验
+- 总计：`50`
 
-All artifacts are stored in shared folders under `outputs/`.
+## 5. 输出结构
 
-Weights:
+所有产物统一保存在 `outputs/` 下的共享目录：
+
 - `outputs/weights/<experiment_name>/best_model.pt`
-
-Other results:
 - `outputs/results/<experiment_name>/metrics_summary.json`
 - `outputs/results/<experiment_name>/test_predictions.csv`
 - `outputs/results/<experiment_name>/valid_confusion_matrix.csv`
 - `outputs/results/<experiment_name>/test_confusion_matrix.csv`
-- cascade runs also save:
-  - `valid_cascade_predictions.csv`
-  - `test_cascade_predictions.csv`
+- 级联实验额外保存：
+- `outputs/results/<experiment_name>/valid_cascade_predictions.csv`
+- `outputs/results/<experiment_name>/test_cascade_predictions.csv`
 
-The command line still uses:
+命令行仍然使用：
+
 - `--output-dir .\outputs\<experiment_name>`
 
-The code automatically maps that experiment name into the shared `weights/` and `results/` trees.
+代码会自动将实验名映射到共享的 `weights/` 与 `results/` 目录。
 
-## 6. Commands
+## 6. 运行命令
 
-If you are in `2026APMCM`:
-
-```powershell
-.\scripts\run_all_efficientnet_b2_50.cmd
-```
-
-or
+如果当前目录位于 `2026APMCM`：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File ".\scripts\run_all_efficientnet_b2_50.ps1" -PythonExe "..\LCC_GPU\python.exe"
+.\scripts\run_all_efficientnet_b3_50.cmd
 ```
 
-Manual cascade example:
+或者：
 
 ```powershell
-..\LCC_GPU\python.exe .\src\main.py --run-mode cascade --device cuda --main-checkpoint .\outputs\weights\v3.4_pretrained_focal_ls_cosine_cbam_b2\best_model.pt --expert-checkpoint .\outputs\weights\expert_tumor3_v3.4_pretrained_focal_ls_cosine_cbam_b2\best_model.pt --output-dir .\outputs\cascade_v3.4_pretrained_focal_ls_cosine_cbam_b2
+powershell -ExecutionPolicy Bypass -File ".\scripts\run_all_efficientnet_b3_50.ps1" -PythonExe "..\LCC_GPU\python.exe"
 ```
 
-## 7. Historical Reference Results
+手动执行级联实验的示例如下：
 
-Completed historical best single model from `B0`:
-- `v3.4_pretrained_focal_ls_cosine_cbam`
-- test accuracy: `86.35%`
-- macro F1: `0.8646`
+```powershell
+..\LCC_GPU\python.exe .\src\main.py --run-mode cascade --device cuda --main-checkpoint .\outputs\weights\v3.4_pretrained_focal_ls_cosine_cbam_b3\best_model.pt --expert-checkpoint .\outputs\weights\expert_tumor3_v3.4_pretrained_focal_ls_cosine_cbam_b3\best_model.pt --output-dir .\outputs\cascade_v3.4_pretrained_focal_ls_cosine_cbam_b3
+```
 
-Completed historical best cascade from `B0`:
-- `cascade_v3.4_pretrained_focal_ls_cosine_cbam`
-- test accuracy: `87.62%`
-- macro F1: `0.8773`
+## 7. 历史参考结果
 
-The current `B2` line is prepared but not yet formally rerun.
+历史 `B0` 单模型最佳结果：
+
+- 实验名：`v3.4_pretrained_focal_ls_cosine_cbam`
+- 测试集准确率：`86.35%`
+- Macro F1：`0.8646`
+
+历史 `B0` 级联最佳结果：
+
+- 实验名：`cascade_v3.4_pretrained_focal_ls_cosine_cbam`
+- 测试集准确率：`87.62%`
+- Macro F1：`0.8773`
+
+当前 `B3` 线路已经准备完成，但还没有完成正式 `50` 组复现实验。

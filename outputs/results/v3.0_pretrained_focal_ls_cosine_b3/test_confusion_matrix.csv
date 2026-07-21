@@ -1,0 +1,5 @@
+﻿true/pred,adenocarcinoma,large.cell.carcinoma,normal,squamous.cell.carcinoma
+adenocarcinoma,104,7,0,9
+large.cell.carcinoma,3,48,0,0
+normal,1,0,53,0
+squamous.cell.carcinoma,2,3,0,85

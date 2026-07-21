@@ -1,81 +1,92 @@
-﻿# Literature Review Notes
+﻿# 文献综述笔记
 
-## Source Folder
+## 论文目录
 
-Use the local paper folder:
+请使用本地论文目录：
+
 - `..\相关论文(1)`
 
-## Practical Takeaways Used by This Project
+## 本项目采用的核心文献结论
 
-### 1. Transfer Learning
+### 1. 迁移学习
 
-The literature consistently supports using pretrained ImageNet backbones for small pathology datasets.
+相关文献普遍支持：对于规模较小的病理图像数据集，使用 ImageNet 预训练主干通常优于从零训练。
 
-Project use:
-- `--pretrained`
-- current default backbone family: `EfficientNet`
+本项目的对应做法：
 
-### 2. EfficientNet Family
+- 使用 `--pretrained`
+- 当前默认主干家族为 `EfficientNet`
 
-The literature supports lightweight-to-medium EfficientNet backbones as strong baselines for histopathology image classification.
+### 2. EfficientNet 系列
 
-Project evolution:
-- historical completed line: `EfficientNet-B0`
-- reverted user baseline before this turn: `EfficientNet-B1`
-- current default line after this update: `EfficientNet-B2`
+文献普遍认为，轻量到中等规模的 EfficientNet 主干适合作为组织病理图像分类的强基线。
 
-### 3. Loss and Regularization
+本项目的演进路径为：
 
-Common useful strategies from related papers:
+- 历史完整正式结果：`EfficientNet-B0`
+- 用户此前恢复的默认基线：`EfficientNet-B1`
+- 中间迁移版本：`EfficientNet-B2`
+- 当前默认线路：`EfficientNet-B3`
+
+### 3. 损失函数与正则化
+
+相关论文中较常见且有效的策略包括：
+
 - `label smoothing`
 - `focal loss`
-- class reweighting in some settings
-- stronger augmentation such as `MixUp` and `CutMix`
+- 部分类别不平衡场景下的类别重加权
+- 更强的数据增强，例如 `MixUp` 与 `CutMix`
 
-Project support:
+本项目已经支持：
+
 - `cross_entropy`
 - `focal`
 - `label smoothing`
-- `balanced/manual` class weighting
+- `balanced/manual` 类别加权
 - `MixUp`
 - `CutMix`
 
-### 4. Learning Rate Scheduling
+### 4. 学习率调度
 
-The literature generally favors nontrivial learning-rate schedules over fixed learning rates.
+文献通常不建议始终使用固定学习率，非平凡调度策略更容易取得稳定收益。
 
-Project support:
+本项目已经支持：
+
 - `none`
 - `cosine`
 - `plateau`
 
-### 5. Attention Modules
+### 5. 注意力模块
 
-Related papers often use lightweight attention modules to refine discriminative local features.
+相关论文经常通过轻量注意力模块增强局部判别特征。
 
-Project support:
+本项目已经支持：
+
 - `SE`
 - `CBAM`
 
-### 6. Expert or Cascade Logic
+### 6. 专家模型与级联逻辑
 
-For classes with strong visual confusion, a secondary specialist classifier is a reasonable design.
+对于视觉上容易混淆的类别，引入第二阶段专家分类器是合理的工程方案。
 
-Project support:
-- tumor3 expert branch
-- pairwise expert branches
-- cascade triggering based on top-k containment and margin threshold
+本项目已经支持：
 
-## Current Engineering Decision
+- 三分类肿瘤专家分支
+- 两两专家分支
+- 基于 top-k 包含关系和 margin 阈值的级联触发机制
 
-The current code path keeps the methodology aligned with the literature while maintaining a controlled engineering ablation setup:
-- same task definition
-- same main training pipeline
-- same expert and cascade framework
-- backbone upgraded to `EfficientNet-B2`
+## 当前工程决策
 
-## Output Convention
+当前代码路径在方法层面仍然与文献结论保持一致，同时维持可控的工程消融框架：
 
-All new B2 experiments use:
+- 任务定义不变
+- 主训练流程不变
+- 专家模型与级联框架不变
+- 默认主干升级为 `EfficientNet-B3`
+
+## 输出规范
+
+所有新的 `B3` 实验统一使用：
+
 - `outputs/weights/<experiment_name>/`
 - `outputs/results/<experiment_name>/`

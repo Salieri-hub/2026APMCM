@@ -47,11 +47,12 @@ DEFAULT_EXPERT_CLASSES = [
     "adenocarcinoma",
     "squamous.cell.carcinoma",
 ]
-DEFAULT_MODEL_NAME = "efficientnet_b2"
+DEFAULT_MODEL_NAME = "efficientnet_b3"
 MODEL_DEFAULT_IMAGE_SIZE = {
     "efficientnet_b0": 224,
     "efficientnet_b1": 240,
     "efficientnet_b2": 256,
+    "efficientnet_b3": 288,
 }
 LOCAL_PRETRAINED_FILES = {
     "efficientnet_b1": {
@@ -63,6 +64,11 @@ LOCAL_PRETRAINED_FILES = {
         "format": "torch",
         "url": "https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-weights/efficientnet_b2_ra-bcdf34b7.pth",
         "relative_path": Path(".cache") / "weights" / "efficientnet_b2.ra_in1k" / "model.pth",
+    },
+    "efficientnet_b3": {
+        "format": "safetensors",
+        "url": "https://huggingface.co/timm/efficientnet_b3.ra2_in1k/resolve/main/model.safetensors",
+        "relative_path": Path(".cache") / "weights" / "efficientnet_b3.ra2_in1k" / "model.safetensors",
     },
 }
 
@@ -99,6 +105,8 @@ def build_backbone_tag(model_name: str) -> str:
         return "b1"
     if model_name == "efficientnet_b2":
         return "b2"
+    if model_name == "efficientnet_b3":
+        return "b3"
     return sanitize_name(model_name)
 
 
@@ -188,7 +196,7 @@ def build_output_subdirs(output_dir: Path) -> Tuple[Path, Path]:
     output_dir = output_dir.resolve()
     if output_dir.name in {"outputs", "weights", "results"}:
         raise ValueError(
-            "--output-dir must include an experiment name, for example outputs/v2.0_pretrained_ce_b2."
+            "--output-dir must include an experiment name, for example outputs/v2.0_pretrained_ce_b3."
         )
 
     if output_dir.parent.name in {"weights", "results"}:
@@ -1634,7 +1642,7 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=None,
         help=(
-            "Experiment slug path. For example outputs/v2.0_pretrained_ce_b2. "
+            "Experiment slug path. For example outputs/v2.0_pretrained_ce_b3. "
             "Checkpoints are written to outputs/weights/<experiment>/ and reports to outputs/results/<experiment>/."
         ),
     )
@@ -1652,7 +1660,7 @@ def parse_args() -> argparse.Namespace:
         "--image-size",
         type=int,
         default=None,
-        help="Input image size. Defaults to 256 for EfficientNet-B2, 240 for EfficientNet-B1, and 224 for EfficientNet-B0.",
+        help="Input image size. Defaults to 288 for EfficientNet-B3, 256 for EfficientNet-B2, 240 for EfficientNet-B1, and 224 for EfficientNet-B0.",
     )
     parser.add_argument("--lr", type=float, default=3e-4)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
